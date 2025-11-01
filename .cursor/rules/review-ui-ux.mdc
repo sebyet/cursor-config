@@ -1,0 +1,184 @@
+---
+description: UI/UX review checklist for quality assurance before merging code
+globs: *.tsx,*.ts,*.jsx,*.js,*.css,*.scss
+---
+
+# UI/UX Review Checklist
+
+Use this checklist to review UI/UX work before merging. Validate both user experience and technical implementation.
+
+## Pre-Merge Checklist
+
+### Accessibility
+- MUST: Test keyboard navigation (Tab, Enter, Escape, Arrow keys)
+- MUST: Verify focus indicators are visible and logical
+- MUST: Check screen reader compatibility (VoiceOver, NVDA, JAWS)
+- MUST: Verify color contrast meets WCAG AA minimum (prefer APCA)
+- MUST: Images have descriptive `alt` text or `aria-hidden` if decorative
+- MUST: Form inputs have associated labels (not placeholders only)
+- MUST: Icon-only buttons have descriptive `aria-label`
+- MUST: Interactive elements announce their state (`aria-expanded`, `aria-pressed`, etc.)
+- MUST: Error messages are associated with fields (`aria-describedby` or `aria-invalid`)
+- SHOULD: Test with reduced motion enabled (`prefers-reduced-motion`)
+
+### Responsive Design
+- MUST: Test on mobile viewport (320px - 768px)
+- MUST: Test on tablet viewport (768px - 1024px)
+- MUST: Test on desktop viewport (1024px+)
+- MUST: Test on ultra-wide (simulate at 50% zoom)
+- MUST: Verify touch targets ≥44px on mobile
+- MUST: Check safe areas on iOS (notch/home indicator)
+- MUST: Verify no horizontal scrolling on any viewport
+- MUST: Check text remains readable at all sizes
+- SHOULD: Test landscape orientation on mobile
+
+### Cross-Browser Testing
+- MUST: Test in Chrome/Edge (Chromium)
+- MUST: Test in Safari (macOS/iOS)
+- MUST: Test in Firefox
+- SHOULD: Test on iOS Safari (real device if possible)
+- MUST: Verify CSS Grid/Flexbox work correctly
+- MUST: Check form inputs render correctly
+- MUST: Verify animations work (or have fallbacks)
+
+### Performance
+- MUST: Check Lighthouse score (≥90 for Performance)
+- MUST: Verify no layout shift (CLS < 0.1)
+- MUST: Images are optimized and lazy-loaded below fold
+- MUST: Verify no console errors or warnings
+- MUST: Check network requests (minimize, batch when possible)
+- SHOULD: Test on slow 3G connection
+- MUST: Mutations (`POST/PATCH/DELETE`) feel fast (<500ms perceived)
+- SHOULD: Profile with React DevTools (minimize re-renders)
+
+## Visual Design Review
+
+### Typography
+- MUST: Use consistent font sizes from design system
+- MUST: Maintain proper line height (1.5-1.75 for body text)
+- MUST: Use appropriate font weights (not too many variations)
+- MUST: Verify text is readable (contrast, size)
+- SHOULD: Use tabular numbers for comparisons
+- MUST: Avoid widows/orphans in text
+
+### Spacing & Layout
+- MUST: Use consistent spacing scale (avoid arbitrary values)
+- MUST: Verify alignment to grid/baseline (no accidental placement)
+- MUST: Check visual balance (icon/text lockups)
+- MUST: Verify whitespace is generous (not cramped)
+- SHOULD: Apply optical alignment adjustments (±1px when needed)
+
+### Color & Styling
+- MUST: Use semantic color tokens (not hardcoded colors)
+- MUST: Verify color is not the only way to convey information
+- MUST: Check hover/focus states increase contrast
+- SHOULD: Verify hue consistency (borders/shadows match background)
+- MUST: Charts use color-blind-friendly palettes
+- MUST: Verify dark mode support (if applicable)
+
+### Component Consistency
+- MUST: Use design system components (not custom implementations)
+- MUST: Use component variants correctly
+- MUST: Verify similar components behave similarly
+- MUST: Check hover/active states are consistent
+- MUST: Verify shadows/layers follow design system
+
+## UX Review Criteria
+
+### Self-Evident Design
+- MUST: Page purpose is clear at a glance
+- MUST: Most important elements are most prominent
+- MUST: Related elements are grouped together
+- MUST: Clear entry points for actions
+- NEVER: Users must guess what something does
+- MUST: Use familiar patterns (don't reinvent the wheel)
+
+### Content
+- MUST: Headlines are descriptive (not clever)
+- MUST: Content is scannable (bullets, whitespace, hierarchy)
+- MUST: Eliminate needless words (no marketing speak)
+- MUST: Instructions are concise and actionable
+- MUST: Use active voice (not passive)
+
+### Navigation
+- MUST: Current location is clear (active states, breadcrumbs)
+- MUST: Navigation labels match user mental models
+- MUST: URL reflects state (deep-linkable)
+- MUST: Back/Forward buttons restore scroll
+- MUST: Links support Cmd/Ctrl/middle-click
+
+### Forms
+- MUST: Every input has a visible label
+- MUST: Required fields are clearly marked
+- MUST: Validation happens in real-time
+- MUST: Error messages explain what went wrong and how to fix
+- MUST: Success states confirm completion
+- MUST: Forms are compatible with password managers
+- MUST: No dead zones on checkboxes/radios
+
+### Error Handling
+- MUST: Errors are in plain language (no technical jargon)
+- MUST: Errors appear near the relevant field/action
+- MUST: Errors are visually distinct (color + icon + text)
+- MUST: Always provide a way forward (retry, alternative)
+- MUST: Confirm destructive actions before execution
+- MUST: Provide Undo for destructive actions (when possible)
+
+### States & Feedback
+- MUST: Loading states show progress (spinners, skeletons)
+- MUST: No blank screens during loading
+- MUST: Immediate feedback for user actions
+- MUST: Optimistic UI with rollback on failure
+- MUST: Empty states are helpful (not just "No items")
+- MUST: Error states guide recovery
+
+## Testing Checklist
+
+### Keyboard Navigation
+- MUST: Tab order is logical
+- MUST: All interactive elements are keyboard accessible
+- MUST: Focus is trapped in modals/drawers
+- MUST: Escape closes modals/dialogs
+- MUST: Enter submits forms
+- MUST: Arrow keys work in menus/lists
+
+### Touch Interactions
+- MUST: Touch targets ≥44px on mobile
+- MUST: No accidental taps (spacing between targets)
+- MUST: Drag interactions are forgiving
+- MUST: Scroll works smoothly
+- MUST: No double-tap zoom on buttons
+
+### Form Validation
+- MUST: Real-time validation doesn't block typing
+- MUST: Validation errors appear inline
+- MUST: Focus moves to first error on submit
+- MUST: Invalid fields are clearly marked
+- MUST: Error messages are dismissible
+
+### Edge Cases
+- MUST: Design handles short content (min height)
+- MUST: Design handles very long content (scrolling, truncation)
+- MUST: Design handles empty states
+- MUST: Design handles error states
+- MUST: Design handles loading states
+- MUST: Design handles dense/sparse data
+
+## Common Issues to Watch For
+
+- NEVER: Disable browser zoom
+- NEVER: Block paste in inputs
+- NEVER: Hide important features
+- NEVER: Use color alone to convey information
+- NEVER: Create dead ends (always offer recovery)
+- NEVER: Make users guess what to do
+- MUST: Verify internationalization (dates, numbers, currency)
+- MUST: Check RTL support (if applicable)
+
+---
+
+## See Also
+
+- **[UX Principles](mdc:.cursor/rules/dont-make-me-think.mdc)**: Understanding user behavior and cognitive principles
+- **[Using the Design System](mdc:.cursor/rules/use-design-system.mdc)**: Which components and tokens to use
+- **[Technical Guidelines](mdc:.cursor/rules/web-interface-guidelines.mdc)**: Detailed implementation guidance

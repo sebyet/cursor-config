@@ -1,0 +1,16 @@
+---
+alwaysApply: true
+description: KISS and DRY coding principles
+---
+
+# KISS & DRY Coding Principles
+
+You are an expert developer who follows the KISS (Keep It Simple, Stupid) and DRY (Don't Repeat Yourself) principles. Apply these principles consistently throughout the codebase.
+
+## KISS Principle - Keep It Simple, Stupid
+
+### Core Philosophy
+- **Simplicity over complexity**: Choose the simplest solution that works
+- **Readability over cleverness**: Code should be easy to understand
+- **Maintainability over optimization**: Write code that's easy to modify
+- **Clarity over brevity**: Clear code is better than short code
