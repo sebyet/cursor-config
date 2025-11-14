@@ -1,0 +1,229 @@
+---
+description: Performance optimization guidelines for fast, efficient applications. Use when optimizing bundle size, improving Core Web Vitals, or addressing performance bottlenecks. Focuses on Next.js and React optimizations.
+alwaysApply: false
+---
+# Performance Optimization
+
+Concise rules for optimizing application performance. Use MUST/SHOULD/NEVER to guide decisions.
+
+## Core Web Vitals
+
+- Largest Contentful Paint (LCP)
+  - MUST: Optimize LCP to < 2.5 seconds
+  - SHOULD: Preload critical resources (fonts, images, CSS)
+  - SHOULD: Optimize images (use `next/image`, proper sizing)
+  - SHOULD: Minimize render-blocking resources
+  - MUST: Use Server Components for faster initial load
+
+- First Input Delay (FID) / Interaction to Next Paint (INP)
+  - MUST: Keep JavaScript execution time low
+  - SHOULD: Code-split large bundles
+  - SHOULD: Defer non-critical JavaScript
+  - MUST: Minimize main thread blocking
+  - SHOULD: Use `startTransition` for non-urgent updates
+
+- Cumulative Layout Shift (CLS)
+  - MUST: Set explicit dimensions for images and media
+  - SHOULD: Reserve space for dynamic content (skeletons)
+  - MUST: Avoid inserting content above existing content
+  - SHOULD: Use `font-display: swap` for web fonts
+  - MUST: Prevent layout shifts from ads or embeds
+
+## Next.js Performance
+
+- Server Components
+  - MUST: Default to Server Components (reduce bundle size)
+  - SHOULD: Use Server Components for data fetching
+  - SHOULD: Minimize Client Component usage
+  - MUST: Keep Client Component boundaries minimal
+  - SHOULD: Pass Server Components as children to Client Components
+
+- Code splitting
+  - SHOULD: Use dynamic imports (`next/dynamic`) for large components
+  - SHOULD: Lazy load below-the-fold content
+  - SHOULD: Split vendor bundles when appropriate
+  - SHOULD: Use route-based code splitting (automatic in Next.js)
+
+- Image optimization
+  - MUST: Use `next/image` component for images
+  - SHOULD: Provide `width` and `height` or use `fill` prop
+  - SHOULD: Use `priority` for above-the-fold images
+  - SHOULD: Use appropriate image formats (WebP, AVIF)
+  - SHOULD: Configure image domains in `next.config.mjs`
+  - SHOULD: Lazy load images below the fold
+
+- Font optimization
+  - MUST: Use `next/font` for font optimization
+  - SHOULD: Preload critical fonts
+  - SHOULD: Use `display: 'swap'` for better performance
+  - SHOULD: Limit number of font families and weights
+  - SHOULD: Self-host fonts when possible
+
+## Caching Strategy
+
+- Static generation
+  - SHOULD: Use static generation for pages that don't need request-time data
+  - SHOULD: Use `generateStaticParams` for dynamic routes
+  - SHOULD: Use ISR (Incremental Static Regeneration) for updated content
+  - SHOULD: Pre-render pages at build time when possible
+
+- Data caching
+  - SHOULD: Use `cache: 'force-cache'` for static data
+  - SHOULD: Use `next.revalidate` for time-based revalidation
+  - SHOULD: Use `next.tags` for tag-based cache invalidation
+  - SHOULD: Use Cache Components (`'use cache'`) in Next.js 16+
+  - MUST: Revalidate cache after data mutations
+
+- Client-side caching
+  - SHOULD: Cache API responses when appropriate
+  - SHOULD: Use React Query or SWR for client-side data caching
+  - SHOULD: Implement stale-while-revalidate pattern
+  - SHOULD: Set appropriate cache headers
+
+## Bundle Optimization
+
+- JavaScript bundle size
+  - MUST: Minimize Client Component usage
+  - SHOULD: Analyze bundle size with `@next/bundle-analyzer`
+  - SHOULD: Remove unused dependencies
+  - SHOULD: Use tree-shaking friendly imports
+  - SHOULD: Avoid importing entire libraries when only need parts
+
+- Tree shaking
+  - SHOULD: Use ES modules for better tree shaking
+  - SHOULD: Import specific functions, not entire modules
+  - SHOULD: Avoid side effects in module-level code
+  - SHOULD: Use `sideEffects: false` in package.json when appropriate
+
+- Third-party scripts
+  - SHOULD: Load third-party scripts with appropriate strategy
+  - SHOULD: Use `next/script` with `strategy` prop
+  - SHOULD: Defer non-critical scripts
+  - SHOULD: Use `afterInteractive` for most scripts
+  - SHOULD: Avoid blocking scripts in `<head>`
+
+## React Performance
+
+- Re-renders
+  - MUST: Minimize unnecessary re-renders
+  - SHOULD: Use `React.memo` for expensive components
+  - SHOULD: Use `useMemo` for expensive computations
+  - SHOULD: Use `useCallback` for stable function references
+  - SHOULD: Track re-renders with React DevTools
+
+- State management
+  - SHOULD: Keep state as local as possible
+  - SHOULD: Lift state up only when necessary
+  - SHOULD: Use `startTransition` for non-urgent state updates
+  - SHOULD: Batch state updates when possible
+
+- List rendering
+  - MUST: Virtualize long lists (use `virtua` or similar)
+  - SHOULD: Use `key` prop correctly for list items
+  - SHOULD: Avoid rendering large lists at once
+  - SHOULD: Implement pagination or infinite scroll
+
+## Network Optimization
+
+- Request optimization
+  - SHOULD: Use `Promise.all` for parallel requests
+  - SHOULD: Batch related requests when possible
+  - SHOULD: Minimize number of HTTP requests
+  - SHOULD: Use HTTP/2 or HTTP/3 when available
+  - SHOULD: Implement request deduplication
+
+- Data fetching
+  - SHOULD: Fetch data at the component level that needs it
+  - SHOULD: Use Server Components for data fetching
+  - SHOULD: Implement proper loading states
+  - SHOULD: Stream data when possible
+  - SHOULD: Prefetch data for likely user actions
+
+- API optimization
+  - SHOULD: Return only necessary data from APIs
+  - SHOULD: Implement pagination for large datasets
+  - SHOULD: Use compression (gzip, brotli)
+  - SHOULD: Cache API responses appropriately
+  - SHOULD: Minimize payload size
+
+## Rendering Optimization
+
+- Streaming
+  - SHOULD: Use `loading.tsx` for route-level streaming
+  - SHOULD: Use `<Suspense>` boundaries for component-level streaming
+  - SHOULD: Stream slow data requests
+  - SHOULD: Show meaningful loading states
+
+- Server-side rendering
+  - SHOULD: Use static rendering when possible
+  - SHOULD: Use dynamic rendering only when necessary
+  - SHOULD: Optimize Server Component execution time
+  - SHOULD: Cache expensive computations
+
+- Client-side rendering
+  - SHOULD: Minimize hydration time
+  - SHOULD: Avoid hydration mismatches
+  - SHOULD: Use progressive enhancement
+  - SHOULD: Optimize initial JavaScript execution
+
+## CSS Performance
+
+- CSS optimization
+  - SHOULD: Use CSS-in-JS sparingly (prefer CSS modules or Tailwind)
+  - SHOULD: Minimize CSS bundle size
+  - SHOULD: Remove unused CSS
+  - SHOULD: Use critical CSS for above-the-fold content
+  - SHOULD: Avoid blocking CSS in `<head>`
+
+- Tailwind CSS
+  - SHOULD: Use Tailwind's JIT mode (default in v3+)
+  - SHOULD: Purge unused styles in production
+  - SHOULD: Use utility classes efficiently
+  - SHOULD: Avoid excessive class concatenation
+
+## Performance Monitoring
+
+- Measurement
+  - SHOULD: Measure performance regularly
+  - SHOULD: Use Lighthouse for performance audits
+  - SHOULD: Monitor Core Web Vitals in production
+  - SHOULD: Set up performance budgets
+  - SHOULD: Track performance metrics over time
+
+- Profiling
+  - SHOULD: Profile with CPU throttling
+  - SHOULD: Profile with network throttling
+  - SHOULD: Use React DevTools Profiler
+  - SHOULD: Use browser performance tools
+  - SHOULD: Identify and fix performance bottlenecks
+
+- Performance budgets
+  - SHOULD: Set bundle size budgets
+  - SHOULD: Set performance score budgets
+  - SHOULD: Monitor budgets in CI/CD
+  - SHOULD: Alert when budgets are exceeded
+
+## Best Practices
+
+- Performance mindset
+  - SHOULD: Consider performance from the start
+  - SHOULD: Measure before optimizing
+  - SHOULD: Optimize based on data, not assumptions
+  - SHOULD: Balance performance with maintainability
+  - MUST: Test performance on real devices and networks
+
+- Optimization strategy
+  - SHOULD: Optimize the critical path first
+  - SHOULD: Focus on user-perceived performance
+  - SHOULD: Implement progressive enhancement
+  - SHOULD: Test on slow devices and networks
+  - SHOULD: Monitor performance in production
+
+---
+
+## See Also
+
+- **[Next.js Performance](https://nextjs.org/docs/app/building-your-application/optimizing)**: Next.js optimization features
+- **[Web Vitals](https://web.dev/vitals/)**: Core Web Vitals documentation
+- **[React Performance](https://react.dev/learn/render-and-commit)**: React rendering optimization
+- **[Web Interface Guidelines](mdc:.cursor/rules/web-interface-guidelines.mdc)**: Performance-related UI patterns

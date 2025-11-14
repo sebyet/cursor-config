@@ -1,0 +1,173 @@
+---
+description: Monitoring, logging, and observability best practices. Use when implementing logging, error tracking, metrics, or observability features. Ensures production-ready monitoring.
+alwaysApply: false
+---
+# Monitoring & Observability Guidelines
+
+Concise rules for monitoring applications and understanding system behavior. Use MUST/SHOULD/NEVER to guide decisions.
+
+## Logging
+
+- Log levels
+  - MUST: Use appropriate log levels (error, warn, info, debug)
+  - MUST: Log errors with `console.error()` or logging service
+  - SHOULD: Use `console.warn()` for warnings (deprecations, fallbacks)
+  - SHOULD: Use `console.info()` for important events (user actions, state changes)
+  - SHOULD: Use `console.debug()` for development-only logs
+  - MUST: Remove or guard debug logs in production
+
+- Structured logging
+  - SHOULD: Use structured logging format (JSON) for production
+  - SHOULD: Include context in logs (user ID, request ID, timestamp, operation)
+  - MUST: Never log sensitive information (passwords, tokens, API keys, PII)
+  - SHOULD: Log request/response metadata for debugging
+  - SHOULD: Log performance metrics (duration, memory usage)
+
+- Logging best practices
+  - SHOULD: Log at appropriate level (not everything is an error)
+  - SHOULD: Include enough context to debug issues
+  - MUST: Remove or guard console.log in production
+  - SHOULD: Use structured logging for easier parsing
+  - SHOULD: Rotate logs to prevent disk space issues
+
+## Error Tracking
+
+- Error reporting
+  - SHOULD: Integrate error reporting service (Sentry, LogRocket, etc.)
+  - MUST: Log errors to error reporting service in production
+  - SHOULD: Include user context (user ID, session ID) in error reports
+  - SHOULD: Include stack traces for debugging
+  - MUST: Sanitize sensitive data before sending to error reporting service
+  - SHOULD: Group similar errors to reduce noise
+
+- Error handling
+  - MUST: Catch and log all errors
+  - SHOULD: Use error boundaries for React components
+  - SHOULD: Log errors with sufficient context
+  - SHOULD: Alert on critical errors
+  - SHOULD: Track error rates and trends
+
+## Metrics & Monitoring
+
+- Application metrics
+  - SHOULD: Track key business metrics (user signups, conversions, etc.)
+  - SHOULD: Track performance metrics (response time, throughput)
+  - SHOULD: Track error rates and types
+  - SHOULD: Track resource usage (CPU, memory, database connections)
+
+- Performance monitoring
+  - SHOULD: Monitor API response times
+  - SHOULD: Monitor database query performance
+  - SHOULD: Monitor page load times
+  - SHOULD: Monitor Core Web Vitals (LCP, FID, CLS)
+  - SHOULD: Set up performance budgets
+
+- Infrastructure monitoring
+  - SHOULD: Monitor server health (CPU, memory, disk)
+  - SHOULD: Monitor database performance
+  - SHOULD: Monitor network latency
+  - SHOULD: Monitor third-party service availability
+
+## Alerting
+
+- Alert configuration
+  - SHOULD: Set up alerts for critical errors
+  - SHOULD: Set up alerts for performance degradation
+  - SHOULD: Set up alerts for service downtime
+  - SHOULD: Set up alerts for resource exhaustion
+  - SHOULD: Use appropriate alert channels (email, Slack, PagerDuty)
+
+- Alert best practices
+  - SHOULD: Alert on actionable issues only
+  - SHOULD: Avoid alert fatigue (too many alerts)
+  - SHOULD: Set appropriate thresholds for alerts
+  - SHOULD: Use different alert levels (critical, warning, info)
+  - SHOULD: Include context in alerts (what, when, where)
+
+## Dashboards
+
+- Dashboard design
+  - SHOULD: Create dashboards for key metrics
+  - SHOULD: Organize dashboards by service or feature
+  - SHOULD: Include real-time and historical data
+  - SHOULD: Make dashboards accessible to team
+  - SHOULD: Update dashboards as needs change
+
+- Dashboard metrics
+  - SHOULD: Include error rates and types
+  - SHOULD: Include performance metrics
+  - SHOULD: Include business metrics
+  - SHOULD: Include infrastructure metrics
+  - SHOULD: Include user activity metrics
+
+## Distributed Tracing
+
+- Tracing setup
+  - SHOULD: Use distributed tracing for microservices
+  - SHOULD: Trace requests across services
+  - SHOULD: Include trace IDs in logs
+  - SHOULD: Correlate traces with logs and metrics
+
+- Tracing best practices
+  - SHOULD: Start traces at request entry point
+  - SHOULD: Propagate trace context across services
+  - SHOULD: Include operation names and tags
+  - SHOULD: Sample traces appropriately (not 100%)
+
+## Health Checks
+
+- Health check endpoints
+  - SHOULD: Create health check endpoint (`/health`)
+  - SHOULD: Check database connectivity
+  - SHOULD: Check external service availability
+  - SHOULD: Return appropriate status codes
+  - SHOULD: Include version information
+
+- Health check implementation
+  - SHOULD: Make health checks fast (< 1 second)
+  - SHOULD: Make health checks lightweight
+  - SHOULD: Use health checks for load balancer
+  - SHOULD: Monitor health check failures
+
+## Log Aggregation
+
+- Log management
+  - SHOULD: Use log aggregation service (Datadog, Loggly, etc.)
+  - SHOULD: Centralize logs from all services
+  - SHOULD: Index logs for searchability
+  - SHOULD: Retain logs for appropriate duration
+  - SHOULD: Archive old logs
+
+- Log analysis
+  - SHOULD: Search logs by context (user ID, request ID, etc.)
+  - SHOULD: Analyze log patterns
+  - SHOULD: Correlate logs with errors and metrics
+  - SHOULD: Set up alerts based on log patterns
+
+## Best Practices
+
+- Observability strategy
+  - SHOULD: Implement logging, metrics, and tracing
+  - SHOULD: Make observability data actionable
+  - SHOULD: Review observability setup regularly
+  - SHOULD: Train team on using observability tools
+
+- Performance
+  - SHOULD: Minimize performance impact of logging
+  - SHOULD: Use async logging when possible
+  - SHOULD: Sample high-volume logs
+  - SHOULD: Batch log writes
+
+- Security
+  - MUST: Never log sensitive data
+  - SHOULD: Sanitize logs before storage
+  - SHOULD: Control access to observability data
+  - SHOULD: Encrypt logs in transit and at rest
+
+---
+
+## See Also
+
+- **[Error Handling & Logging](mdc:.cursor/rules/error-handling-logging.mdc)**: Error handling patterns
+- **[Performance Optimization](mdc:.cursor/rules/performance-optimization.mdc)**: Performance monitoring
+- **[CI/CD & Deployment](mdc:.cursor/rules/ci-cd-deployment.mdc)**: Deployment monitoring

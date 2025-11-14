@@ -1,0 +1,171 @@
+---
+description: Framer Motion best practices, performance optimization, accessibility, and testing guidelines. Use when implementing animations with Framer Motion or optimizing animation performance.
+alwaysApply: false
+---
+
+# Framer Motion & Performance
+
+Best practices for using Framer Motion and optimizing animation performance, accessibility, and testing.
+
+## Performance
+
+### 1. Hardware Acceleration
+
+**MUST**: Animate compositor-friendly properties:
+- ✅ `transform` (translate, scale, rotate)
+- ✅ `opacity`
+- ❌ Avoid: `top`, `left`, `width`, `height` (cause layout/repaint)
+
+**MUST**: Use `will-change` sparingly and only for elements that will definitely animate.
+
+### 2. Reduced Motion
+
+**MUST**: Honor `prefers-reduced-motion`:
+```css
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+Or provide reduced variants that maintain functionality without motion.
+
+### 3. Interruptibility
+
+**MUST**: Design animations that can be interrupted or reversed. Animations should be input-driven and avoid autoplay.
+
+**MUST**: When a user triggers a new action, the current animation should gracefully transition to the new state.
+
+## Framer Motion Best Practices
+
+### 4. Library-Specific Patterns
+
+**MUST**: Use Framer Motion's optimized features when available.
+
+**AnimatePresence for enter/exit:**
+```tsx
+<AnimatePresence mode="wait">
+  {isVisible && (
+    <motion.div
+      key="content"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      Content
+    </motion.div>
+  )}
+</AnimatePresence>
+```
+
+**Layout animations:**
+```tsx
+<motion.div layout>
+  {/* Automatically animates position changes */}
+</motion.div>
+```
+
+**Shared layout animations:**
+```tsx
+<motion.div layoutId="unique-id">
+  {/* Can be shared across components */}
+</motion.div>
+```
+
+**Key guidelines:**
+- Use `AnimatePresence` for conditional rendering
+- Use `layout` prop for automatic position animations
+- Use `layoutId` for shared element transitions
+- Prefer variants for complex animations
+- Use `useInView` hook for scroll-triggered animations
+
+### 5. Performance with Framer Motion
+
+**MUST**: Optimize Framer Motion animations for performance.
+
+**Best practices:**
+- Use `will-change` sparingly (Framer Motion handles this)
+- Prefer `transform` and `opacity` (already covered)
+- Use `layout` prop instead of animating `top/left`
+- Batch animations with variants
+- Use `useReducedMotion` hook for accessibility
+
+**Implementation:**
+```tsx
+import { useReducedMotion } from "framer-motion";
+
+function Component() {
+  const shouldReduceMotion = useReducedMotion();
+  
+  return (
+    <motion.div
+      animate={shouldReduceMotion ? {} : { scale: 1.1 }}
+      transition={{ duration: shouldReduceMotion ? 0 : 0.2 }}
+    />
+  );
+}
+```
+
+## Testing Animations
+
+### 6. Testing Checklist
+
+**SHOULD**: Test animations across devices and scenarios.
+
+**Checklist:**
+- ✅ Test on low-end devices (animations should still be smooth)
+- ✅ Test with `prefers-reduced-motion` enabled
+- ✅ Test with slow network (loading states)
+- ✅ Test rapid user interactions (interruptibility)
+- ✅ Test keyboard navigation (should be instant)
+- ✅ Test with screen readers (animations shouldn't interfere)
+
+**Performance testing:**
+- Use Chrome DevTools Performance tab
+- Check for layout thrashing
+- Monitor frame rate (should stay at 60fps)
+- Test with CPU throttling enabled
+
+### 7. Accessibility Testing
+
+**MUST**: Ensure animations don't interfere with assistive technologies:
+- Screen readers should announce content changes, not animations
+- Keyboard navigation should be instant (no animations)
+- Focus management should work correctly
+- Reduced motion preferences must be respected
+
+**Implementation:**
+```tsx
+import { useReducedMotion } from "framer-motion";
+
+function AccessibleComponent() {
+  const shouldReduceMotion = useReducedMotion();
+  
+  return (
+    <motion.div
+      initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
+      animate={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
+      transition={shouldReduceMotion ? {} : { duration: 0.2 }}
+    >
+      Content
+    </motion.div>
+  );
+}
+```
+
+---
+
+## See Also
+
+- **[Animation Principles](mdc:.cursor/rules/animation-principles.mdc)**: Core principles and when to animate
+- **[Animation Patterns](mdc:.cursor/rules/animation-patterns.mdc)**: Implementation patterns and choreography
+- **[Web Interface Guidelines](mdc:.cursor/rules/web-interface-guidelines.mdc)**: General UI/UX guidelines
+- **[Performance Optimization](mdc:.cursor/rules/performance-optimization.mdc)**: Performance best practices
+
+## References
+
+- [Framer Motion Documentation](https://www.framer.com/motion/)
+- [Easings.co](https://easings.co) - Custom easing functions

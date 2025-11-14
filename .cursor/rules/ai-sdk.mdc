@@ -1,0 +1,723 @@
+---
+description: Guidelines for using the AI SDK by Vercel and AI Elements component library for building AI-powered applications. Use when implementing text generation, structured outputs, tool calling, chat interfaces, AI agents, or AI UI components. Ensures consistent patterns and best practices for AI integration.
+alwaysApply: false
+---
+# AI SDK Guidelines
+
+Concise rules for using the AI SDK by Vercel and AI Elements component library. Use MUST/SHOULD/NEVER to guide decisions. The AI SDK provides a unified API for 25+ model providers including OpenAI, Anthropic, Google, xAI, Azure, Amazon Bedrock, Groq, Mistral, and more. AI Elements provides pre-built shadcn/ui components for building AI-native applications faster.
+
+## Core Libraries
+
+- **AI SDK Core**: Unified API for generating text, structured objects, tool calls, and building agents
+- **AI SDK UI**: Framework-agnostic hooks (`useChat`, `useCompletion`, `useObject`) for building chat and generative UIs
+- **AI SDK RSC** (experimental): Streaming React components with generative UI support using React Server Components
+
+## Choosing the Right Library
+
+### Use `ai-sdk-tools` for Chatbots
+
+- MUST: Use `ai-sdk-tools` (https://ai-sdk-tools.dev/) for building AI chatbots and conversational interfaces
+- MUST: Use `ai-sdk-tools` when you need:
+  - Multi-agent orchestration with automatic handoffs and programmatic routing
+  - Zustand-based state management for chat applications (eliminates prop drilling)
+  - Development tools for debugging (real-time insights into tool calls, state changes, performance metrics)
+  - Artifact streaming with structured, type-safe artifacts that stream to React components
+  - Universal caching for expensive AI tool executions (reduces costs by 80%, improves response times by 10x)
+- SHOULD: Install `ai-sdk-tools` via `npm install ai-sdk-tools`
+- MUST: Use `ai-sdk-tools` for production-ready chatbot applications requiring advanced state management and debugging capabilities
+
+### Use Plain `ai` SDK for Other AI Features
+
+- MUST: Use the plain `ai` SDK package for non-chatbot AI features:
+  - Text generation (streaming and non-streaming)
+  - Structured object generation
+  - Tool calling (without multi-agent orchestration)
+  - Simple AI integrations
+  - Background AI processing
+  - One-off AI operations
+- SHOULD: Use plain `ai` SDK when you don't need:
+  - Global state management for chat
+  - Multi-agent coordination
+  - Advanced debugging tools
+  - Artifact streaming
+  - Universal caching
+- MUST: Install plain `ai` SDK via `npm install ai`
+
+### Decision Framework
+
+- **Is this a chatbot or conversational interface?** → Use `ai-sdk-tools`
+- **Do you need global state management for chat?** → Use `ai-sdk-tools`
+- **Do you need multi-agent orchestration?** → Use `ai-sdk-tools`
+- **Is this a simple text generation or structured output?** → Use plain `ai` SDK
+- **Is this a background job or one-off AI operation?** → Use plain `ai` SDK
+- **Do you need advanced debugging and monitoring?** → Use `ai-sdk-tools`
+
+## AI Elements Component Library
+
+### Overview
+
+- **AI Elements**: Component library and custom registry built on top of shadcn/ui for building AI-native applications faster
+- MUST: Use AI Elements for pre-built components like conversations, messages, and other AI UI patterns
+- SHOULD: Prefer AI Elements components over building custom AI UI components from scratch
+- MUST: Have shadcn/ui installed before using AI Elements (will auto-install if missing)
+
+### Prerequisites
+
+- MUST: Have Node.js version 18 or later
+- MUST: Have a Next.js project with the AI SDK installed
+- MUST: Have shadcn/ui installed in your project
+- SHOULD: Use AI Gateway and add `AI_GATEWAY_API_KEY` to `env.local` for easier provider management and $5/month usage credit
+- MUST: Note that AI Elements targets React 19 (no `forwardRef` usage) and Tailwind CSS 4
+
+### Installation
+
+- SHOULD: Use the AI Elements CLI for the fastest setup: `npx ai-elements@latest add [component-name]`
+- SHOULD: Use the standard shadcn/ui CLI if already using shadcn workflow: `npx shadcn@latest add [component-name]`
+- MUST: Components are added to `@/components/ai-elements/` directory by default (or configured shadcn components folder)
+- MUST: Verify installation confirmation in terminal before using components
+
+### Component Usage
+
+- MUST: Import AI Elements components from the installed directory
+- SHOULD: Use AI Elements components for common AI UI patterns (conversations, messages, etc.)
+- MUST: Ensure AI SDK is properly configured before using AI Elements components
+- SHOULD: Customize AI Elements components to match your design system
+
+## Text Generation
+
+### Non-Streaming Text Generation
+
+- MUST: Use `generateText` for non-interactive use cases (drafting emails, summarizing documents)
+- MUST: Import from `'ai'` package
+- SHOULD: Include system prompts for better control over model behavior
+- MUST: Handle errors with try-catch blocks
+
+```typescript
+import { generateText } from 'ai';
+
+const { text } = await generateText({
+  model: 'openai/gpt-4.1',
+  system: 'You are a professional writer. You write simple, clear, and concise content.',
+  prompt: 'Summarize the following article in 3-5 sentences: ${article}',
+});
+```
+
+### Streaming Text Generation
+
+- MUST: Use `streamText` for interactive use cases (chatbots, real-time responses)
+- MUST: Use async iterables (`for await...of`) to consume text streams
+- SHOULD: Implement callbacks (`onFinish`, `onError`, `onChunk`) for event handling
+- MUST: Handle streaming errors gracefully
+
+```typescript
+import { streamText } from 'ai';
+
+const result = streamText({
+  model: 'openai/gpt-4.1',
+  prompt: 'Invent a new holiday and describe its traditions.',
+  onError({ error }) {
+    console.error(error);
+  },
+  onChunk({ chunk }) {
+    if (chunk.type === 'text') {
+      console.log(chunk.text);
+    }
+  },
+  onFinish({ text, finishReason, usage }) {
+    console.log('Finished generating:', text);
+    console.log('Usage:', usage);
+  },
+});
+
+// Consume the stream
+for await (const textPart of result.textStream) {
+  console.log(textPart);
+}
+```
+
+## Structured Object Generation
+
+### Generate Structured Objects
+
+- MUST: Use `generateObject` with Zod schemas for type-safe structured data
+- MUST: Define schemas using Zod for validation
+- SHOULD: Use descriptive field names and descriptions in schemas
+- MUST: Handle validation errors from the model
+
+```typescript
+import { generateObject } from 'ai';
+import { z } from 'zod';
+
+const { object } = await generateObject({
+  model: 'openai/gpt-4.1',
+  schema: z.object({
+    recipe: z.object({
+      name: z.string(),
+      ingredients: z.array(z.object({ 
+        name: z.string(), 
+        amount: z.string() 
+      })),
+      steps: z.array(z.string()),
+    }),
+  }),
+  prompt: 'Generate a lasagna recipe.',
+});
+```
+
+### Stream Structured Objects
+
+- MUST: Use `streamObject` for real-time structured data updates
+- SHOULD: Use `partialObjectStream` for progressive object updates
+- SHOULD: Use `elementStream` for arrays of objects with element-by-element updates
+
+```typescript
+import { streamObject } from 'ai';
+import { z } from 'zod';
+
+// For single object streaming
+const { partialObjectStream } = streamObject({
+  model: 'openai/gpt-4.1',
+  schema: z.object({
+    recipe: z.object({
+      name: z.string(),
+      ingredients: z.array(z.object({ name: z.string(), amount: z.string() })),
+      steps: z.array(z.string()),
+    }),
+  }),
+  prompt: 'Generate a lasagna recipe.',
+});
+
+for await (const partialObject of partialObjectStream) {
+  console.log(partialObject);
+}
+
+// For array of objects
+const { elementStream } = streamObject({
+  model: openai('gpt-4.1'),
+  output: 'array',
+  schema: z.object({
+    name: z.string(),
+    class: z.string().describe('Character class, e.g. warrior, mage, or thief.'),
+    description: z.string(),
+  }),
+  prompt: 'Generate 3 hero descriptions for a fantasy role playing game.',
+});
+
+for await (const hero of elementStream) {
+  console.log(hero);
+}
+```
+
+### Enum Classification
+
+- SHOULD: Use `generateObject` with `output: 'enum'` for classification tasks
+- MUST: Provide an array of valid enum values
+
+```typescript
+import { generateObject } from 'ai';
+
+const { object } = await generateObject({
+  model: 'openai/gpt-4.1',
+  output: 'enum',
+  enum: ['action', 'comedy', 'drama', 'horror', 'sci-fi'],
+  prompt: 'Classify the genre of this movie plot: ...',
+});
+```
+
+## Tool Calling
+
+### Basic Tool Calling
+
+- MUST: Define tools using the `tool` helper with Zod input schemas
+- MUST: Provide clear descriptions for tools
+- SHOULD: Use descriptive parameter names and descriptions in schemas
+- MUST: Handle tool execution errors
+
+```typescript
+import { z } from 'zod';
+import { generateText, tool } from 'ai';
+
+const result = await generateText({
+  model: 'openai/gpt-4o',
+  tools: {
+    weather: tool({
+      description: 'Get the weather in a location',
+      inputSchema: z.object({
+        location: z.string().describe('The location to get the weather for'),
+      }),
+      execute: async ({ location }) => ({
+        location,
+        temperature: 72 + Math.floor(Math.random() * 21) - 10,
+      }),
+    }),
+  },
+  prompt: 'What is the weather in San Francisco?',
+});
+```
+
+### Multi-Step Tool Calls
+
+- SHOULD: Use `stopWhen` with conditions like `stepCountIs()` to limit tool execution steps
+- MUST: Access `steps` from the result to inspect tool call history
+- SHOULD: Set reasonable limits to prevent infinite loops
+
+```typescript
+import { generateText, tool, stepCountIs } from 'ai';
+
+const { text, steps } = await generateText({
+  model: 'openai/gpt-4o',
+  tools: {
+    weather: tool({
+      description: 'Get the weather in a location',
+      inputSchema: z.object({
+        location: z.string().describe('The location to get the weather for'),
+      }),
+      execute: async ({ location }) => ({
+        location,
+        temperature: 72 + Math.floor(Math.random() * 21) - 10,
+      }),
+    }),
+  },
+  stopWhen: stepCountIs(5), // stop after a maximum of 5 steps
+  prompt: 'What is the weather in San Francisco?',
+});
+```
+
+### Streaming Tool Calls
+
+- MUST: Use `fullStream` from `streamText` to handle streaming tool calls
+- MUST: Handle different stream part types: `'tool-call'`, `'tool-result'`, `'text-delta'`
+- SHOULD: Provide real-time feedback to users during tool execution
+
+```typescript
+import { streamText } from 'ai';
+import { z } from 'zod';
+
+const result = streamText({
+  model: 'openai/gpt-4.1',
+  tools: {
+    cityAttractions: {
+      inputSchema: z.object({ city: z.string() }),
+      execute: async ({ city }) => ({
+        attractions: ['attraction1', 'attraction2', 'attraction3'],
+      }),
+    },
+  },
+  prompt: 'What are some San Francisco tourist attractions?',
+});
+
+for await (const part of result.fullStream) {
+  switch (part.type) {
+    case 'tool-call': {
+      console.log('Tool called:', part.toolName);
+      break;
+    }
+    case 'tool-result': {
+      console.log('Tool result:', part.result);
+      break;
+    }
+    case 'text-delta': {
+      console.log('Text:', part.textDelta);
+      break;
+    }
+  }
+}
+```
+
+### Tool Choice Control
+
+- SHOULD: Use `toolChoice` to force or restrict tool usage when needed
+- MUST: Set `toolChoice: 'required'` to force tool usage
+- MUST: Set `toolChoice: 'none'` to disable tool usage
+- SHOULD: Use specific tool names for fine-grained control
+
+```typescript
+const result = await generateText({
+  model: 'openai/gpt-4o',
+  tools: {
+    weather: tool({ /* ... */ }),
+  },
+  toolChoice: 'required', // force the model to call a tool
+  prompt: 'What is the weather in San Francisco?',
+});
+```
+
+### Reusable Tools
+
+- SHOULD: Extract tools into separate modules for reusability
+- MUST: Export tools with proper type inference
+- SHOULD: Organize tools by domain or functionality
+
+```typescript
+// tools/weather-tool.ts
+import { tool } from 'ai';
+import { z } from 'zod';
+
+export const weatherTool = tool({
+  description: 'Get the weather in a location',
+  inputSchema: z.object({
+    location: z.string().describe('The location to get the weather for'),
+  }),
+  execute: async ({ location }) => ({
+    location,
+    temperature: 72 + Math.floor(Math.random() * 21) - 10,
+  }),
+});
+```
+
+## useChat Hook
+
+### When to Use This Section
+
+- MUST: Use `ai-sdk-tools` for building chatbots and conversational interfaces (see "Choosing the Right Library" section above)
+- SHOULD: Use plain `useChat` from `@ai-sdk/react` only for simple, non-chatbot chat interfaces or when you don't need the advanced features provided by `ai-sdk-tools`
+- MUST: Prefer `ai-sdk-tools` for production chatbots requiring state management, debugging, or multi-agent orchestration
+
+### Basic useChat Implementation
+
+- MUST: Use `useChat` from `@ai-sdk/react` for simple chat interfaces (not full chatbots)
+- MUST: Configure `DefaultChatTransport` with API endpoint
+- MUST: Mark components using `useChat` with `'use client'` directive
+- MUST: Handle message parts correctly (text, file, etc.)
+- SHOULD: Provide loading states and disable inputs during submission
+
+```typescript
+'use client';
+
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
+import { useState } from 'react';
+
+export default function Page() {
+  const { messages, sendMessage, status } = useChat({
+    transport: new DefaultChatTransport({
+      api: '/api/chat',
+    }),
+  });
+  const [input, setInput] = useState('');
+
+  return (
+    <>
+      {messages.map(message => (
+        <div key={message.id}>
+          {message.role === 'user' ? 'User: ' : 'AI: '}
+          {message.parts.map((part, index) =>
+            part.type === 'text' ? <span key={index}>{part.text}</span> : null,
+          )}
+        </div>
+      ))}
+
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          if (input.trim()) {
+            sendMessage({ text: input });
+            setInput('');
+          }
+        }}
+      >
+        <input
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          disabled={status !== 'ready'}
+          placeholder="Say something..."
+        />
+        <button type="submit" disabled={status !== 'ready'}>
+          Submit
+        </button>
+      </form>
+    </>
+  );
+}
+```
+
+### Status Management
+
+- MUST: Check `status` to determine UI state (`'ready'`, `'submitted'`, `'streaming'`)
+- SHOULD: Use `stop()` function to allow users to cancel streaming
+- MUST: Show loading indicators during `'submitted'` or `'streaming'` states
+
+```typescript
+const { messages, sendMessage, status, stop } = useChat({
+  transport: new DefaultChatTransport({
+    api: '/api/chat',
+  }),
+});
+
+{(status === 'submitted' || status === 'streaming') && (
+  <div>
+    {status === 'submitted' && <Spinner />}
+    <button type="button" onClick={() => stop()}>
+      Stop
+    </button>
+  </div>
+)}
+```
+
+### Backend Route for useChat
+
+- MUST: Create API route handlers for chat endpoints
+- MUST: Use `convertToModelMessages` to convert UI messages to model format
+- MUST: Use `streamText` for streaming responses
+- MUST: Return `result.toUIMessageStreamResponse()` for UI compatibility
+- SHOULD: Set `maxDuration` for long-running requests (Next.js)
+
+```typescript
+import { openai } from '@ai-sdk/openai';
+import { convertToModelMessages, streamText, UIMessage } from 'ai';
+
+// Allow streaming responses up to 30 seconds
+export const maxDuration = 30;
+
+export async function POST(req: Request) {
+  const { messages }: { messages: UIMessage[] } = await req.json();
+
+  const result = streamText({
+    model: openai('gpt-4.1'),
+    system: 'You are a helpful assistant.',
+    messages: convertToModelMessages(messages),
+  });
+
+  return result.toUIMessageStreamResponse();
+}
+```
+
+### File Attachments
+
+- MUST: Handle `FileList` for file attachments
+- MUST: Check `part.type === 'file'` when rendering message parts
+- SHOULD: Handle different media types (images, PDFs, etc.)
+- MUST: Reset file input after sending
+
+```typescript
+const { messages, sendMessage, status } = useChat();
+const [files, setFiles] = useState<FileList | undefined>(undefined);
+const fileInputRef = useRef<HTMLInputElement>(null);
+
+// In form submission
+sendMessage({
+  text: input,
+  files,
+});
+
+// In message rendering
+{message.parts.map((part, index) => {
+  if (part.type === 'text') {
+    return <span key={index}>{part.text}</span>;
+  }
+  if (part.type === 'file' && part.mediaType?.startsWith('image/')) {
+    return <img key={index} src={part.url} alt={part.filename} />;
+  }
+  return null;
+})}
+```
+
+### Custom Request Configuration
+
+- SHOULD: Configure headers, body, and credentials at transport level for global settings
+- SHOULD: Use request-level configuration for per-request overrides
+- MUST: Ensure request-level config takes precedence over transport-level config
+
+```typescript
+const { messages, sendMessage } = useChat({
+  transport: new DefaultChatTransport({
+    api: '/api/custom-chat',
+    headers: {
+      Authorization: 'your_token',
+    },
+    body: {
+      user_id: '123',
+    },
+    credentials: 'same-origin',
+  }),
+});
+
+// Request-level configuration (takes precedence)
+sendMessage(
+  { text: input },
+  {
+    headers: {
+      Authorization: 'Bearer token123',
+      'X-Custom-Header': 'custom-value',
+    },
+    body: {
+      temperature: 0.7,
+      max_tokens: 100,
+      user_id: '123',
+    },
+  },
+);
+```
+
+### Message Metadata
+
+- SHOULD: Use `messageMetadata` callback to attach custom metadata to messages
+- SHOULD: Track token usage, timestamps, and model information
+- MUST: Access metadata via `message.metadata` on the client
+
+```typescript
+// Server: Send metadata
+return result.toUIMessageStreamResponse({
+  messageMetadata: ({ part }) => {
+    if (part.type === 'start') {
+      return {
+        createdAt: Date.now(),
+        model: 'gpt-4o',
+      };
+    }
+    if (part.type === 'finish') {
+      return {
+        totalTokens: part.totalUsage.totalTokens,
+      };
+    }
+  },
+});
+
+// Client: Access metadata
+{messages.map(message => (
+  <div key={message.id}>
+    {message.metadata?.createdAt &&
+      new Date(message.metadata.createdAt).toLocaleTimeString()}
+    {message.parts.map((part, index) =>
+      part.type === 'text' ? <span key={index}>{part.text}</span> : null,
+    )}
+    {message.metadata?.totalTokens && (
+      <span>{message.metadata.totalTokens} tokens</span>
+    )}
+  </div>
+))}
+```
+
+## Error Handling
+
+- MUST: Handle errors with try-catch blocks for non-streaming operations
+- MUST: Use `onError` callbacks for streaming operations
+- SHOULD: Provide retry mechanisms using `reload()` function
+- MUST: Display user-friendly error messages
+- SHOULD: Log errors for debugging
+
+```typescript
+'use client';
+
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
+
+export default function Chat() {
+  const { messages, sendMessage, error, reload } = useChat({
+    transport: new DefaultChatTransport({
+      api: '/api/chat',
+    }),
+  });
+
+  return (
+    <div>
+      {error && (
+        <>
+          <div>An error occurred.</div>
+          <button type="button" onClick={() => reload()}>
+            Retry
+          </button>
+        </>
+      )}
+      {/* ... rest of UI ... */}
+    </div>
+  );
+}
+```
+
+## Model Providers
+
+- MUST: Import provider-specific clients (e.g., `@ai-sdk/openai`, `@ai-sdk/anthropic`)
+- SHOULD: Use provider-specific model instances for better type safety
+- MUST: Configure API keys via environment variables
+- SHOULD: Use the unified string format (`'openai/gpt-4.1'`) for quick prototyping
+- SHOULD: Switch to provider instances for production (better error handling and type safety)
+
+```typescript
+// Quick prototyping
+import { generateText } from 'ai';
+const { text } = await generateText({
+  model: 'openai/gpt-4.1',
+  prompt: 'Hello',
+});
+
+// Production (recommended)
+import { openai } from '@ai-sdk/openai';
+import { generateText } from 'ai';
+const { text } = await generateText({
+  model: openai('gpt-4.1'),
+  prompt: 'Hello',
+});
+```
+
+## Integration Patterns
+
+### Streaming-First Architecture
+
+- MUST: Prefer streaming for interactive user experiences
+- SHOULD: Use streaming for all chat interfaces
+- SHOULD: Use non-streaming only for background jobs or non-interactive tasks
+- MUST: Handle partial updates gracefully in UI
+
+### Type Safety
+
+- MUST: Use Zod schemas for structured outputs
+- SHOULD: Leverage TypeScript inference from Zod schemas
+- MUST: Validate structured outputs before using them
+- SHOULD: Create reusable schema definitions
+
+### Framework Integration
+
+- MUST: Use `'use client'` directive for components using AI SDK UI hooks
+- SHOULD: Keep AI logic in Server Components when possible
+- MUST: Use API routes for AI operations that require API keys
+- SHOULD: Separate AI logic from UI components
+
+### Production Considerations
+
+- MUST: Set appropriate `maxDuration` for long-running requests
+- SHOULD: Implement rate limiting for AI endpoints
+- MUST: Handle authentication and authorization
+- SHOULD: Add telemetry and monitoring
+- MUST: Implement proper error boundaries
+- SHOULD: Use middleware for cross-cutting concerns
+
+## Best Practices
+
+- MUST: Start with simple text generation, then add complexity
+- SHOULD: Use structured outputs for data extraction tasks
+- SHOULD: Implement tools for external API calls and data fetching
+- MUST: Test with different models to find the best fit
+- SHOULD: Monitor token usage and costs
+- MUST: Handle rate limits and API errors gracefully
+- SHOULD: Cache responses when appropriate
+- MUST: Validate all user inputs before sending to AI models
+- SHOULD: Use system prompts to control model behavior
+- MUST: Keep prompts clear, specific, and well-structured
+
+## Common Use Cases
+
+### Chatbots
+- Use `useChat` hook with `streamText` backend
+- Implement file attachments for multi-modal support
+- Add message metadata for analytics
+
+### Data Extraction
+- Use `generateObject` or `streamObject` with Zod schemas
+- Define clear schemas with descriptions
+- Handle partial results during streaming
+
+### AI Agents
+- Use tool calling with multiple tools
+- Implement step limits with `stopWhen`
+- Handle tool execution errors
+
+### Generative UI
+- Use AI SDK RSC (experimental) for React Server Components
+- Stream component updates in real-time
+- Handle loading and error states
+
+### Multi-Modal Processing
+- Support file attachments in `useChat`
+- Handle images, PDFs, and other media types
+- Process media in tool execution when needed

@@ -1,0 +1,467 @@
+---
+description: State management patterns for React applications using Zustand and nuqs. Use when deciding between local state, global state (Zustand), or URL state (nuqs). Helps choose the right state management approach.
+alwaysApply: false
+---
+# State Management Guidelines
+
+Concise rules for managing state in React applications. Use MUST/SHOULD/NEVER to guide decisions.
+
+## State Management Strategy
+
+- Decision framework
+  - MUST: Choose state management based on state scope and requirements
+  - SHOULD: Start with local state, lift up only when needed
+  - SHOULD: Use the simplest solution that meets requirements
+  - MUST: Consider state persistence, sharing, and URL sync needs
+
+## Choosing the Right State Management
+
+### Use Local State (`useState`) When:
+- State is only used within a single component
+- State doesn't need to be shared with other components
+- State is temporary UI state (modals, dropdowns, tooltips)
+- State is form input values (unless form needs to be shared)
+- State doesn't need to persist across page refreshes
+- State doesn't need to be in the URL
+
+**Examples:**
+- Modal open/closed state
+- Dropdown menu visibility
+- Form input values (local form)
+- Accordion expanded state (single component)
+- Temporary loading/error states
+
+### Use Zustand When:
+- State needs to be shared across multiple components
+- State should persist across page navigation (but not in URL)
+- State represents application-wide preferences (theme, language)
+- State is user session/authentication data
+- State is shopping cart or similar global data
+- State needs to be accessed from many places
+- State should survive page refresh (with persistence)
+
+**Examples:**
+- User authentication state
+- Theme preferences (dark/light mode)
+- Shopping cart items
+- User preferences/settings
+- Sidebar open/closed state (shared across pages)
+- Toast notifications state
+
+### Use nuqs (URL State) When:
+- State should be shareable via URL (filters, search, pagination)
+- State should be deep-linkable (users can bookmark/share specific state)
+- State should survive page refresh via URL
+- State represents navigation/filter state
+- State should be visible in browser history
+- State is used for SEO (search parameters)
+
+**Examples:**
+- Search query parameters
+- Filter selections (category, price range)
+- Pagination (page number)
+- Sort order
+- Tab selection (if shareable)
+- View mode (grid/list)
+
+### Decision Tree:
+
+```
+Is state only used in one component?
+├─ YES → Use `useState` (local state)
+└─ NO → Does state need to be in URL/shareable?
+    ├─ YES → Use `nuqs` (URL state)
+    └─ NO → Does state need to persist across navigation?
+        ├─ YES → Use Zustand (global state)
+        └─ NO → Use `useState` and lift up if needed
+```
+
+### Combining State Management:
+
+- URL + Zustand
+  - SHOULD: Use nuqs for URL parameters (filters, search)
+  - SHOULD: Use Zustand for derived/computed state from URL
+  - SHOULD: Sync Zustand state with URL when needed
+  - Example: Filter state in URL, filtered results cached in Zustand
+
+- Local + Zustand
+  - SHOULD: Use local state for component-specific UI
+  - SHOULD: Use Zustand for shared preferences that affect local state
+  - Example: Modal state is local, but theme (from Zustand) affects modal styling
+
+- URL + Local
+  - SHOULD: Use URL for shareable state
+  - SHOULD: Use local state for temporary UI that doesn't need URL
+  - Example: Search query in URL, search input focus state is local
+
+## State Management Strategy (Detailed)
+
+- When to use local state
+  - MUST: Use `useState` for component-specific state
+  - SHOULD: Use local state for UI-only state (modals, dropdowns, form inputs)
+  - SHOULD: Use local state when state doesn't need to be shared
+  - SHOULD: Keep state as local as possible (lift up only when needed)
+
+- When to use Zustand (global state)
+  - SHOULD: Use Zustand for shared application state
+  - SHOULD: Use Zustand for user authentication/session
+  - SHOULD: Use Zustand for theme preferences
+  - SHOULD: Use Zustand for data shared across many components
+  - SHOULD NOT: Use Zustand for temporary UI state
+  - SHOULD NOT: Use Zustand for state that should be in URL
+
+- When to use nuqs (URL state)
+  - MUST: Use nuqs for shareable state (filters, search, pagination)
+  - SHOULD: Use nuqs for deep-linkable state (tabs, expanded panels)
+  - SHOULD: Use nuqs for state that should survive page refresh via URL
+  - SHOULD NOT: Use nuqs for sensitive data (tokens, passwords)
+  - SHOULD NOT: Use nuqs for temporary UI state (modals, dropdowns)
+
+- When to use server state
+  - MUST: Use Server Components for server-side data fetching
+  - SHOULD: Use React Query/SWR for client-side server state
+  - SHOULD: Cache server state appropriately
+  - SHOULD: Handle loading and error states for server data
+  - MUST: Revalidate server state after mutations
+
+- State management library
+  - MUST: Use Zustand for global client state management
+  - MUST: Use nuqs for URL/search parameter state management
+  - SHOULD: Use React Query or SWR for server state
+  - SHOULD NOT: Use Redux unless team has specific requirements
+  - SHOULD: Keep state management simple (prefer Zustand/nuqs over complex solutions)
+
+## Zustand Patterns
+
+- Store structure
+  - MUST: Create stores in `stores/` directory
+  - SHOULD: Use one store per domain (e.g., `useAuthStore`, `useCartStore`)
+  - SHOULD: Keep stores focused and single-purpose
+  - SHOULD: Name stores with `use` prefix (e.g., `useUserStore`)
+
+- Store definition
+  - MUST: Define store interface/type for state shape
+  - SHOULD: Use TypeScript for type safety
+  - SHOULD: Group related state together
+  - SHOULD: Provide default/initial state values
+
+- Store actions
+  - SHOULD: Define actions as methods in store
+  - SHOULD: Use descriptive action names
+  - SHOULD: Keep actions pure when possible
+  - SHOULD: Handle async operations in actions
+
+- Example store:
+```typescript
+import { create } from 'zustand'
+import { devtools } from 'zustand/middleware'
+
+interface UserState {
+  user: User | null
+  isLoading: boolean
+  setUser: (user: User | null) => void
+  clearUser: () => void
+  fetchUser: (id: string) => Promise<void>
+}
+
+export const useUserStore = create<UserState>()(
+  devtools(
+    (set) => ({
+      user: null,
+      isLoading: false,
+      setUser: (user) => set({ user }),
+      clearUser: () => set({ user: null }),
+      fetchUser: async (id) => {
+        set({ isLoading: true })
+        try {
+          const user = await getUser(id)
+          set({ user, isLoading: false })
+        } catch (error) {
+          set({ isLoading: false })
+          throw error
+        }
+      },
+    }),
+    { name: 'UserStore' }
+  )
+)
+```
+
+## Zustand Best Practices
+
+- Store organization
+  - SHOULD: Split large stores into smaller, focused stores
+  - SHOULD: Use store composition for related stores
+  - SHOULD: Keep stores independent when possible
+  - SHOULD: Avoid deeply nested state
+
+- State updates
+  - MUST: Use immutable updates (Zustand handles this automatically)
+  - SHOULD: Use functional updates for complex state changes
+  - SHOULD: Batch related state updates together
+  - SHOULD: Avoid unnecessary state updates
+
+- Selectors
+  - SHOULD: Use selectors to subscribe to specific state slices
+  - SHOULD: Memoize selectors for performance
+  - SHOULD: Use shallow equality for object/array comparisons
+  - SHOULD: Extract selectors into separate functions
+
+- Example with selectors:
+```typescript
+// Store
+const useCartStore = create((set) => ({
+  items: [],
+  addItem: (item) => set((state) => ({ items: [...state.items, item] })),
+}))
+
+// Component - subscribe to specific slice
+const itemCount = useCartStore((state) => state.items.length)
+const items = useCartStore((state) => state.items)
+
+// Or use selector function
+const selectItemCount = (state) => state.items.length
+const itemCount = useCartStore(selectItemCount)
+```
+
+- Middleware
+  - SHOULD: Use `devtools` middleware in development
+  - SHOULD: Use `persist` middleware for state persistence
+  - SHOULD: Use `immer` middleware for complex state updates
+  - SHOULD: Compose middleware appropriately
+
+- Persistence
+  - SHOULD: Persist important state (user preferences, cart)
+  - SHOULD: Use localStorage for client-side persistence
+  - SHOULD: Handle persistence errors gracefully
+  - SHOULD: Version persisted state for migrations
+
+## React State Patterns
+
+- useState
+  - SHOULD: Use `useState` for simple local state
+  - SHOULD: Use functional updates for state based on previous state
+  - SHOULD: Initialize state with function for expensive computations
+  - SHOULD: Keep state updates together when possible
+
+- useReducer
+  - SHOULD: Use `useReducer` for complex state logic
+  - SHOULD: Use `useReducer` when state updates depend on previous state
+  - SHOULD: Extract reducer logic into separate functions
+  - SHOULD: Use `useReducer` for state machines
+
+- Context
+  - SHOULD: Use Context for theme, language, or app-wide config
+  - SHOULD NOT: Use Context for frequently changing state
+  - SHOULD: Split Context providers by concern
+  - SHOULD: Memoize Context values to prevent unnecessary re-renders
+
+## Server State Management
+
+- Data fetching
+  - MUST: Use Server Components for initial data fetching
+  - SHOULD: Use React Query or SWR for client-side data fetching
+  - SHOULD: Cache server responses appropriately
+  - SHOULD: Handle loading and error states
+
+- Cache invalidation
+  - MUST: Invalidate cache after mutations
+  - SHOULD: Use optimistic updates for better UX
+  - SHOULD: Revalidate on focus or interval when needed
+  - SHOULD: Handle cache errors gracefully
+
+- Example with React Query:
+```typescript
+// Query
+const { data, isLoading, error } = useQuery({
+  queryKey: ['user', userId],
+  queryFn: () => fetchUser(userId),
+})
+
+// Mutation with cache invalidation
+const mutation = useMutation({
+  mutationFn: updateUser,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['user', userId] })
+  },
+})
+```
+
+## State Synchronization
+
+- Client-server sync
+  - MUST: Sync client state with server after mutations
+  - SHOULD: Use optimistic updates for immediate feedback
+  - SHOULD: Rollback optimistic updates on error
+  - SHOULD: Revalidate server state after mutations
+
+- Real-time updates
+  - SHOULD: Use Supabase Realtime for live data updates
+  - SHOULD: Update Zustand stores from realtime subscriptions
+  - SHOULD: Handle connection errors gracefully
+  - SHOULD: Clean up subscriptions on unmount
+
+## Performance Optimization
+
+- Re-render prevention
+  - SHOULD: Use selectors to subscribe to specific state slices
+  - SHOULD: Memoize components that use store state
+  - SHOULD: Use shallow equality for object comparisons
+  - SHOULD: Split stores to reduce re-render scope
+
+- State updates
+  - SHOULD: Batch related state updates
+  - SHOULD: Avoid unnecessary state updates
+  - SHOULD: Use functional updates for complex changes
+  - SHOULD: Debounce rapid state updates when appropriate
+
+## Common Patterns
+
+- Form state
+  - SHOULD: Use React Hook Form for form state management
+  - SHOULD: Keep form state local unless needs to be shared
+  - SHOULD: Validate form state appropriately
+  - SHOULD: Handle form submission errors
+
+- UI state
+  - MUST: Use local state (`useState`) for modals, dropdowns, tooltips (single component)
+  - SHOULD: Use Zustand for shared UI state (sidebar open/closed across pages, theme)
+  - MUST: Use nuqs for filters, pagination, search (shareable via URL)
+  - SHOULD: Use `nuqs` for URL state management (type-safe, SSR-compatible)
+  - SHOULD: Persist UI preferences in Zustand with persistence
+  - Example: Modal state = local, Sidebar state = Zustand, Filter state = nuqs
+
+- Authentication state
+  - SHOULD: Store auth state in Zustand store
+  - SHOULD: Persist auth tokens securely
+  - SHOULD: Clear auth state on logout
+  - SHOULD: Sync auth state with server
+
+## URL State Management (nuqs)
+
+- nuqs setup
+  - MUST: Install `nuqs` package
+  - MUST: Wrap app with `NuqsAdapter` in Next.js App Router
+  - SHOULD: Use `NuqsAdapter` from `nuqs/adapters/next/app`
+  - SHOULD: Place adapter in root layout
+
+- Example setup:
+```typescript
+// app/layout.tsx
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html>
+      <body>
+        <NuqsAdapter>{children}</NuqsAdapter>
+      </body>
+    </html>
+  )
+}
+```
+
+- Basic usage
+  - SHOULD: Use `useQueryState` for single query parameters
+  - SHOULD: Use `useQueryStates` for multiple query parameters
+  - SHOULD: Provide default values when appropriate
+  - SHOULD: Use parsers for type safety (string, number, boolean, etc.)
+
+- Example with nuqs:
+```typescript
+import { useQueryState, parseAsInteger, parseAsString } from 'nuqs'
+
+function ProductList() {
+  // String query parameter
+  const [search, setSearch] = useQueryState('search', parseAsString.withDefault(''))
+  
+  // Number query parameter (pagination)
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
+  
+  // Multiple query parameters
+  const [filters, setFilters] = useQueryStates({
+    category: parseAsString,
+    minPrice: parseAsInteger,
+    maxPrice: parseAsInteger,
+  })
+
+  return (
+    <div>
+      <input 
+        value={search} 
+        onChange={(e) => setSearch(e.target.value)} 
+        placeholder="Search products..."
+      />
+      <button onClick={() => setPage(page + 1)}>Next Page</button>
+      <button onClick={() => setFilters({ category: null })}>Clear Category</button>
+    </div>
+  )
+}
+```
+
+- nuqs best practices
+  - SHOULD: Use parsers for type safety (`parseAsString`, `parseAsInteger`, `parseAsBoolean`)
+  - SHOULD: Provide default values with `.withDefault()`
+  - SHOULD: Use `shallow` option for shallow routing in Next.js
+  - SHOULD: Clear query parameters by setting to `null`
+  - SHOULD: Use `useQueryState` for simple cases, `useQueryStates` for complex filters
+  - SHOULD: Debounce rapid URL updates (filters, search)
+
+- Advanced patterns
+  - SHOULD: Use custom parsers for complex data structures
+  - SHOULD: Use `serialize` and `parse` for JSON data in URLs
+  - SHOULD: Combine nuqs with Zustand for complex state (URL + local state)
+  - SHOULD: Use `history` option to control browser history behavior
+
+- Example with custom parser:
+```typescript
+import { useQueryState, createSearchParamsCache } from 'nuqs'
+
+const searchParamsCache = createSearchParamsCache({
+  tags: parseAsArrayOf(parseAsString).withDefault([]),
+  sort: parseAsString.withDefault('relevance'),
+})
+
+function FilteredList() {
+  const { tags, sort } = useQueryStates(searchParamsCache)
+  
+  // tags is string[], sort is string
+  return <div>...</div>
+}
+```
+
+- URL state vs other state
+  - MUST: Use URL state for shareable/deep-linkable state
+  - SHOULD: Use Zustand for global client state
+  - SHOULD: Use local state for temporary UI state
+  - SHOULD: Combine URL state with Zustand when needed (URL for sharing, Zustand for performance)
+
+## Best Practices
+
+- State organization
+  - SHOULD: Keep state close to where it's used
+  - SHOULD: Lift state up only when necessary
+  - SHOULD: Use composition over complex state structures
+  - SHOULD: Document complex state logic
+
+- State debugging
+  - SHOULD: Use Zustand devtools for debugging
+  - SHOULD: Log state changes in development
+  - SHOULD: Use React DevTools for component state
+  - SHOULD: Name stores and actions descriptively
+
+- Testing
+  - SHOULD: Test store actions and state updates
+  - SHOULD: Test selectors independently
+  - SHOULD: Mock stores in component tests
+  - SHOULD: Test state persistence
+
+---
+
+## See Also
+
+- **[Next.js App Router](mdc:.cursor/rules/nextjs-app-router.mdc)**: Server Components and data fetching
+- **[Web Interface Guidelines](mdc:.cursor/rules/web-interface-guidelines.mdc)**: URL state requirements
+- **[React Hooks](https://react.dev/reference/react)**: useState, useReducer, useContext
+- **[Zustand Documentation](https://docs.pmnd.rs/zustand/getting-started/introduction)**: Official Zustand docs
+- **[nuqs Documentation](https://nuqs.dev)**: Official nuqs documentation

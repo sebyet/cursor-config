@@ -1,6 +1,5 @@
 ---
-# Specify the following for Cursor rules
-description: Guidelines for writing Postgres migrations
+description: Guidelines for writing Postgres migrations. Use when creating database schema changes, table modifications, or data migrations in Supabase.
 alwaysApply: false
 ---
 

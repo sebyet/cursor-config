@@ -1,0 +1,157 @@
+---
+description: Central rule orchestrator that references all project rules. Always applied to ensure all guidelines are available. Use this as a reference guide to find the right rule for your task.
+alwaysApply: true
+---
+
+# Rules Orchestrator
+
+This is the central orchestrator for all project rules. All rules are organized by category below. When working on a task, refer to the relevant rules for guidance.
+
+## Core Engineering Principles
+
+- **[Software Engineering Principles](mdc:.cursor/rules/software-engineering-principles.mdc)**: Expert software engineering principles, architectural thinking, and KISS & DRY principles. Use when making architectural decisions, designing systems, or writing code.
+
+## Code Quality & Style
+
+- **[Code Style & Formatting](mdc:.cursor/rules/code-style-formatting.mdc)**: Code style and formatting standards for consistent, readable code. Use when writing code to ensure consistent formatting, naming conventions, and code organization.
+
+- **[TypeScript Best Practices](mdc:.cursor/rules/typescript-best-practices.mdc)**: TypeScript best practices for type safety, code quality, and maintainability. Use when writing TypeScript code to ensure proper typing and type safety.
+
+- **[Refactoring Guidelines](mdc:.cursor/rules/refactoring-guidelines.mdc)**: Guidelines for safe, effective code refactoring. Use when improving code structure, removing duplication, or addressing technical debt.
+
+## Next.js & React
+
+- **[Next.js App Router](mdc:.cursor/rules/nextjs-app-router.mdc)**: Comprehensive Next.js App Router guidelines for Server Components, Client Components, routing, data fetching, and caching. Use when building Next.js applications.
+
+- **[State Management](mdc:.cursor/rules/state-management.mdc)**: State management patterns for React applications using Zustand and nuqs. Use when deciding between local state, global state, or URL state.
+
+- **[Custom i18n](mdc:.cursor/rules/i18n-custom.mdc)**: Guidelines for custom internationalization implementation in Next.js App Router. Use when working with dictionary JSON files, locale routing, middleware, and type-safe translations.
+
+- **[React Hook Form](mdc:.cursor/rules/react-hook-form.mdc)**: Guidelines for using react-hook-form with Next.js App Router, Zod validation, and Server Actions. Use when building forms, handling form state, validation, and form submission.
+
+- **[Tailwind CSS](mdc:.cursor/rules/tailwind-css.mdc)**: Guidelines for using Tailwind CSS with Next.js App Router. Use when styling components, configuring Tailwind, optimizing performance, and implementing responsive designs.
+
+## AI & Machine Learning
+
+- **[AI SDK](mdc:.cursor/rules/ai-sdk.mdc)**: Guidelines for using the AI SDK by Vercel for building AI-powered applications. Use when implementing text generation, structured outputs, tool calling, chat interfaces, or AI agents.
+
+## UI/UX & Design
+
+- **[Don't Make Me Think](mdc:.cursor/rules/dont-make-me-think.mdc)**: UX/UI principles based on "Don't Make Me Think" by Steve Krug. Use when designing interfaces, creating user flows, or making UI/UX decisions.
+
+- **[Design Inspirations](mdc:.cursor/rules/design-inspirations.mdc)**: Design inspirations and references from leading companies (OpenAI, Apple, Airbnb). Use when designing interfaces, creating user flows, or making UI/UX decisions.
+
+- **[Use Design System](mdc:.cursor/rules/use-design-system.mdc)**: Guidelines for using the Vibecamp design system with shadcn/ui components. Use when building UI components to ensure consistency.
+
+- **[Animation Principles](mdc:.cursor/rules/animation-principles.mdc)**: Core animation principles and philosophy based on Emil Kowalski's work. Use when deciding whether to animate, understanding animation purpose, or developing animation taste.
+- **[Animation Patterns](mdc:.cursor/rules/animation-patterns.mdc)**: Animation implementation patterns, choreography, and common UI animation patterns. Use when implementing specific animation patterns like modals, lists, loading states, or scroll-triggered animations.
+- **[Framer Motion Guide](mdc:.cursor/rules/animation-framer-motion.mdc)**: Framer Motion best practices, performance optimization, accessibility, and testing guidelines. Use when implementing animations with Framer Motion or optimizing animation performance.
+
+- **[Web Interface Guidelines](mdc:.cursor/rules/web-interface-guidelines.mdc)**: Comprehensive web interface guidelines for interactions, animations, layout, content, forms, performance, and design. Use when implementing UI components, forms, or accessibility features.
+
+## Database & Supabase
+
+- **[Database Design](mdc:.cursor/rules/database-design.mdc)**: Database design principles and best practices for Postgres. Use when designing schemas, creating tables, defining relationships, or optimizing queries.
+
+- **[Create Migration](mdc:.cursor/rules/create-migration.mdc)**: Guidelines for writing Postgres migrations. Use when creating database schema changes, table modifications, or data migrations.
+
+- **[Create DB Functions](mdc:.cursor/rules/create-db-functions.mdc)**: Guidelines for writing secure, performant PostgreSQL functions in Supabase. Use when creating database functions, triggers, or stored procedures.
+
+- **[Create RLS Policies](mdc:.cursor/rules/create-rls-policies.mdc)**: Guidelines for writing Postgres Row Level Security (RLS) policies in Supabase. Use when securing database tables or implementing access control.
+
+- **[Postgres SQL Style Guide](mdc:.cursor/rules/postgres-sql-style-guide.mdc)**: Guidelines for writing Postgres SQL with consistent style and formatting. Use when writing SQL queries, migrations, or database code.
+
+- **[Supabase SQL](mdc:.cursor/rules/supabase-sql.mdc)**: Consolidated Supabase and SQL guidelines. Use when writing SQL queries, migrations, functions, or working with Supabase-specific features.
+
+- **[Use Realtime](mdc:.cursor/rules/use-realtime.mdc)**: Coding rules for Supabase Realtime. Use when implementing real-time features, live updates, presence tracking, or broadcast messaging.
+
+- **[Writing Supabase Edge Functions](mdc:.cursor/rules/writing-supabase-edge-functions.mdc)**: Coding rules for Supabase Edge Functions. Use when creating serverless functions, API endpoints, or Deno-based edge functions.
+
+## Background Jobs & Tasks
+
+- **[Trigger.dev Basic](mdc:.cursor/rules/trigger.basic.mdc)**: Essential rules for writing Trigger.dev tasks (v4 SDK). Use when creating background jobs, scheduled tasks, or long-running async operations.
+
+- **[Trigger.dev Config](mdc:.cursor/rules/trigger.config.mdc)**: Configure your Trigger.dev project with a trigger.config.ts file. Use when setting up Trigger.dev configuration, build extensions, or configuring task execution.
+
+## Security & Validation
+
+- **[Security Guidelines](mdc:.cursor/rules/security-guidelines.mdc)**: Security guidelines for protecting applications, data, and users. Use when handling authentication, authorization, input validation, or sensitive data.
+
+- **[Data Validation](mdc:.cursor/rules/data-validation.mdc)**: Data validation guidelines using Zod and other validation patterns. Use when validating user input, form data, or API requests.
+
+## Error Handling & Observability
+
+- **[Error Handling & Logging](mdc:.cursor/rules/error-handling-logging.mdc)**: Comprehensive error handling and logging guidelines for production-ready applications. Use when handling errors, creating error boundaries, or implementing logging.
+
+- **[Monitoring & Observability](mdc:.cursor/rules/monitoring-observability.mdc)**: Monitoring, logging, and observability best practices. Use when implementing logging, error tracking, metrics, or observability features.
+
+## Performance
+
+- **[Performance Optimization](mdc:.cursor/rules/performance-optimization.mdc)**: Performance optimization guidelines for fast, efficient applications. Use when optimizing bundle size, improving Core Web Vitals, or addressing performance bottlenecks.
+
+## Testing
+
+- **[Testing Guidelines](mdc:.cursor/rules/testing-guidelines.mdc)**: Testing standards and best practices for unit, integration, and E2E tests. Use when writing tests, setting up test infrastructure, or ensuring code quality.
+
+## Development Workflow
+
+- **[Git Workflow](mdc:.cursor/rules/git-workflow.mdc)**: Git workflow, commit conventions, and version control best practices. Use when committing code, creating branches, or managing version control.
+
+- **[Dependency Management](mdc:.cursor/rules/dependency-management.mdc)**: Dependency management, updates, and security practices. Use when adding, updating, or auditing npm packages.
+
+- **[Documentation Standards](mdc:.cursor/rules/documentation-standards.mdc)**: Documentation standards for code, APIs, and project documentation. Use when writing code comments, API docs, README files, or documenting features.
+
+## Quick Reference by Task Type
+
+### When Creating a New Feature
+1. Review **[Software Engineering Principles](mdc:.cursor/rules/software-engineering-principles.mdc)** for architectural decisions
+2. Follow **[Code Style & Formatting](mdc:.cursor/rules/code-style-formatting.mdc)** for consistency
+3. Use **[Next.js App Router](mdc:.cursor/rules/nextjs-app-router.mdc)** for Next.js-specific patterns
+4. Use **[Custom i18n](mdc:.cursor/rules/i18n-custom.mdc)** for internationalization
+5. Apply **[State Management](mdc:.cursor/rules/state-management.mdc)** for state decisions
+6. Follow **[Security Guidelines](mdc:.cursor/rules/security-guidelines.mdc)** for security
+7. Use **[Data Validation](mdc:.cursor/rules/data-validation.mdc)** for input validation
+8. Use **[React Hook Form](mdc:.cursor/rules/react-hook-form.mdc)** for form handling
+9. Write tests following **[Testing Guidelines](mdc:.cursor/rules/testing-guidelines.mdc)**
+
+### When Working with Database
+1. Follow **[Database Design](mdc:.cursor/rules/database-design.mdc)** for schema design
+2. Use **[Create Migration](mdc:.cursor/rules/create-migration.mdc)** for migrations
+3. Use **[Create DB Functions](mdc:.cursor/rules/create-db-functions.mdc)** for functions
+4. Use **[Create RLS Policies](mdc:.cursor/rules/create-rls-policies.mdc)** for security
+5. Follow **[Postgres SQL Style Guide](mdc:.cursor/rules/postgres-sql-style-guide.mdc)** for SQL formatting
+
+### When Building UI Components
+1. Follow **[Don't Make Me Think](mdc:.cursor/rules/dont-make-me-think.mdc)** for UX principles
+2. Reference **[Design Inspirations](mdc:.cursor/rules/design-inspirations.mdc)** for design patterns and visual style
+3. Use **[Use Design System](mdc:.cursor/rules/use-design-system.mdc)** for design system components
+4. Follow **[Tailwind CSS](mdc:.cursor/rules/tailwind-css.mdc)** for styling patterns and optimization
+5. Follow **[Animation Principles](mdc:.cursor/rules/animation-principles.mdc)**, **[Animation Patterns](mdc:.cursor/rules/animation-patterns.mdc)**, and **[Framer Motion Guide](mdc:.cursor/rules/animation-framer-motion.mdc)** for implementing animations and transitions
+6. Follow **[Web Interface Guidelines](mdc:.cursor/rules/web-interface-guidelines.mdc)** for interactions and accessibility
+7. Apply **[Performance Optimization](mdc:.cursor/rules/performance-optimization.mdc)** for performance
+
+### When Debugging or Fixing Issues
+1. Check **[Error Handling & Logging](mdc:.cursor/rules/error-handling-logging.mdc)** for error patterns
+2. Use **[Monitoring & Observability](mdc:.cursor/rules/monitoring-observability.mdc)** for logging
+3. Review **[Security Guidelines](mdc:.cursor/rules/security-guidelines.mdc)** for security issues
+
+### When Refactoring
+1. Follow **[Refactoring Guidelines](mdc:.cursor/rules/refactoring-guidelines.mdc)** for safe refactoring
+2. Ensure tests are in place per **[Testing Guidelines](mdc:.cursor/rules/testing-guidelines.mdc)**
+3. Maintain code style per **[Code Style & Formatting](mdc:.cursor/rules/code-style-formatting.mdc)**
+
+### When Building AI Features
+1. Follow **[AI SDK](mdc:.cursor/rules/ai-sdk.mdc)** for AI SDK patterns and best practices
+2. Use **[Data Validation](mdc:.cursor/rules/data-validation.mdc)** for validating structured outputs with Zod
+3. Follow **[Error Handling & Logging](mdc:.cursor/rules/error-handling-logging.mdc)** for error handling in AI operations
+4. Apply **[Security Guidelines](mdc:.cursor/rules/security-guidelines.mdc)** for securing API keys and user inputs
+5. Use **[Next.js App Router](mdc:.cursor/rules/nextjs-app-router.mdc)** for API routes and Server Components
+6. Follow **[Performance Optimization](mdc:.cursor/rules/performance-optimization.mdc)** for streaming and response optimization
+
+## Rule Application Priority
+
+Rules are applied in this order:
+1. **Always Applied Rules** (alwaysApply: true) - Applied to all relevant files automatically
+2. **Context-Specific Rules** (alwaysApply: false) - Applied when working on related tasks
+
+Always check the specific rule file for detailed guidelines and examples.

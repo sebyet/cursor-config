@@ -1,0 +1,188 @@
+---
+description: TypeScript best practices for type safety, code quality, and maintainability. Use when writing TypeScript code to ensure proper typing, type safety, and maintainable type definitions.
+alwaysApply: false
+---
+# TypeScript Best Practices
+
+Concise rules for writing type-safe, maintainable TypeScript code. Use MUST/SHOULD/NEVER to guide decisions.
+
+## Type Safety
+
+- Type annotations
+  - MUST: Explicitly type function parameters and return types
+  - SHOULD: Let TypeScript infer types for simple variables
+  - MUST: Type props for React components
+  - MUST: Type Server Actions and Route Handlers
+  - SHOULD: Use `as const` for literal types when needed
+  - MUST: Avoid `any` type (use `unknown` if type is truly unknown)
+
+- Type definitions
+  - SHOULD: Create interfaces for object shapes
+  - SHOULD: Use `type` for unions, intersections, and computed types
+  - SHOULD: Prefer interfaces for public APIs (extendable)
+  - SHOULD: Use `type` for internal types (more flexible)
+  - MUST: Export types that are used across modules
+  - SHOULD: Use descriptive type names
+
+- Generic types
+  - SHOULD: Use generics for reusable types
+  - MUST: Constrain generic types when possible
+  - SHOULD: Use default generic parameters when appropriate
+  - SHOULD: Document complex generic types
+
+## Next.js TypeScript Patterns
+
+- Route parameters
+  - MUST: Type `params` as `Promise<{ param: string }>` in Next.js 15+
+  - MUST: Await params before using: `const { id } = await params`
+  - SHOULD: Use `RouteContext` helper for Route Handler typing
+  - SHOULD: Validate route parameters with Zod or similar
+
+- Server Components
+  - MUST: Type async Server Component functions
+  - SHOULD: Type data fetching functions
+  - MUST: Handle undefined/null cases explicitly
+  - SHOULD: Use type guards for runtime validation
+
+- Client Components
+  - MUST: Type component props with interfaces or types
+  - SHOULD: Use `React.ReactNode` for children props
+  - SHOULD: Type event handlers properly
+  - MUST: Type state with `useState<Type>()`
+
+- Server Actions
+  - MUST: Type Server Action parameters and return types
+  - SHOULD: Use Zod schemas for runtime validation
+  - MUST: Return serializable types only
+  - SHOULD: Use `Result` pattern for operations that can fail
+
+## Utility Types
+
+- Built-in utilities
+  - SHOULD: Use `Partial<T>` for optional properties
+  - SHOULD: Use `Required<T>` for required properties
+  - SHOULD: Use `Pick<T, K>` to select properties
+  - SHOULD: Use `Omit<T, K>` to exclude properties
+  - SHOULD: Use `Record<K, V>` for object maps
+  - SHOULD: Use `Readonly<T>` for immutable types
+
+- Custom utilities
+  - SHOULD: Create utility types for common patterns
+  - SHOULD: Use `Awaited<T>` for unwrapping promises
+  - SHOULD: Use `NonNullable<T>` to exclude null/undefined
+  - SHOULD: Use template literal types for string patterns
+
+## Type Guards and Assertions
+
+- Type guards
+  - SHOULD: Create type guard functions for runtime validation
+  - SHOULD: Use `typeof` and `instanceof` for type narrowing
+  - SHOULD: Use discriminated unions for complex types
+  - MUST: Validate data before using type assertions
+
+- Type assertions
+  - SHOULD: Avoid type assertions (`as`) when possible
+  - MUST: Only use type assertions when you're certain of the type
+  - SHOULD: Prefer type guards over type assertions
+  - NEVER: Use `as any` to bypass type checking
+
+## Strict Mode Configuration
+
+- TypeScript config
+  - SHOULD: Enable `strict: true` in `tsconfig.json`
+  - SHOULD: Enable `noUncheckedIndexedAccess` for safer array/object access
+  - SHOULD: Enable `noImplicitReturns` to catch missing return statements
+  - SHOULD: Enable `noUnusedLocals` and `noUnusedParameters`
+  - SHOULD: Use `exactOptionalPropertyTypes` for precise optional types
+
+- Compiler options
+  - SHOULD: Set `target` to match your runtime environment
+  - SHOULD: Use `moduleResolution: "bundler"` for modern bundlers
+  - SHOULD: Enable `skipLibCheck` for faster compilation
+  - SHOULD: Use path aliases (`@/`) for cleaner imports
+
+## Common Patterns
+
+- Null and undefined
+  - MUST: Handle null and undefined explicitly
+  - SHOULD: Use optional chaining (`?.`) for safe property access
+  - SHOULD: Use nullish coalescing (`??`) for default values
+  - SHOULD: Use non-null assertion (`!`) sparingly and only when certain
+  - MUST: Validate data before using non-null assertions
+
+- Arrays and objects
+  - SHOULD: Use `Array<T>` or `T[]` consistently
+  - SHOULD: Use `readonly` arrays when arrays shouldn't be mutated
+  - SHOULD: Type object keys explicitly when possible
+  - SHOULD: Use `Record<string, T>` for dynamic object shapes
+
+- Functions
+  - MUST: Type function parameters
+  - SHOULD: Type return types explicitly
+  - SHOULD: Use function overloads for multiple signatures
+  - SHOULD: Use rest parameters with proper typing
+  - SHOULD: Type async functions properly
+
+## React TypeScript Patterns
+
+- Component props
+  - MUST: Define props interfaces/types
+  - SHOULD: Use `React.FC` or explicit function signatures
+  - SHOULD: Use `React.ReactNode` for children
+  - SHOULD: Use `React.ComponentProps` to extract prop types
+  - SHOULD: Use `React.ComponentPropsWithoutRef` when needed
+
+- Hooks
+  - MUST: Type hook return values
+  - SHOULD: Type hook parameters
+  - SHOULD: Use `useState<Type>()` for typed state
+  - SHOULD: Type custom hooks properly
+  - SHOULD: Use `useRef<Type>()` for typed refs
+
+- Event handlers
+  - SHOULD: Use `React.ChangeEvent<HTMLInputElement>` for input events
+  - SHOULD: Use `React.FormEvent<HTMLFormElement>` for form events
+  - SHOULD: Use `React.MouseEvent<HTMLButtonElement>` for click events
+  - SHOULD: Type event handler parameters explicitly
+
+## Error Handling Types
+
+- Error types
+  - SHOULD: Create custom error classes with types
+  - SHOULD: Use discriminated unions for error states
+  - SHOULD: Type error objects properly
+  - MUST: Handle error types in catch blocks
+
+- Result pattern
+  - SHOULD: Use `Result<T, E>` pattern for operations that can fail
+  - SHOULD: Type success and error cases explicitly
+  - SHOULD: Use type guards to narrow Result types
+
+## Best Practices
+
+- Code organization
+  - SHOULD: Keep type definitions close to where they're used
+  - SHOULD: Create shared types in `types/` or `@/types` directory
+  - SHOULD: Export types from index files for easier imports
+  - SHOULD: Use namespace for related types when appropriate
+
+- Type safety
+  - MUST: Fix TypeScript errors, don't suppress them
+  - SHOULD: Use `@ts-expect-error` only when necessary (with explanation)
+  - NEVER: Use `@ts-ignore` (use `@ts-expect-error` instead)
+  - SHOULD: Enable strict mode for better type safety
+  - MUST: Validate runtime data even with TypeScript types
+
+- Performance
+  - SHOULD: Use `const` assertions for better inference
+  - SHOULD: Avoid excessive type computations
+  - SHOULD: Use type aliases for complex types
+  - SHOULD: Leverage TypeScript's type inference when possible
+
+---
+
+## See Also
+
+- **[TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)**: Official TypeScript documentation
+- **[Next.js TypeScript](https://nextjs.org/docs/app/building-your-application/configuring/typescript)**: Next.js TypeScript configuration
+- **[React TypeScript Cheatsheet](https://react-typescript-cheatsheet.netlify.app/)**: React TypeScript patterns

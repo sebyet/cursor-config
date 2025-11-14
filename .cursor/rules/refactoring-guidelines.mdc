@@ -1,0 +1,216 @@
+---
+description: Guidelines for safe, effective code refactoring. Use when improving code structure, removing duplication, or addressing technical debt. Ensures refactoring is done safely with tests.
+alwaysApply: false
+---
+# Refactoring Guidelines
+
+Concise rules for refactoring code safely and effectively. Use MUST/SHOULD/NEVER to guide decisions.
+
+## When to Refactor
+
+- Refactor when
+  - SHOULD: Code is hard to understand or maintain
+  - SHOULD: Code has accumulated technical debt
+  - SHOULD: Code violates DRY principle (duplication)
+  - SHOULD: Code has code smells (long methods, large classes, magic numbers)
+  - SHOULD: Code needs to be extended but structure doesn't support it
+  - SHOULD: Performance issues can be solved through refactoring
+  - SHOULD: Code doesn't follow current team standards
+
+- Don't refactor when
+  - NEVER: Refactor "just because" (must have clear purpose)
+  - NEVER: Refactor code that's about to be deleted
+  - NEVER: Refactor during critical bug fixes (fix bug first, refactor later)
+  - SHOULD NOT: Refactor without tests (unless adding tests is part of refactoring)
+
+## Refactoring Safety
+
+- Tests first
+  - MUST: Have tests before refactoring (unit, integration, or E2E)
+  - MUST: Ensure tests pass before starting refactoring
+  - SHOULD: Add tests for uncovered code before refactoring
+  - MUST: Run tests after each refactoring step
+  - SHOULD: Use test coverage to identify untested code
+
+- Incremental approach
+  - MUST: Refactor in small, incremental steps
+  - SHOULD: Commit after each successful refactoring step
+  - SHOULD: Make refactoring commits separate from feature commits
+  - MUST: Ensure code works after each step before continuing
+
+- Version control
+  - MUST: Commit working code before refactoring
+  - SHOULD: Create feature branch for large refactorings
+  - SHOULD: Use descriptive commit messages ("refactor: extract user validation logic")
+  - SHOULD: Keep refactoring commits focused (one change per commit)
+
+## Refactoring Patterns
+
+- Extract function/method
+  - SHOULD: Extract repeated code into functions
+  - SHOULD: Extract complex expressions into named functions
+  - SHOULD: Extract long functions into smaller functions
+  - MUST: Give extracted functions descriptive names
+  - SHOULD: Keep functions focused and single-purpose
+
+- Extract variable
+  - SHOULD: Extract complex expressions into variables
+  - SHOULD: Extract magic numbers/strings into named constants
+  - SHOULD: Use descriptive variable names
+  - SHOULD: Extract variables to improve readability
+
+- Rename
+  - SHOULD: Rename variables/functions to be more descriptive
+  - SHOULD: Rename to match current naming conventions
+  - SHOULD: Use IDE refactoring tools for safe renaming
+  - MUST: Update all references when renaming
+
+- Move code
+  - SHOULD: Move code to more appropriate location
+  - SHOULD: Move functions to utility files when reusable
+  - SHOULD: Move related code together (high cohesion)
+  - SHOULD: Move code closer to where it's used
+
+- Simplify conditionals
+  - SHOULD: Replace complex conditionals with guard clauses
+  - SHOULD: Extract complex conditions into named functions
+  - SHOULD: Use early returns to reduce nesting
+  - SHOULD: Replace nested conditionals with switch or lookup tables
+
+- Remove duplication
+  - MUST: Identify and remove duplicate code
+  - SHOULD: Extract common patterns into reusable functions
+  - SHOULD: Use composition over duplication
+  - MUST: Ensure abstraction doesn't obscure intent
+
+## Code Smells to Address
+
+- Long methods/functions
+  - SHOULD: Break down functions longer than 20-30 lines
+  - SHOULD: Extract logical sections into separate functions
+  - SHOULD: Aim for functions that do one thing well
+
+- Large classes/components
+  - SHOULD: Split large components into smaller components
+  - SHOULD: Extract related logic into custom hooks
+  - SHOULD: Use composition to break down complex components
+
+- Magic numbers/strings
+  - MUST: Replace magic numbers with named constants
+  - MUST: Replace magic strings with constants or enums
+  - SHOULD: Group related constants together
+
+- Deep nesting
+  - SHOULD: Reduce nesting levels (aim for max 3-4 levels)
+  - SHOULD: Use early returns to reduce nesting
+  - SHOULD: Extract nested logic into separate functions
+
+- Feature envy
+  - SHOULD: Move methods closer to data they operate on
+  - SHOULD: Reduce coupling between components
+  - SHOULD: Use composition to share behavior
+
+- Dead code
+  - MUST: Remove unused code, functions, variables
+  - SHOULD: Remove commented-out code (use git history)
+  - SHOULD: Remove unused imports and dependencies
+
+## Technical Debt Management
+
+- Identify debt
+  - SHOULD: Track technical debt in issues or documentation
+  - SHOULD: Document why shortcuts were taken
+  - SHOULD: Prioritize debt based on impact
+  - SHOULD: Review technical debt regularly
+
+- Pay down debt
+  - SHOULD: Allocate time for technical debt reduction
+  - SHOULD: Refactor when touching related code
+  - SHOULD: Fix debt that blocks new features
+  - SHOULD: Address high-impact debt first
+
+- Prevent debt
+  - SHOULD: Follow coding standards and best practices
+  - SHOULD: Review code to catch debt early
+  - SHOULD: Refactor incrementally, not all at once
+  - SHOULD: Balance speed with quality
+
+## Refactoring vs Rewriting
+
+- Refactor when
+  - SHOULD: Code structure is salvageable
+  - SHOULD: Tests exist and can guide refactoring
+  - SHOULD: Changes can be made incrementally
+  - SHOULD: Team understands existing codebase
+
+- Rewrite when
+  - SHOULD: Code is fundamentally flawed
+  - SHOULD: Technology stack needs to change
+  - SHOULD: Code is too complex to refactor safely
+  - SHOULD: Refactoring would take longer than rewriting
+
+- Hybrid approach
+  - SHOULD: Consider rewriting specific modules while keeping others
+  - SHOULD: Extract and rewrite problematic parts incrementally
+  - SHOULD: Use strangler fig pattern for large rewrites
+
+## React/Next.js Specific
+
+- Component refactoring
+  - SHOULD: Extract reusable logic into custom hooks
+  - SHOULD: Split large components into smaller components
+  - SHOULD: Extract complex JSX into separate components
+  - SHOULD: Move component-specific logic out of components
+
+- State management
+  - SHOULD: Extract state logic into custom hooks
+  - SHOULD: Move shared state to appropriate location (context, store)
+  - SHOULD: Simplify state updates (use reducers for complex state)
+
+- Performance refactoring
+  - SHOULD: Memoize expensive computations
+  - SHOULD: Optimize re-renders with React.memo
+  - SHOULD: Use useMemo/useCallback appropriately
+  - SHOULD: Lazy load components when beneficial
+
+## Database Refactoring
+
+- Schema changes
+  - MUST: Use migrations for all schema changes
+  - MUST: Test migrations on staging before production
+  - SHOULD: Make migrations reversible when possible
+  - SHOULD: Migrate data incrementally for large changes
+
+- Query optimization
+  - SHOULD: Refactor slow queries
+  - SHOULD: Add indexes for frequently queried columns
+  - SHOULD: Optimize N+1 queries
+  - SHOULD: Use query analysis tools to identify bottlenecks
+
+## Best Practices
+
+- Communication
+  - SHOULD: Communicate large refactorings to team
+  - SHOULD: Get code review for refactoring changes
+  - SHOULD: Document why refactoring was needed
+  - SHOULD: Share learnings from refactoring
+
+- Timing
+  - SHOULD: Refactor when code is stable (not during active development)
+  - SHOULD: Refactor when touching related code
+  - SHOULD: Schedule dedicated refactoring time
+  - SHOULD NOT: Refactor during critical deadlines
+
+- Measurement
+  - SHOULD: Measure impact of refactoring (performance, maintainability)
+  - SHOULD: Track time spent on refactoring
+  - SHOULD: Verify refactoring improved code quality
+  - SHOULD: Use code quality metrics to guide refactoring
+
+---
+
+## See Also
+
+- **[Software Engineering Principles](mdc:.cursor/rules/software-engineering-principles.mdc)**: KISS, DRY, and avoiding over-engineering
+- **[Testing Guidelines](mdc:.cursor/rules/testing-guidelines.mdc)**: How to test refactored code
+- **[Code Style & Formatting](mdc:.cursor/rules/code-style-formatting.mdc)**: Consistent code style

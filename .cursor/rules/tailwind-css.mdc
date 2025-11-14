@@ -1,0 +1,329 @@
+---
+description: Guidelines for using Tailwind CSS with Next.js App Router. Use when styling components, configuring Tailwind, optimizing performance, and implementing responsive designs. Ensures consistent styling patterns and optimal performance.
+alwaysApply: false
+---
+
+# Tailwind CSS Guidelines
+
+Concise rules for using Tailwind CSS in Next.js App Router applications. Use MUST/SHOULD/NEVER to guide decisions. Based on Tailwind CSS best practices and Next.js integration patterns.
+
+## Configuration
+
+- Tailwind config
+  - MUST: Configure `tailwind.config.ts` for custom theme and utilities
+  - MUST: Specify all content paths where Tailwind should scan
+  - SHOULD: Extend default theme instead of overriding
+  - SHOULD: Use CSS variables for design tokens
+  - MUST: Configure plugins in config file
+
+```typescript
+import type { Config } from "tailwindcss"
+
+const config: Config = {
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        // ...
+      },
+    },
+  },
+  plugins: [require("tailwindcss-animate")],
+}
+
+export default config
+```
+
+- Content paths
+  - MUST: Include all directories containing Tailwind classes
+  - MUST: Include `app/`, `components/`, and `pages/` directories
+  - SHOULD: Use glob patterns for comprehensive coverage
+  - MUST: Update content paths when adding new directories
+  - SHOULD: Exclude node_modules and build directories
+
+## Performance Optimization
+
+- JIT mode
+  - MUST: Use JIT (Just-In-Time) mode (default in Tailwind v3+)
+  - SHOULD: Rely on automatic purging of unused styles
+  - MUST: Ensure content paths are correctly configured for purging
+  - SHOULD: Monitor bundle size in production
+
+- Class optimization
+  - SHOULD: Use consistent class ordering
+  - SHOULD: Group related utilities together
+  - SHOULD: Use `tailwind-merge` for conditional classes
+  - SHOULD: Avoid duplicate utility classes
+  - SHOULD: Use `clsx` with `tailwind-merge` for conditional styling
+
+```typescript
+import { cn } from "@/lib/utils" // Uses clsx + tailwind-merge
+
+<div className={cn(
+  "base-classes",
+  condition && "conditional-classes",
+  anotherCondition && "more-classes"
+)} />
+```
+
+## Utility-First Approach
+
+- Direct utility usage
+  - SHOULD: Use utility classes directly in components
+  - SHOULD: Prefer utilities over custom CSS
+  - SHOULD: Maintain consistency across components
+  - SHOULD: Use utility classes for most styling needs
+  - SHOULD: Extract repeated utility combinations into components
+
+- Custom CSS
+  - SHOULD: Use custom CSS only when utilities are insufficient
+  - SHOULD: Use `@apply` directive sparingly
+  - SHOULD: Prefer component extraction over `@apply`
+  - MUST: Keep custom CSS minimal
+  - SHOULD: Document why custom CSS is needed
+
+## Responsive Design
+
+- Mobile-first approach
+  - MUST: Design mobile-first (base styles for mobile)
+  - SHOULD: Use responsive modifiers: `sm:`, `md:`, `lg:`, `xl:`, `2xl:`
+  - SHOULD: Add larger breakpoint styles progressively
+  - MUST: Test on multiple screen sizes
+  - SHOULD: Use responsive utilities consistently
+
+```typescript
+// ✅ Good: Mobile-first
+<div className="text-sm md:text-base lg:text-lg">
+  Responsive text
+</div>
+
+// ✅ Good: Responsive spacing
+<div className="p-4 md:p-6 lg:p-8">
+  Responsive padding
+</div>
+```
+
+- Breakpoint usage
+  - SHOULD: Use standard breakpoints (sm, md, lg, xl, 2xl)
+  - SHOULD: Customize breakpoints in config if needed
+  - SHOULD: Use breakpoints consistently across application
+  - SHOULD: Test responsive behavior thoroughly
+
+## Dark Mode
+
+- Dark mode configuration
+  - MUST: Configure `darkMode: ['class']` in Tailwind config
+  - SHOULD: Use `next-themes` for theme management
+  - MUST: Use `dark:` modifier for dark mode styles
+  - SHOULD: Provide dark mode styles for all components
+  - SHOULD: Test dark mode thoroughly
+
+```typescript
+// tailwind.config.ts
+const config: Config = {
+  darkMode: ['class'],
+  // ...
+}
+
+// Component usage
+<div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+  Content
+</div>
+```
+
+- Theme implementation
+  - SHOULD: Use CSS variables for theme colors
+  - SHOULD: Define dark mode colors in CSS variables
+  - SHOULD: Ensure proper contrast in both modes
+  - MUST: Test accessibility in both light and dark modes
+
+## Design System Integration
+
+- CSS variables
+  - MUST: Define design tokens as CSS variables
+  - SHOULD: Use HSL color format for variables
+  - SHOULD: Reference variables in Tailwind config
+  - SHOULD: Enable dynamic theming with variables
+  - MUST: Define variables in global CSS file
+
+```css
+/* globals.css */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  /* ... */
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  /* ... */
+}
+```
+
+```typescript
+// tailwind.config.ts
+theme: {
+  extend: {
+    colors: {
+      background: 'hsl(var(--background))',
+      foreground: 'hsl(var(--foreground))',
+    },
+  },
+}
+```
+
+- Component variants
+  - SHOULD: Use `class-variance-authority` (CVA) for component variants
+  - SHOULD: Define variants in component files
+  - SHOULD: Use type-safe variant definitions
+  - SHOULD: Keep variants consistent across components
+
+```typescript
+import { cva, type VariantProps } from "class-variance-authority"
+
+const buttonVariants = cva(
+  "base-classes",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground",
+        outline: "border border-input",
+      },
+      size: {
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-md px-3",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+```
+
+## Class Merging
+
+- Conditional classes
+  - MUST: Use `cn()` utility (clsx + tailwind-merge) for conditional classes
+  - SHOULD: Merge classes to prevent conflicts
+  - SHOULD: Use `tailwind-merge` to handle conflicting utilities
+  - MUST: Avoid class conflicts manually
+  - SHOULD: Create reusable `cn` utility function
+
+```typescript
+// lib/utils.ts
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+```
+
+## Best Practices
+
+- Arbitrary values
+  - SHOULD: Use predefined utilities first
+  - SHOULD: Use arbitrary values (`[value]`) sparingly
+  - SHOULD: Prefer design tokens over arbitrary values
+  - SHOULD: Document why arbitrary values are used
+  - SHOULD: Consider adding to theme if used frequently
+
+```typescript
+// ✅ Good: Use predefined utility
+<div className="p-4">
+
+// ⚠️ Acceptable: Arbitrary value when needed
+<div className="p-[13px]">
+
+// ❌ Bad: Should use theme value
+<div className="p-[var(--spacing-custom)]">
+```
+
+- Component extraction
+  - SHOULD: Extract repeated utility combinations into components
+  - SHOULD: Create reusable styled components
+  - SHOULD: Use component composition
+  - SHOULD: Maintain utility-first philosophy
+  - SHOULD: Document component variants
+
+- Accessibility
+  - MUST: Use semantic HTML with Tailwind utilities
+  - MUST: Ensure proper focus states: `focus:ring-2 focus:ring-primary`
+  - MUST: Maintain proper contrast ratios
+  - SHOULD: Use focus-visible for keyboard navigation
+  - MUST: Test with screen readers
+
+```typescript
+<button className="
+  px-4 py-2 
+  bg-primary text-primary-foreground
+  focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
+  disabled:opacity-50 disabled:cursor-not-allowed
+">
+  Button
+</button>
+```
+
+## Common Patterns
+
+- Container patterns
+```typescript
+<div className="container mx-auto px-4 sm:px-6 lg:px-8">
+  Content
+</div>
+```
+
+- Flexbox patterns
+```typescript
+<div className="flex items-center justify-between gap-4">
+  Content
+</div>
+```
+
+- Grid patterns
+```typescript
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  Items
+</div>
+```
+
+- Spacing patterns
+```typescript
+<div className="space-y-4">
+  <div>Item 1</div>
+  <div>Item 2</div>
+</div>
+```
+
+## Performance Considerations
+
+- Bundle size
+  - SHOULD: Monitor Tailwind CSS bundle size
+  - SHOULD: Ensure unused styles are purged
+  - SHOULD: Use production build for accurate size
+  - SHOULD: Optimize content paths for better purging
+
+- Build optimization
+  - SHOULD: Use Tailwind's JIT compiler
+  - SHOULD: Enable CSS minification in production
+  - SHOULD: Use PostCSS for optimization
+  - SHOULD: Monitor build times
+
+---
+
+## See Also
+
+- **[Tailwind CSS Documentation](https://tailwindcss.com/docs)**: Official Tailwind CSS docs
+- **[Use Design System](mdc:.cursor/rules/use-design-system.mdc)**: Design system guidelines
+- **[Next.js App Router](mdc:.cursor/rules/nextjs-app-router.mdc)**: Next.js styling patterns
+- **[Performance Optimization](mdc:.cursor/rules/performance-optimization.mdc)**: Performance guidelines

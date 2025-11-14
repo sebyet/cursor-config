@@ -1,0 +1,269 @@
+---
+description: Code style and formatting standards for consistent, readable code. Use when writing code to ensure consistent formatting, naming conventions, and code organization across the project.
+alwaysApply: false
+---
+# Code Style & Formatting
+
+Concise rules for consistent code formatting and style. Use MUST/SHOULD/NEVER to guide decisions.
+
+## Formatting Tools
+
+- Prettier
+  - MUST: Use Prettier for automatic code formatting
+  - MUST: Configure Prettier in `.prettierrc` or `package.json`
+  - SHOULD: Format on save in editor
+  - MUST: Run Prettier in CI/CD pipeline
+  - SHOULD: Use `.prettierignore` for generated files and dependencies
+
+- ESLint
+  - MUST: Use ESLint for code quality and style enforcement
+  - MUST: Configure ESLint rules in `.eslintrc.json` or `eslint.config.js`
+  - SHOULD: Use TypeScript ESLint for TypeScript projects
+  - SHOULD: Fix auto-fixable issues automatically
+  - MUST: Run ESLint in CI/CD pipeline
+
+- EditorConfig
+  - SHOULD: Use `.editorconfig` for cross-editor consistency
+  - SHOULD: Configure indentation, line endings, charset
+
+## Indentation & Spacing
+
+- Indentation
+  - MUST: Use 2 spaces for indentation (TypeScript/JavaScript)
+  - MUST: Use 2 spaces for CSS/SCSS
+  - MUST: Never mix tabs and spaces
+  - SHOULD: Configure editor to show whitespace characters
+
+- Line length
+  - SHOULD: Keep lines under 100 characters
+  - SHOULD: Break long lines at logical points (operators, commas)
+  - MUST: Indent continuation lines appropriately
+
+- Blank lines
+  - SHOULD: Use blank lines to separate logical sections
+  - SHOULD: Single blank line between functions/classes
+  - SHOULD: No blank lines at start/end of files
+  - SHOULD: Blank line before return statements in long functions
+
+## Naming Conventions
+
+- Variables and functions
+  - MUST: Use camelCase for variables and functions
+  - MUST: Use descriptive names (avoid abbreviations)
+  - SHOULD: Use verbs for functions (`getUser`, `calculateTotal`)
+  - SHOULD: Use nouns for variables (`userName`, `totalAmount`)
+  - MUST: Boolean variables start with `is`, `has`, `should`, `can` (`isLoading`, `hasError`)
+
+- Constants
+  - MUST: Use UPPER_SNAKE_CASE for constants
+  - SHOULD: Group related constants in objects or enums
+  - MUST: Use `const` for constants, never `let` or `var`
+
+- Components
+  - MUST: Use PascalCase for component names
+  - MUST: Component file names match component name
+  - SHOULD: Use descriptive component names (`UserProfileCard`, not `Card`)
+
+- Types and interfaces
+  - MUST: Use PascalCase for types and interfaces
+  - SHOULD: Prefix interfaces with `I` only if team convention (otherwise avoid)
+  - SHOULD: Use descriptive names (`UserProfile`, not `User`)
+
+- Files and directories
+  - MUST: Use kebab-case for file and directory names
+  - SHOULD: Match file name to default export
+  - SHOULD: Use descriptive directory names (`user-profile`, not `profile`)
+
+## Import Organization
+
+- Import order
+  - MUST: Group imports in this order:
+    1. External dependencies (React, Next.js, third-party)
+    2. Internal modules (`@/components`, `@/lib`, `@/hooks`)
+    3. Relative imports (`./`, `../`)
+  - SHOULD: Separate groups with blank line
+  - SHOULD: Sort imports alphabetically within groups
+
+- Import style
+  - MUST: Use named imports when possible
+  - SHOULD: Use default imports only when necessary
+  - SHOULD: Avoid wildcard imports (`import * as`)
+  - MUST: Remove unused imports
+
+- Example:
+```typescript
+// External dependencies
+import { useState, useEffect } from 'react'
+import { NextRequest } from 'next/server'
+import { z } from 'zod'
+
+// Internal modules
+import { Button } from '@/components/ui/button'
+import { useToast } from '@/hooks/use-toast'
+import { cn } from '@/lib/utils'
+
+// Relative imports
+import { UserCard } from './user-card'
+import type { User } from '../types'
+```
+
+## Code Organization
+
+- File structure
+  - SHOULD: One component/function per file (unless closely related)
+  - SHOULD: Export default for main component/function
+  - SHOULD: Export named exports for utilities/types
+  - SHOULD: Group related files in directories
+
+- Function organization
+  - SHOULD: Keep functions focused and single-purpose
+  - SHOULD: Extract complex logic into separate functions
+  - SHOULD: Place helper functions below main function
+  - SHOULD: Order functions by importance (public → private)
+
+- Component organization
+  - SHOULD: Organize component code in this order:
+    1. Imports
+    2. Types/interfaces
+    3. Component function
+    4. Helper functions
+    5. Exports
+  - SHOULD: Use early returns for guard clauses
+  - SHOULD: Extract complex JSX into separate components
+
+## Quotes and Strings
+
+- String quotes
+  - MUST: Use single quotes (`'`) for JavaScript/TypeScript (or double if team preference)
+  - MUST: Be consistent across codebase
+  - SHOULD: Use template literals for interpolation
+  - SHOULD: Use template literals for multi-line strings
+
+- JSX attributes
+  - SHOULD: Use double quotes (`"`) for JSX attributes
+  - SHOULD: Use single quotes for string props
+
+## Semicolons
+
+- Semicolon usage
+  - MUST: Be consistent (use semicolons or don't, but be consistent)
+  - SHOULD: Use semicolons for clarity (recommended)
+  - MUST: Configure Prettier to enforce semicolon preference
+
+## Braces and Blocks
+
+- Brace style
+  - MUST: Use opening brace on same line (1TBS style)
+  - MUST: Always use braces for if/for/while blocks (even single-line)
+  - SHOULD: Use braces for arrow functions with multiple statements
+
+- Example:
+```typescript
+// Good
+if (condition) {
+  doSomething()
+}
+
+// Avoid (even for single line)
+if (condition) doSomething()
+```
+
+## Comments
+
+- Comment style
+  - MUST: Use `//` for single-line comments
+  - SHOULD: Use `/* */` for multi-line comments
+  - MUST: Write comments in English
+  - SHOULD: Explain "why", not "what" (code should be self-documenting)
+
+- Comment placement
+  - SHOULD: Place comments above code, not inline
+  - SHOULD: Keep comments up-to-date with code
+  - SHOULD: Remove commented-out code (use git history instead)
+
+- Documentation comments
+  - SHOULD: Use JSDoc for function documentation
+  - SHOULD: Document public APIs and complex functions
+  - SHOULD: Include parameter and return types in JSDoc
+
+## TypeScript Specific
+
+- Type annotations
+  - SHOULD: Let TypeScript infer types when obvious
+  - MUST: Explicitly type function parameters and return types
+  - SHOULD: Use `type` for unions/intersections, `interface` for object shapes
+
+- Type imports
+  - MUST: Use `import type` for type-only imports
+  - SHOULD: Group type imports separately or inline
+
+- Example:
+```typescript
+import type { User } from '@/types/user'
+import { getUser } from '@/lib/api'
+```
+
+## React/Next.js Specific
+
+- Component structure
+  - MUST: Use function components (not class components)
+  - SHOULD: Use arrow functions for components
+  - SHOULD: Define props interface above component
+  - SHOULD: Destructure props in function signature
+
+- Hooks
+  - MUST: Follow Rules of Hooks (top-level only, same order)
+  - SHOULD: Group hooks together at top of component
+  - SHOULD: Custom hooks start with `use` prefix
+
+- JSX
+  - MUST: Use self-closing tags when no children
+  - SHOULD: Use meaningful prop names
+  - SHOULD: Spread props last
+  - MUST: Include `key` prop for list items
+
+## CSS/SCSS Specific
+
+- Class naming
+  - SHOULD: Use Tailwind CSS utility classes (if using Tailwind)
+  - SHOULD: Use BEM or similar for custom CSS classes
+  - MUST: Use kebab-case for CSS class names
+
+- CSS organization
+  - SHOULD: Group related styles together
+  - SHOULD: Use CSS modules or styled-components for scoped styles
+  - SHOULD: Order properties logically (layout → typography → visual)
+
+## Pre-commit Hooks
+
+- Git hooks
+  - SHOULD: Use husky or similar for git hooks
+  - SHOULD: Run Prettier on staged files
+  - SHOULD: Run ESLint on staged files
+  - SHOULD: Prevent commits with linting errors
+  - SHOULD: Run type checking before commit (TypeScript)
+
+## Best Practices
+
+- Consistency
+  - MUST: Follow team conventions consistently
+  - SHOULD: Use automated tools to enforce style
+  - SHOULD: Review style guide periodically
+  - MUST: Update style guide when patterns change
+
+- Code review
+  - SHOULD: Focus on logic over style (let tools handle style)
+  - SHOULD: Discuss style changes as team
+  - SHOULD: Use automated formatting to reduce style discussions
+
+- Migration
+  - SHOULD: Format entire codebase when introducing Prettier
+  - SHOULD: Use `--write` flag to format all files
+  - SHOULD: Commit formatting changes separately from logic changes
+
+---
+
+## See Also
+
+- **[TypeScript Best Practices](mdc:.cursor/rules/typescript-best-practices.mdc)**: Type safety and TypeScript patterns
+- **[Software Engineering Principles](mdc:.cursor/rules/software-engineering-principles.mdc)**: KISS, DRY, and architectural principles

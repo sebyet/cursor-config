@@ -1,0 +1,709 @@
+---
+description: Comprehensive Next.js App Router guidelines for Server Components, Client Components, routing, data fetching, and caching. Use when building Next.js applications to follow App Router best practices and patterns.
+alwaysApply: false
+---
+# Next.js App Router Guidelines
+
+Concise rules for building Next.js applications with the App Router. Use MUST/SHOULD/NEVER to guide decisions. All rules are based on official Next.js documentation (v16+).
+
+## Server and Client Components
+
+- Component selection
+  - MUST: Default to Server Components for layouts and pages
+  - MUST: Use Client Components (`'use client'`) only when needed for:
+    - State management (`useState`, `useReducer`)
+    - Event handlers (`onClick`, `onChange`)
+    - Lifecycle effects (`useEffect`, `useLayoutEffect`)
+    - Browser APIs (`localStorage`, `window`, `Navigator.geolocation`)
+    - Custom hooks
+  - MUST: Use Server Components for:
+    - Data fetching from databases or APIs
+    - Using API keys, tokens, and secrets
+    - Reducing JavaScript bundle size
+    - Improving First Contentful Paint (FCP)
+  - MUST: Add `'use client'` directive at the top of the file, above imports
+  - MUST: Keep Client Component boundaries minimal - only mark interactive components as Client Components
+  - SHOULD: Pass Server Components as `children` props to Client Components for composition
+  - NEVER: Import server-only code into Client Components (use `server-only` package to prevent this)
+  - MUST: Wrap third-party components that need client features in your own Client Component wrapper
+
+- Context providers
+  - MUST: Create Client Components for React Context providers
+  - SHOULD: Render providers as deep as possible in the component tree
+  - MUST: Accept `children` prop in provider components
+
+- Environment safety
+  - MUST: Use `server-only` package to mark server-only modules
+  - MUST: Use `client-only` package to mark client-only modules
+  - MUST: Only use `NEXT_PUBLIC_` prefixed environment variables in Client Components
+
+## Routing and Navigation
+
+- Navigation
+  - MUST: Use `<Link>` component from `next/link` for internal navigation
+  - MUST: Use `<a>` tags only for external links
+  - SHOULD: Let Next.js handle prefetching automatically (enabled by default)
+  - SHOULD: Disable prefetching with `prefetch={false}` only for large link lists (e.g., infinite scroll)
+  - MUST: Use `useLinkStatus` hook to show loading indicators during navigation
+  - SHOULD: Use `window.history.pushState` for updating URL without navigation (e.g., filters, sorting)
+  - SHOULD: Use `window.history.replaceState` for replacing current history entry (e.g., locale switching)
+
+- Dynamic routes
+  - MUST: Use `generateStaticParams` for dynamic segments that can be prerendered
+  - MUST: Await `params` in async page components: `const { id } = await params`
+  - SHOULD: Create `loading.tsx` files for dynamic routes to enable partial prefetching
+  - MUST: Use `loading.tsx` to show immediate feedback during navigation
+
+- Route structure
+  - MUST: Use `app/` directory for App Router
+  - MUST: Create `page.tsx` for route segments
+  - MUST: Create `layout.tsx` for shared layouts
+  - MUST: Create `loading.tsx` for loading states
+  - MUST: Create `error.tsx` for error boundaries
+  - MUST: Create `not-found.tsx` for 404 pages
+  - SHOULD: Use route groups `(folder)` for organization without affecting URL structure
+
+## Data Fetching
+
+- Server Components
+  - MUST: Make Server Components async functions for data fetching
+  - MUST: Use `fetch` API, ORM, or database clients directly in Server Components
+  - SHOULD: Use `fetch` with proper caching options
+  - MUST: Use `cache: 'no-store'` for dynamic rendering when needed
+  - SHOULD: Use `cache: 'force-cache'` for static data
+  - MUST: Use `next.revalidate` option for time-based revalidation
+
+- Client Components
+  - SHOULD: Use React's `use` hook for streaming data from Server Components
+  - SHOULD: Wrap `use` hook with `<Suspense>` boundaries
+  - SHOULD: Use community libraries (SWR, React Query) for complex client-side data fetching
+  - MUST: Pass promises from Server Components to Client Components as props
+
+- Request optimization
+  - MUST: Use `Promise.all` for parallel data fetching
+  - SHOULD: Use `Promise.allSettled` when some requests can fail independently
+  - SHOULD: Preload data by eagerly calling fetch functions before they're needed
+  - MUST: Use React's `cache` function to deduplicate non-fetch requests
+  - SHOULD: Wrap database queries with `cache` from React for request memoization
+
+- Streaming
+  - MUST: Use `loading.tsx` files for route-level streaming
+  - SHOULD: Use `<Suspense>` boundaries for component-level streaming
+  - MUST: Create meaningful loading states (skeletons, spinners) that mirror final content
+  - SHOULD: Stream slow data requests to improve perceived performance
+
+## Caching and Revalidation
+
+- Fetch caching
+  - MUST: Explicitly set `cache: 'force-cache'` to cache fetch requests
+  - SHOULD: Use `next.revalidate` for time-based revalidation
+  - MUST: Use `next.tags` for tag-based cache invalidation
+  - SHOULD: Tag related fetch requests with the same tag for batch invalidation
+
+- Cache Components (Next.js 16+)
+  - SHOULD: Use `'use cache'` directive for caching computations
+  - MUST: Use `cacheTag` to tag cached data in Cache Components
+  - SHOULD: Prefer Cache Components over `unstable_cache` when available
+  - MUST: Use `cacheTag` with database queries, file operations, and server-side work
+
+- Cache invalidation
+  - MUST: Use `revalidateTag(tag, 'max')` for stale-while-revalidate behavior
+  - MUST: Use `updateTag(tag)` in Server Actions for immediate cache expiration (read-your-own-writes)
+  - SHOULD: Use `revalidatePath(path)` for route-level revalidation
+  - MUST: Call revalidation functions in Route Handlers or Server Actions
+  - SHOULD: Reuse tags across multiple functions for batch invalidation
+
+- Legacy caching
+  - SHOULD: Migrate from `unstable_cache` to Cache Components when possible
+  - MUST: Include cache keys in `unstable_cache` dependency array
+  - SHOULD: Use `tags` and `revalidate` options with `unstable_cache`
+
+## File Conventions
+
+- Special files
+  - MUST: Export default function from `page.tsx`
+  - MUST: Export default function from `layout.tsx` with `children` prop
+  - MUST: Export default function from `loading.tsx`
+  - MUST: Export default function from `error.tsx` with error and reset props
+  - MUST: Export default function from `not-found.tsx`
+  - MUST: Export named functions (GET, POST, etc.) from `route.ts` for Route Handlers
+  - SHOULD: Use `template.tsx` when you need to remount on navigation (unlike layouts)
+
+- Metadata
+  - SHOULD: Export `metadata` object or `generateMetadata` function from pages/layouts
+  - SHOULD: Use metadata files (favicon, icon, opengraph-image) for static metadata
+  - MUST: Use `generateMetadata` for dynamic metadata based on route params
+
+- Route segments
+  - MUST: Use `[param]` for dynamic segments
+  - MUST: Use `[...slug]` for catch-all routes
+  - MUST: Use `[[...slug]]` for optional catch-all routes
+  - SHOULD: Use `generateStaticParams` for dynamic routes that can be prerendered
+
+## Route Handlers (API Routes)
+
+- File structure
+  - MUST: Create `route.ts` or `route.js` files in `app/` directory for API endpoints
+  - MUST: Place Route Handlers in `app/api/` folder or nested within route segments
+  - MUST: Export named HTTP method functions (GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS)
+  - NEVER: Create `route.ts` at the same route segment level as `page.tsx` (conflict)
+  - SHOULD: Use `app/api/` folder for external API endpoints
+  - SHOULD: Use nested routes (e.g., `app/users/[id]/route.ts`) for resource-specific endpoints
+
+- HTTP methods
+  - MUST: Export async functions named after HTTP methods
+  - MUST: Accept `Request` or `NextRequest` as first parameter
+  - MUST: Accept optional `context` parameter with `params` for dynamic routes
+  - MUST: Await `params` from context: `const { id } = await params`
+  - MUST: Return `Response` object or use `NextResponse` helpers
+  - SHOULD: Use `Response.json()` for JSON responses
+  - SHOULD: Use `NextResponse.json()` for convenience methods
+  - SHOULD: Use `redirect()` from `next/navigation` for redirects
+  - MUST: Handle unsupported methods (Next.js returns 405 automatically)
+
+- Request handling
+  - MUST: Use `NextRequest` type for TypeScript typing
+  - SHOULD: Use `request.nextUrl.searchParams` for query parameters
+  - SHOULD: Use `request.json()` for JSON request bodies
+  - SHOULD: Use `request.formData()` for form data
+  - SHOULD: Use `request.text()` for plain text (e.g., webhooks)
+  - MUST: Use `cookies()` from `next/headers` to read/write cookies
+  - MUST: Await `cookies()` before using: `const cookieStore = await cookies()`
+  - SHOULD: Use `headers()` from `next/headers` to read request headers
+  - MUST: Await `headers()` before using: `const headersList = await headers()`
+
+- Response handling
+  - MUST: Return proper HTTP status codes
+  - SHOULD: Set appropriate `Content-Type` headers
+  - SHOULD: Use `Response.json()` for JSON responses
+  - SHOULD: Handle errors with try-catch and return error responses
+  - SHOULD: Use streaming for large responses or LLM integrations
+
+- Caching
+  - MUST: Know that Route Handlers are NOT cached by default
+  - SHOULD: Use `export const dynamic = 'force-static'` to cache GET methods
+  - MUST: Understand that only GET methods can be cached
+  - SHOULD: Use Cache Components with `'use cache'` directive for data caching
+  - SHOULD: Use `cacheTag` to tag cached data in Route Handlers
+  - MUST: Use `revalidate` route segment config for time-based revalidation
+
+- Dynamic routes
+  - MUST: Use `RouteContext` helper for TypeScript typing: `RouteContext<'/users/[id]'>`
+  - MUST: Await `params` from context parameter
+  - SHOULD: Type context parameter properly for dynamic segments
+
+- Common patterns
+  - SHOULD: Use Route Handlers for webhooks, external API proxies, CORS endpoints
+  - SHOULD: Use Route Handlers for non-UI responses (RSS, XML, etc.)
+  - SHOULD: Set CORS headers when needed for cross-origin requests
+  - SHOULD: Validate request data before processing
+  - MUST: Handle authentication and authorization in Route Handlers
+
+- When to use Route Handlers
+  - SHOULD: Use for external API endpoints
+  - SHOULD: Use for webhooks from third-party services
+  - SHOULD: Use for CORS-enabled endpoints
+  - SHOULD: Use for non-UI responses (RSS feeds, sitemaps, etc.)
+  - SHOULD: Use when you need full control over HTTP methods and responses
+  - SHOULD NOT: Use for simple data mutations (prefer Server Actions)
+
+## Server Actions (Action Files)
+
+- File structure
+  - MUST: Create dedicated action files (e.g., `app/actions.ts` or `app/lib/actions.ts`)
+  - MUST: Add `'use server'` directive at the top of the file for all exports
+  - SHOULD: Organize actions by domain (e.g., `app/lib/user-actions.ts`, `app/lib/post-actions.ts`)
+  - SHOULD: Keep actions colocated with related features when appropriate
+  - CAN: Define Server Actions inline in Server Components with `'use server'` directive
+
+- Function definition
+  - MUST: Mark all Server Action functions as `async`
+  - MUST: Accept `FormData` or serializable parameters (strings, numbers, objects, arrays)
+  - MUST: Use `'use server'` directive at file level OR inline at function level
+  - SHOULD: Use file-level `'use server'` when exporting multiple actions
+  - SHOULD: Use inline `'use server'` for single-use actions in Server Components
+  - MUST: Return serializable data (cannot return functions, classes, or non-serializable objects)
+
+- Invocation
+  - MUST: Import Server Actions from dedicated files in Client Components
+  - SHOULD: Pass Server Actions as props to Client Components when needed
+  - MUST: Use `action` prop on `<form>` elements
+  - MUST: Use `formAction` prop on `<button>` elements
+  - CAN: Call Server Actions directly in event handlers (`onClick`, etc.)
+  - CAN: Call Server Actions in `useEffect` hooks
+  - MUST: Use `startTransition` when calling actions in event handlers for better UX
+
+- Form integration
+  - MUST: Accept `FormData` as parameter when used with forms
+  - SHOULD: Extract form data using `FormData.get()` or `FormData.getAll()`
+  - SHOULD: Validate form data before processing
+  - MUST: Support progressive enhancement (works without JavaScript)
+  - SHOULD: Provide user feedback during form submission
+
+- State management
+  - SHOULD: Use `useActionState` hook to track pending state
+  - SHOULD: Show loading indicators during action execution
+  - SHOULD: Handle errors gracefully and display to users
+  - MUST: Update UI after successful mutations
+
+- Cache invalidation
+  - MUST: Call `revalidateTag()` or `updateTag()` after data mutations
+  - MUST: Use `updateTag()` for immediate cache expiration (read-your-own-writes)
+  - SHOULD: Use `revalidateTag(tag, 'max')` for stale-while-revalidate behavior
+  - SHOULD: Use `revalidatePath()` for route-level revalidation
+  - SHOULD: Call `refresh()` to refresh the client router cache
+  - MUST: Revalidate before redirecting if fresh data is needed
+
+- Redirects and navigation
+  - SHOULD: Use `redirect()` after successful mutations
+  - MUST: Call `revalidatePath()` or `revalidateTag()` before `redirect()` if fresh data is needed
+  - MUST: Understand that `redirect()` throws and stops execution
+  - SHOULD: Redirect to the newly created/updated resource
+
+- Cookies
+  - MUST: Use `cookies()` from `next/headers` in Server Actions
+  - MUST: Await `cookies()` before using: `const cookieStore = await cookies()`
+  - SHOULD: Know that setting/deleting cookies triggers server re-render
+  - MUST: Understand that cookie changes update the UI automatically
+
+- Security
+  - MUST: Authenticate and authorize users before sensitive operations
+  - MUST: Validate and sanitize all user input
+  - MUST: Never trust client-side data
+  - SHOULD: Use server-side validation libraries (e.g., Zod)
+  - MUST: Handle errors securely (don't expose sensitive information)
+
+- When to use Server Actions
+  - MUST: Use for data mutations (create, update, delete)
+  - SHOULD: Use for form submissions
+  - SHOULD: Use for optimistic updates
+  - SHOULD: Use when you need to update data and refresh the UI
+  - SHOULD NOT: Use for data fetching (prefer Server Components)
+  - SHOULD NOT: Use for parallel operations (actions are sequential)
+
+- Best practices
+  - SHOULD: Keep actions focused and single-purpose
+  - SHOULD: Extract validation logic into separate functions
+  - SHOULD: Use TypeScript for type safety
+  - SHOULD: Handle errors with try-catch and return meaningful error messages
+  - SHOULD: Log actions for debugging and auditing
+  - MUST: Never expose sensitive data in error messages
+
+## Route Handlers vs Server Actions
+
+- When to use Route Handlers
+  - MUST: Use for external API endpoints (REST APIs, GraphQL)
+  - MUST: Use for webhooks from third-party services
+  - MUST: Use for CORS-enabled endpoints
+  - MUST: Use for non-UI responses (RSS feeds, XML, sitemaps)
+  - SHOULD: Use when you need full HTTP method control (GET, POST, PUT, DELETE, etc.)
+  - SHOULD: Use when you need custom response headers or status codes
+  - SHOULD: Use for streaming responses (LLM integrations, large data)
+  - SHOULD: Use when integrating with external services that expect REST endpoints
+
+- When to use Server Actions
+  - MUST: Use for form submissions and data mutations
+  - MUST: Use for create, update, delete operations
+  - SHOULD: Use for optimistic UI updates
+  - SHOULD: Use when you need to update data and automatically refresh the UI
+  - SHOULD: Use for progressive enhancement (works without JavaScript)
+  - SHOULD: Use for simple mutations that don't need full HTTP control
+  - SHOULD NOT: Use for data fetching (prefer Server Components)
+  - SHOULD NOT: Use for external API endpoints (prefer Route Handlers)
+
+- Key differences
+  - Route Handlers: Full HTTP control, manual cache management, external-facing
+  - Server Actions: Form-first, automatic UI updates, internal mutations
+  - Route Handlers: Use `route.ts` files, export HTTP methods
+  - Server Actions: Use `actions.ts` files, export async functions with `'use server'`
+  - Route Handlers: Return `Response` objects
+  - Server Actions: Return serializable data (automatically handled by Next.js)
+
+## Performance
+
+- Bundle optimization
+  - MUST: Minimize Client Component usage to reduce JavaScript bundle size
+  - SHOULD: Use dynamic imports with `next/dynamic` for code splitting
+  - SHOULD: Analyze bundle size with `@next/bundle-analyzer`
+  - MUST: Move logic from client to server when possible
+
+- Rendering optimization
+  - SHOULD: Use static rendering for pages that don't need dynamic data
+  - SHOULD: Use dynamic rendering only when necessary
+  - MUST: Use `loading.tsx` and `<Suspense>` for streaming
+  - SHOULD: Prefetch routes that users are likely to visit
+  - MUST: Ensure hydration completes quickly for prefetching to work
+
+- Image optimization
+  - MUST: Use `next/image` component for images
+  - SHOULD: Provide `width` and `height` or use `fill` prop
+  - SHOULD: Use `priority` prop for above-the-fold images
+  - SHOULD: Configure image domains in `next.config.js`
+
+## Error Handling
+
+- Error boundaries
+  - MUST: Create `error.tsx` files for error boundaries
+  - MUST: Accept `error` and `reset` props in error components
+  - SHOULD: Provide user-friendly error messages
+  - SHOULD: Use `notFound()` function for 404 errors
+  - MUST: Create `not-found.tsx` for custom 404 pages
+
+- Error recovery
+  - SHOULD: Provide reset functionality in error boundaries
+  - SHOULD: Log errors appropriately for debugging
+  - MUST: Handle async errors in Server Components with try-catch
+
+## TypeScript
+
+- Type safety
+  - MUST: Type `params` as `Promise<{ param: string }>` in Next.js 15+
+  - MUST: Await params before using: `const { id } = await params`
+  - SHOULD: Use TypeScript for all new files
+  - MUST: Type props for Server and Client Components
+  - SHOULD: Use `React.ReactNode` for children props
+  - SHOULD: Use `RouteContext` helper for Route Handler typing
+  - SHOULD: Use `Awaited<LayoutProps>` or `Awaited<PageProps>` for generateStaticParams typing
+
+## Middleware
+
+- File structure
+  - MUST: Create `middleware.ts` or `middleware.js` in project root (same level as `app/`)
+  - MUST: Export default function that receives `NextRequest`
+  - MUST: Export `config` object with `matcher` property
+  - SHOULD: Use `matcher` to specify which routes middleware runs on
+  - SHOULD: Exclude static files and Next.js internals from matcher
+
+- Request handling
+  - MUST: Return `NextResponse` or `Response` object
+  - SHOULD: Use `NextResponse.rewrite()` for internal rewrites
+  - SHOULD: Use `NextResponse.redirect()` for redirects
+  - SHOULD: Use `NextResponse.next()` to continue request
+  - MUST: Access `request.nextUrl` for URL manipulation
+  - SHOULD: Use `request.cookies` to read cookies
+  - SHOULD: Use `request.headers` to read headers
+  - MUST: Set cookies and headers on `NextResponse` object
+
+- Common patterns
+  - SHOULD: Use middleware for authentication checks
+  - SHOULD: Use middleware for locale/internationalization redirects
+  - SHOULD: Use middleware for A/B testing or feature flags
+  - SHOULD: Use middleware for request logging or analytics
+  - SHOULD: Use middleware for custom headers (security headers, etc.)
+  - SHOULD NOT: Use middleware for data fetching (use Server Components)
+  - MUST: Keep middleware lightweight (runs on every request)
+
+- Performance
+  - MUST: Keep middleware execution fast (affects every request)
+  - SHOULD: Use `matcher` to limit middleware to specific routes
+  - SHOULD: Avoid heavy computations in middleware
+  - SHOULD: Cache expensive operations when possible
+
+## Route Segment Config
+
+- Dynamic rendering
+  - MUST: Export `dynamic` constant to control rendering behavior
+  - SHOULD: Use `'auto'` (default) for automatic static/dynamic detection
+  - SHOULD: Use `'force-dynamic'` to force dynamic rendering
+  - SHOULD: Use `'force-static'` to force static rendering
+  - SHOULD: Use `'error'` to error if dynamic APIs are used
+  - MUST: Understand that `dynamic` affects entire route segment
+
+- Dynamic params
+  - MUST: Export `dynamicParams` boolean to control unmatched routes
+  - SHOULD: Use `dynamicParams = true` (default) to generate on-demand
+  - SHOULD: Use `dynamicParams = false` to return 404 for unmatched routes
+  - MUST: Understand interaction with `generateStaticParams`
+
+- Revalidation
+  - MUST: Export `revalidate` number or `false` for time-based revalidation
+  - SHOULD: Use `revalidate: false` (default) for indefinite caching
+  - SHOULD: Use `revalidate: 0` to force dynamic rendering
+  - SHOULD: Use `revalidate: number` (seconds) for ISR
+  - MUST: Know that lowest `revalidate` in route tree determines frequency
+  - MUST: Use statically analyzable values (not computed)
+
+- Fetch cache
+  - SHOULD: Use `fetchCache` only when you need to override default behavior
+  - SHOULD: Understand that this is an advanced option
+  - MUST: Know that `fetchCache` affects all fetch requests in the segment
+
+- Runtime
+  - MUST: Export `runtime` as `'nodejs'` (default) or `'edge'`
+  - SHOULD: Use `'nodejs'` for most use cases
+  - SHOULD: Use `'edge'` for low-latency requirements
+  - MUST: Know that Edge Runtime has limitations (no Node.js APIs)
+  - MUST: Know that Cache Components don't work with Edge Runtime
+
+- Preferred region
+  - SHOULD: Export `preferredRegion` for deployment platform optimization
+  - SHOULD: Use `'auto'` (default) for automatic region selection
+  - MUST: Understand this is platform-dependent (Vercel, etc.)
+
+- Max duration
+  - SHOULD: Export `maxDuration` for long-running operations
+  - MUST: Set at page level for Server Actions timeout
+  - MUST: Understand platform limits
+
+## Parallel Routes
+
+- File structure
+  - MUST: Use `@folder` convention to create named slots
+  - MUST: Create `page.tsx` inside slot folders
+  - MUST: Accept slot props in parent layout
+  - SHOULD: Create `default.tsx` for unmatched slots
+  - MUST: Understand that slots don't affect URL structure
+
+- Usage patterns
+  - SHOULD: Use Parallel Routes for dashboards with multiple sections
+  - SHOULD: Use Parallel Routes for conditional rendering (e.g., user roles)
+  - SHOULD: Use Parallel Routes with Intercepting Routes for modals
+  - SHOULD: Use `useSelectedLayoutSegment` with `parallelRoutesKey` parameter
+  - MUST: Know that all slots at same level must be static or dynamic together
+
+- Default fallback
+  - MUST: Create `default.tsx` for slots that may not match
+  - SHOULD: Return `null` in `default.tsx` to hide slot when unmatched
+  - MUST: Understand that `default.tsx` renders on hard navigation (refresh)
+
+- Independent navigation
+  - SHOULD: Create layouts inside slots for independent navigation
+  - SHOULD: Use this pattern for tab groups within slots
+  - MUST: Understand that slots maintain state during soft navigation
+
+## Intercepting Routes
+
+- File structure
+  - MUST: Use `(.)`, `(..)`, `(..)(..)`, or `(...)` convention
+  - MUST: Use `(.)` to match same level
+  - MUST: Use `(..)` to match one level above
+  - MUST: Use `(...)` to match from root `app/` directory
+  - SHOULD: Use with Parallel Routes for modal patterns
+
+- Usage patterns
+  - SHOULD: Use Intercepting Routes for modals that overlay content
+  - SHOULD: Use Intercepting Routes with Parallel Routes for shareable modals
+  - MUST: Understand that interception only works on soft navigation
+  - MUST: Know that hard navigation (refresh, direct URL) shows full page
+  - SHOULD: Create both intercepted route and full page route
+
+- Modal patterns
+  - SHOULD: Create `default.tsx` in parallel slot that returns `null`
+  - SHOULD: Intercept route in parallel slot (e.g., `@modal/(.)login/page.tsx`)
+  - SHOULD: Use `router.back()` to close modal
+  - SHOULD: Create catch-all route in slot to close modal on navigation
+
+## Metadata API
+
+- Static metadata
+  - SHOULD: Export `metadata` object from pages and layouts
+  - SHOULD: Include `title`, `description`, `openGraph`, `twitter`, etc.
+  - SHOULD: Use metadata files (icon, opengraph-image) for static assets
+  - MUST: Know that metadata is merged from layout to page
+
+- Dynamic metadata
+  - MUST: Export `generateMetadata` async function for dynamic metadata
+  - MUST: Accept `params` and `searchParams` as parameters
+  - MUST: Await `params` before using: `const { id } = await params`
+  - SHOULD: Use `generateMetadata` for SEO-optimized dynamic pages
+  - MUST: Return metadata object from `generateMetadata`
+
+- Viewport
+  - SHOULD: Export `viewport` object or `generateViewport` function
+  - SHOULD: Configure viewport settings for mobile optimization
+  - MUST: Know that viewport is not merged (only root layout)
+
+- Best practices
+  - SHOULD: Set metadata at appropriate layout levels
+  - SHOULD: Override metadata in child pages when needed
+  - SHOULD: Use `generateMetadata` for dynamic content
+  - MUST: Provide meaningful titles and descriptions for SEO
+
+## generateStaticParams
+
+- Function definition
+  - MUST: Export async `generateStaticParams` function from dynamic routes
+  - MUST: Return array of objects matching dynamic segment names
+  - SHOULD: Use for routes that can be prerendered at build time
+  - MUST: Return empty array `[]` for ISR (all paths at runtime)
+  - MUST: Always return an array (never undefined or null)
+
+- Single dynamic segment
+  - MUST: Return `{ segmentName: string }[]` format
+  - SHOULD: Fetch data to generate params dynamically
+  - SHOULD: Use for blog posts, products, etc.
+
+- Multiple dynamic segments
+  - CAN: Generate params for multiple segments from child route
+  - CAN: Generate params from parent to child (top-down)
+  - SHOULD: Use parent params in child `generateStaticParams` when needed
+  - MUST: Know that child function receives parent params synchronously
+
+- Catch-all segments
+  - MUST: Return `{ slug: string[] }[]` for catch-all routes
+  - SHOULD: Map array of path segments correctly
+
+- Interaction with dynamicParams
+  - MUST: Use `dynamicParams = false` to disable on-demand generation
+  - SHOULD: Use `dynamicParams = true` to allow on-demand generation
+  - MUST: Understand that unmatched routes return 404 when `dynamicParams = false`
+
+- Performance
+  - SHOULD: Generate subset of paths at build time for large datasets
+  - SHOULD: Use `dynamicParams = true` for remaining paths
+  - SHOULD: Know that `generateStaticParams` runs before layouts/pages
+  - MUST: Understand that fetch requests are memoized across generate functions
+
+## Font Optimization
+
+- Font loading
+  - MUST: Use `next/font` for font optimization
+  - SHOULD: Use `next/font/google` for Google Fonts
+  - SHOULD: Use `next/font/local` for local fonts
+  - MUST: Import and configure fonts in root layout
+  - SHOULD: Apply font variables to `body` or `html` element
+
+- Best practices
+  - SHOULD: Preload fonts for above-the-fold content
+  - SHOULD: Use `display: 'swap'` for better performance
+  - SHOULD: Limit number of font families and weights
+  - MUST: Know that Next.js automatically optimizes font loading
+
+## Script Component
+
+- Usage
+  - MUST: Use `<Script>` component from `next/script` for third-party scripts
+  - SHOULD: Use `strategy` prop to control loading behavior
+  - SHOULD: Use `'afterInteractive'` (default) for most scripts
+  - SHOULD: Use `'beforeInteractive'` for critical scripts
+  - SHOULD: Use `'lazyOnload'` for non-critical scripts
+  - MUST: Know that `beforeInteractive` scripts must be in `_document` (Pages Router) or root layout
+
+- Best practices
+  - SHOULD: Load analytics scripts with `afterInteractive`
+  - SHOULD: Use `onLoad` callback for script-dependent code
+  - SHOULD: Avoid blocking scripts when possible
+  - MUST: Understand that Script component optimizes loading
+
+## Environment Variables
+
+- Variable naming
+  - MUST: Use `NEXT_PUBLIC_` prefix for client-accessible variables
+  - MUST: Never use `NEXT_PUBLIC_` for secrets or API keys
+  - SHOULD: Use `.env.local` for local development
+  - SHOULD: Use `.env.production` for production (if needed)
+  - MUST: Add `.env*.local` to `.gitignore`
+
+- Access patterns
+  - MUST: Access via `process.env.VARIABLE_NAME`
+  - MUST: Know that `NEXT_PUBLIC_` variables are embedded at build time
+  - MUST: Know that non-prefixed variables are only available server-side
+  - SHOULD: Validate environment variables at startup
+  - MUST: Provide fallbacks for optional variables
+
+- Type safety
+  - SHOULD: Create `env.d.ts` or similar for TypeScript definitions
+  - SHOULD: Validate environment variables with Zod or similar
+  - MUST: Handle missing required variables gracefully
+
+## Static vs Dynamic Rendering
+
+- Static rendering
+  - SHOULD: Use for pages that don't need request-time data
+  - SHOULD: Use `generateStaticParams` for dynamic static routes
+  - SHOULD: Use `cache: 'force-cache'` for static data fetching
+  - MUST: Know that static pages are generated at build time
+  - SHOULD: Use ISR with `revalidate` for updated static content
+
+- Dynamic rendering
+  - MUST: Use when you need request-time data (cookies, headers, searchParams)
+  - MUST: Use `cache: 'no-store'` or `dynamic = 'force-dynamic'`
+  - SHOULD: Use `connection()` API to force dynamic rendering
+  - MUST: Know that dynamic pages render on each request
+  - SHOULD: Use streaming to improve perceived performance
+
+- Hybrid approach
+  - SHOULD: Use static rendering by default
+  - SHOULD: Opt into dynamic rendering only when needed
+  - SHOULD: Use partial prerendering when possible
+  - MUST: Understand that dynamic APIs make entire route dynamic
+
+## Edge Runtime
+
+- When to use
+  - SHOULD: Use Edge Runtime for low-latency requirements
+  - SHOULD: Use Edge Runtime for simple API routes
+  - SHOULD NOT: Use Edge Runtime for complex operations
+  - MUST: Know that Edge Runtime has limited APIs (no Node.js APIs)
+  - MUST: Know that Cache Components don't work with Edge Runtime
+
+- Limitations
+  - MUST: Avoid Node.js-specific APIs in Edge Runtime
+  - MUST: Use Web APIs instead of Node.js APIs
+  - SHOULD: Test Edge Runtime code thoroughly
+  - MUST: Know that some npm packages don't work in Edge Runtime
+
+## Route Groups
+
+- Organization
+  - MUST: Use `(folder)` syntax for route groups
+  - MUST: Know that route groups don't affect URL structure
+  - SHOULD: Use route groups for organizing routes without changing URLs
+  - SHOULD: Use route groups for multiple layouts
+  - SHOULD: Use route groups for feature-based organization
+
+- Best practices
+  - SHOULD: Use descriptive names for route groups
+  - SHOULD: Use route groups to share layouts across routes
+  - MUST: Understand that route groups are for organization only
+
+## React Hooks for Server Actions
+
+- useActionState
+  - SHOULD: Use `useActionState` to track Server Action state
+  - SHOULD: Use for form actions with validation
+  - MUST: Pass Server Action as first argument
+  - SHOULD: Use `pending` state for loading indicators
+  - SHOULD: Handle errors from action state
+
+- useTransition
+  - SHOULD: Use `useTransition` for optimistic updates
+  - SHOULD: Use `startTransition` to wrap Server Action calls
+  - SHOULD: Use `isPending` to show loading state
+  - MUST: Know that transitions are non-blocking
+
+- Optimistic updates
+  - SHOULD: Update UI optimistically before Server Action completes
+  - SHOULD: Rollback on error
+  - SHOULD: Use `useTransition` for optimistic updates
+  - MUST: Handle error cases gracefully
+
+## Best Practices
+
+- Code organization
+  - SHOULD: Keep Server Components as the default
+  - SHOULD: Create separate Client Component files for interactivity
+  - SHOULD: Use colocation for related components
+  - SHOULD: Organize shared components in `components/` directory
+  - SHOULD: Keep data fetching functions in `lib/` or `app/lib/` directory
+
+- Security
+  - MUST: Never expose API keys or secrets to the client
+  - MUST: Use Server Components or Route Handlers for sensitive operations
+  - SHOULD: Validate and sanitize user input
+  - MUST: Use environment variables correctly (no `NEXT_PUBLIC_` for secrets)
+
+- Development
+  - SHOULD: Use Next.js DevTools to identify static vs dynamic routes
+  - SHOULD: Monitor bundle size during development
+  - SHOULD: Test navigation performance on slow networks
+  - MUST: Handle loading and error states appropriately
+
+---
+
+## See Also
+
+- **[Next.js Documentation](https://nextjs.org/docs)**: Official Next.js documentation
+- **[React Server Components](https://react.dev/reference/rsc/server-components)**: React Server Components reference
+- **[Coding Principles](mdc:.cursor/rules/coding-principles.mdc)**: KISS and DRY principles
+- **[Web Interface Guidelines](mdc:.cursor/rules/web-interface-guidelines.mdc)**: UI/UX implementation guidance

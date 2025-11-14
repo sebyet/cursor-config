@@ -1,5 +1,5 @@
 ---
-description: Guidelines for writing Postgres Row Level Security policies
+description: Guidelines for writing Postgres Row Level Security (RLS) policies in Supabase. Use when securing database tables, implementing access control, or creating policies for authenticated/anonymous users.
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: Coding rules for Supabase Edge Functions
+description: Coding rules for Supabase Edge Functions. Use when creating serverless functions, API endpoints, or Deno-based edge functions in Supabase. Follows Deno runtime best practices.
 alwaysApply: false
 ---
 

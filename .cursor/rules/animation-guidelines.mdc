@@ -1,0 +1,821 @@
+---
+description: Comprehensive animation guidelines based on Emil Kowalski's principles. Use when implementing UI animations, transitions, or motion design. Ensures animations enhance rather than hinder user experience.
+alwaysApply: false
+---
+
+# Animation Guidelines
+
+Based on principles from Emil Kowalski's work on animation design. These guidelines help create purposeful, performant animations that enhance user experience.
+
+## Core Principles
+
+### 1. Purposeful Animations
+
+**MUST**: Every animation must serve a clear purpose. Before animating, ask:
+- Does this animation provide feedback?
+- Does it help users understand what's happening?
+- Does it create spatial consistency?
+- Does it add deliberate delight (sparingly)?
+
+**NEVER**: Animate for animation's sake. Unnecessary animations make interfaces feel unpredictable, slow, and annoying.
+
+**Examples of purposeful animations:**
+- Button press feedback (scale down to `0.97`)
+- Toast enter/exit (spatial consistency for swipe-to-dismiss)
+- Feature explanations (helping users understand functionality)
+- Morphing components (delight for rarely-used interactions)
+
+### 2. Frequency of Use
+
+**MUST**: Consider how often users will see an animation:
+- **High frequency** (hundreds of times per day): Remove animations entirely
+- **Medium frequency** (multiple times per day): Use minimal, fast animations
+- **Low frequency** (rarely used): Can use more elaborate animations for delight
+
+**NEVER**: Animate keyboard-initiated actions. These actions are repeated frequently and animations make them feel slow, delayed, and disconnected.
+
+**NEVER**: Animate frequently-used interactions like:
+- Command menus opened multiple times daily
+- List navigation with arrow keys
+- Hover effects on items used repeatedly
+
+**Example**: Raycast has no animation on its command menu because it's used hundreds of times per day. The optimal experience is instant.
+
+### 3. Perception of Speed
+
+**MUST**: Keep UI animations fast to improve perceived performance:
+- **General rule**: Animations should stay under `300ms`
+- **Dropdowns/selects**: `180ms` feels more responsive than `400ms`
+- **Spinners**: Faster spinning makes apps seem to load faster (even with same load time)
+
+**MUST**: Tooltips should have a slight delay before appearing to prevent accidental activation. Once a tooltip is open, hovering over other tooltips should open them with **no delay and no animation**.
+
+**SHOULD**: Remove animations or hover interactions altogether if seen tens or hundreds of times per day. They'll quickly become annoying and make the interface feel slower.
+
+## Technical Implementation
+
+### 4. Button Feedback
+
+**MUST**: Add subtle scale down effect when buttons are pressed:
+```css
+button:active {
+  transform: scale(0.97);
+}
+```
+
+This makes the interface feel instantly more responsive and gives immediate feedback.
+
+### 5. Initial Scale Values
+
+**NEVER**: Animate from `scale(0)`. This makes animations feel off and unnatural.
+
+**MUST**: Use higher initial scale values (`0.9+`) for more gentle, natural, and elegant movement:
+```css
+.element {
+  transform: scale(0.93); /* initial state */
+}
+```
+
+**Rationale**: Elements that animate from `scale(0)` look like they come out of nowhere. A higher initial value resembles the real world more (like a deflated balloon still has a visible shape).
+
+### 6. Tooltip Behavior
+
+**MUST**: Implement smart tooltip delays:
+- First tooltip in a group: Delay before appearing (prevents accidental activation)
+- Subsequent tooltips: No delay and no animation (feels faster)
+
+**Implementation example:**
+```css
+.tooltip {
+  transition:
+    transform 0.125s ease-out,
+    opacity 0.125s ease-out;
+  transform-origin: var(--transform-origin);
+ 
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+ 
+  /* Disable subsequent animations */
+  &[data-instant] {
+    transition-duration: 0ms;
+  }
+}
+```
+
+**Note**: Radix UI and Base UI support this pattern through `data-instant` attribute.
+
+### 7. Easing Functions
+
+**MUST**: Use `ease-out` for elements entering or exiting the screen. It accelerates at the beginning, giving users a feeling of responsiveness.
+
+**NEVER**: Use `ease-in` for UI animations. It starts slow and speeds up at the end, which is the opposite of what we want.
+
+**SHOULD**: Use custom easing curves instead of built-in CSS easings. Built-in curves are usually not strong enough.
+
+**Recommended resources**: [easings.co](https://easings.co) for custom easing variations.
+
+**Example comparison:**
+- `ease-in`: Starts slow, feels sluggish
+- `ease-out`: Starts fast, feels responsive (preferred)
+- Custom `ease-out`: More energetic and impactful
+
+### 8. Origin-Aware Animations
+
+**MUST**: Make popovers, dropdowns, and similar components origin-aware. They should scale in from their trigger point.
+
+**MUST**: Set correct `transform-origin`. The default value is `center`, which is wrong in most cases.
+
+**Implementation:**
+```css
+/* Radix UI */
+.radix {
+  transform-origin: var(--radix-dropdown-menu-content-transform-origin);
+}
+
+/* Base UI */
+.baseui {
+  transform-origin: var(--transform-origin);
+}
+```
+
+**Rationale**: Even if the difference seems subtle, unseen details compound. Origin-aware animations create spatial consistency and make interactions feel more connected.
+
+### 9. Animation Speed Guidelines
+
+**MUST**: Keep animations fast:
+- **UI animations**: Under `300ms` (general rule)
+- **Dropdowns**: `180ms` for optimal responsiveness
+- **Tooltips**: `125ms` for enter/exit
+- **Button feedback**: Instant (no transition needed for scale)
+
+**SHOULD**: Test perceived performance. A faster animation can make the app feel faster even if actual load time is the same.
+
+### 10. Blur as a Fallback
+
+**SHOULD**: Use `filter: blur()` when nothing else works. If you've tried different easings and durations and something still feels off, add a bit of blur to mask imperfections.
+
+**Example:**
+```css
+.transitioning-element {
+  filter: blur(2px);
+  transition: filter 0.2s ease-out;
+}
+```
+
+**Rationale**: Blur bridges the visual gap between old and new states. Without it, you see two distinct objects, which feels less natural. It tricks the eye into seeing a smooth transition by blending states together.
+
+## Performance
+
+### 11. Hardware Acceleration
+
+**MUST**: Animate compositor-friendly properties:
+- ✅ `transform` (translate, scale, rotate)
+- ✅ `opacity`
+- ❌ Avoid: `top`, `left`, `width`, `height` (cause layout/repaint)
+
+**MUST**: Use `will-change` sparingly and only for elements that will definitely animate.
+
+### 12. Reduced Motion
+
+**MUST**: Honor `prefers-reduced-motion`:
+```css
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+Or provide reduced variants that maintain functionality without motion.
+
+### 13. Interruptibility
+
+**MUST**: Design animations that can be interrupted or reversed. Animations should be input-driven and avoid autoplay.
+
+**MUST**: When a user triggers a new action, the current animation should gracefully transition to the new state.
+
+## Developing Animation Taste
+
+### 14. Study Great Work
+
+**SHOULD**: Surround yourself with great animation work:
+- Study apps with excellent animations (Linear, Raycast, Apple products)
+- Analyze why specific interactions feel good
+- Build a curated list of tastemakers in animation design
+- Use their apps, study their patterns
+
+### 15. Think Deeply About Why
+
+**SHOULD**: Don't just label animations as good or bad. Instead:
+- Rationalize why something feels great
+- Analyze and understand patterns
+- Go beyond surface level
+- Be curious about the mechanics
+
+**SHOULD**: Practice your craft. Create animations. Seek feedback from others. Good critique accelerates learning more than trial and error alone.
+
+### 16. The Taste Gap
+
+**SHOULD**: Recognize that your early work won't be good, and that's normal. Your taste is good enough to tell that your work isn't on par yet. Don't quit—it gets better over time.
+
+## Animation Choreography
+
+### 17. Staggered Animations
+
+**SHOULD**: Stagger animations when multiple elements animate together. This creates visual hierarchy and prevents overwhelming the user.
+
+**Implementation with Framer Motion:**
+```tsx
+<motion.div
+  variants={{
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1, // 100ms delay between children
+        delayChildren: 0.2,    // Initial delay
+      }
+    }
+  }}
+  initial="hidden"
+  animate="show"
+>
+  {items.map((item) => (
+    <motion.div key={item.id} variants={itemVariants}>
+      {item.content}
+    </motion.div>
+  ))}
+</motion.div>
+```
+
+**Guidelines:**
+- **Small lists** (2-5 items): `50-100ms` stagger
+- **Medium lists** (5-10 items): `30-50ms` stagger
+- **Large lists** (10+ items): `20-30ms` stagger or consider virtualization
+
+**NEVER**: Stagger animations for frequently-used interactions. They should be instant.
+
+### 18. Spring Physics
+
+**SHOULD**: Use spring animations for more natural, physics-based motion. Springs feel more organic than easing curves.
+
+**Implementation with Framer Motion:**
+```tsx
+<motion.div
+  initial={{ scale: 0.9, opacity: 0 }}
+  animate={{ scale: 1, opacity: 1 }}
+  transition={{
+    type: "spring",
+    stiffness: 300,    // Higher = faster, snappier
+    damping: 30,      // Higher = less bouncy
+    mass: 0.5,        // Higher = slower to start/stop
+  }}
+/>
+```
+
+**Recommended spring presets:**
+- **Gentle**: `{ stiffness: 120, damping: 14 }` - Subtle, smooth
+- **Default**: `{ stiffness: 300, damping: 30 }` - Balanced
+- **Wobbly**: `{ stiffness: 180, damping: 12 }` - Playful, bouncy
+- **Stiff**: `{ stiffness: 400, damping: 40 }` - Quick, minimal bounce
+
+**When to use springs:**
+- ✅ Modal/dialog entrances
+- ✅ Card interactions
+- ✅ Button feedback (subtle)
+- ✅ Drag interactions
+- ❌ NOT for frequently-used interactions
+- ❌ NOT for keyboard navigation
+
+### 19. Animation States & Variants
+
+**MUST**: Define clear animation states using variants pattern for consistency and maintainability.
+
+**Implementation:**
+```tsx
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  },
+  exit: {
+    opacity: 0,
+    transition: { staggerChildren: 0.05, staggerDirection: -1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 }
+};
+```
+
+**Benefits:**
+- Consistent animations across components
+- Easier to maintain and update
+- Better performance (variants are optimized)
+- Clear state management
+
+### 20. List Item Animations
+
+**MUST**: Animate list items when adding/removing to maintain spatial awareness.
+
+**Implementation with AnimatePresence:**
+```tsx
+<AnimatePresence mode="popLayout">
+  {items.map((item) => (
+    <motion.li
+      key={item.id}
+      layout
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.8 }}
+      transition={{ duration: 0.2 }}
+    >
+      {item.content}
+    </motion.li>
+  ))}
+</AnimatePresence>
+```
+
+**Key points:**
+- Use `layout` prop for automatic position animations
+- Use `mode="popLayout"` to prevent layout shift
+- Keep exit animations fast (`150-200ms`)
+- **NEVER** animate list items in frequently-used lists
+
+### 21. Modal & Dialog Patterns
+
+**MUST**: Animate both backdrop and content with proper timing relationships.
+
+**Implementation:**
+```tsx
+// Backdrop
+<motion.div
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  exit={{ opacity: 0 }}
+  transition={{ duration: 0.2 }}
+/>
+
+// Content
+<motion.div
+  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+  animate={{ opacity: 1, scale: 1, y: 0 }}
+  exit={{ opacity: 0, scale: 0.95, y: 20 }}
+  transition={{
+    type: "spring",
+    stiffness: 300,
+    damping: 30,
+  }}
+/>
+```
+
+**Timing:**
+- Backdrop: `200ms` fade
+- Content: `200-300ms` spring animation
+- Exit: Slightly faster than enter (`150-200ms`)
+
+### 22. Page & Route Transitions
+
+**SHOULD**: Use subtle page transitions to maintain spatial context during navigation.
+
+**Implementation:**
+```tsx
+// In layout or page component
+<motion.div
+  initial={{ opacity: 0, y: 10 }}
+  animate={{ opacity: 1, y: 0 }}
+  exit={{ opacity: 0, y: -10 }}
+  transition={{ duration: 0.2, ease: "easeOut" }}
+>
+  {children}
+</motion.div>
+```
+
+**Guidelines:**
+- Keep transitions fast (`150-250ms`)
+- Use subtle movement (`10-20px` max)
+- **NEVER** animate route changes for frequently-visited pages
+- Consider disabling for instant navigation (back button, deep links)
+
+### 23. Loading States
+
+**MUST**: Animate loading states to improve perceived performance.
+
+**Skeleton screens:**
+```css
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--muted) 0%,
+    var(--muted-foreground) 50%,
+    var(--muted) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+```
+
+**Spinner guidelines:**
+- Faster spinning = perceived faster loading
+- Use `transform: rotate()` for smooth animation
+- Keep spinner size appropriate (not too large)
+
+**Progress indicators:**
+- Animate progress bar smoothly
+- Use `ease-out` for progress animations
+- Show percentage or estimated time when possible
+
+### 24. Error & Success States
+
+**SHOULD**: Use subtle animations for error and success feedback.
+
+**Error patterns:**
+```tsx
+// Shake animation for errors
+<motion.div
+  animate={{
+    x: [0, -10, 10, -10, 10, 0],
+  }}
+  transition={{
+    duration: 0.5,
+    ease: "easeInOut",
+  }}
+>
+  {errorMessage}
+</motion.div>
+```
+
+**Success patterns:**
+```tsx
+// Subtle scale + checkmark animation
+<motion.div
+  initial={{ scale: 0 }}
+  animate={{ scale: 1 }}
+  transition={{
+    type: "spring",
+    stiffness: 500,
+    damping: 30,
+  }}
+>
+  <CheckIcon />
+</motion.div>
+```
+
+**Guidelines:**
+- Keep error animations brief (`300-500ms`)
+- Success animations can be slightly longer for delight
+- **NEVER** use aggressive animations that might startle users
+
+### 25. Scroll-Triggered Animations
+
+**SHOULD**: Use Intersection Observer for scroll-triggered animations.
+
+**Implementation:**
+```tsx
+const ref = useRef(null);
+const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+<motion.div
+  ref={ref}
+  initial={{ opacity: 0, y: 50 }}
+  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+  transition={{ duration: 0.6, ease: "easeOut" }}
+>
+  {content}
+</motion.div>
+```
+
+**Guidelines:**
+- Use `once: true` to prevent re-animation on scroll up
+- Set appropriate `margin` to trigger before viewport
+- Keep animations subtle (`20-50px` movement)
+- **NEVER** animate on every scroll event (performance killer)
+
+### 26. Gesture-Driven Animations
+
+**SHOULD**: Support drag, swipe, and pinch gestures with appropriate animations.
+
+**Drag example:**
+```tsx
+<motion.div
+  drag="x"
+  dragConstraints={{ left: 0, right: 0 }}
+  dragElastic={0.2}
+  onDragEnd={(event, info) => {
+    if (info.offset.x > 100) {
+      // Swipe right action
+    }
+  }}
+/>
+```
+
+**Guidelines:**
+- Use `dragElastic` for natural resistance
+- Provide visual feedback during drag
+- Snap back smoothly if threshold not met
+- Use spring animations for snap-back
+
+### 27. Focus Management Animations
+
+**SHOULD**: Animate focus changes to help users track navigation.
+
+**Implementation:**
+```css
+/* Smooth scroll to focused element */
+:focus-visible {
+  scroll-margin-top: 2rem;
+  transition: scroll-margin 0.2s ease-out;
+}
+```
+
+**Guidelines:**
+- Use `scroll-margin-top` for proper spacing
+- Keep focus ring visible and animated
+- Animate focus changes in modals/dialogs
+- **NEVER** animate focus for keyboard navigation (should be instant)
+
+### 28. Animation Composition
+
+**MUST**: Combine multiple animation properties thoughtfully.
+
+**Good composition:**
+```tsx
+<motion.div
+  initial={{ opacity: 0, scale: 0.9, y: 20 }}
+  animate={{ opacity: 1, scale: 1, y: 0 }}
+  transition={{
+    opacity: { duration: 0.2 },
+    scale: { duration: 0.3, type: "spring" },
+    y: { duration: 0.2 },
+  }}
+/>
+```
+
+**Guidelines:**
+- Don't animate too many properties at once
+- Use different durations for different properties if needed
+- Keep total animation time under `300ms`
+- Test on lower-end devices
+
+### 29. Testing Animations
+
+**SHOULD**: Test animations across devices and scenarios.
+
+**Checklist:**
+- ✅ Test on low-end devices (animations should still be smooth)
+- ✅ Test with `prefers-reduced-motion` enabled
+- ✅ Test with slow network (loading states)
+- ✅ Test rapid user interactions (interruptibility)
+- ✅ Test keyboard navigation (should be instant)
+- ✅ Test with screen readers (animations shouldn't interfere)
+
+**Performance testing:**
+- Use Chrome DevTools Performance tab
+- Check for layout thrashing
+- Monitor frame rate (should stay at 60fps)
+- Test with CPU throttling enabled
+
+## Common Animation Mistakes & Anti-Patterns
+
+### 32. What NOT to Do
+
+**NEVER** do these:
+
+1. **Animating everything**
+   ```tsx
+   // ❌ BAD: Animating every list item in a frequently-used list
+   {items.map(item => (
+     <motion.div animate={{ opacity: 1 }}>{item}</motion.div>
+   ))}
+   
+   // ✅ GOOD: Only animate when adding/removing items
+   <AnimatePresence>
+     {items.map(item => (
+       <motion.li key={item.id} layout>{item}</motion.li>
+     ))}
+   </AnimatePresence>
+   ```
+
+2. **Using slow animations for feedback**
+   ```tsx
+   // ❌ BAD: 500ms button press animation
+   <motion.button whileTap={{ scale: 0.9 }} transition={{ duration: 0.5 }} />
+   
+   // ✅ GOOD: Instant or very fast feedback
+   <motion.button whileTap={{ scale: 0.97 }} transition={{ duration: 0.1 }} />
+   ```
+
+3. **Animating keyboard navigation**
+   ```tsx
+   // ❌ BAD: Animated focus changes
+   <motion.div animate={isFocused ? { scale: 1.1 } : { scale: 1 }} />
+   
+   // ✅ GOOD: Instant focus changes
+   <div className={isFocused ? "ring-2" : ""} />
+   ```
+
+4. **Overusing spring animations**
+   ```tsx
+   // ❌ BAD: Bouncy spring for every interaction
+   <motion.div transition={{ type: "spring", stiffness: 100, damping: 10 }} />
+   
+   // ✅ GOOD: Reserve springs for specific use cases
+   <motion.div transition={{ duration: 0.2, ease: "easeOut" }} />
+   ```
+
+5. **Ignoring reduced motion**
+   ```tsx
+   // ❌ BAD: No reduced motion support
+   <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity }} />
+   
+   // ✅ GOOD: Respect user preferences
+   const shouldReduceMotion = useReducedMotion();
+   <motion.div 
+     animate={shouldReduceMotion ? {} : { rotate: 360 }}
+     transition={{ repeat: shouldReduceMotion ? 0 : Infinity }}
+   />
+   ```
+
+6. **Animating layout properties**
+   ```tsx
+   // ❌ BAD: Animating width/height
+   <motion.div animate={{ width: isOpen ? 200 : 100 }} />
+   
+   // ✅ GOOD: Use transform scale or layout prop
+   <motion.div layout animate={{ scaleX: isOpen ? 1 : 0.5 }} />
+   ```
+
+7. **Blocking user interactions during animation**
+   ```tsx
+   // ❌ BAD: Disabling interaction during animation
+   <motion.div animate={...} style={{ pointerEvents: "none" }} />
+   
+   // ✅ GOOD: Allow interruption
+   <motion.div animate={...} />
+   ```
+
+8. **Using too many simultaneous animations**
+   ```tsx
+   // ❌ BAD: Animating 10+ properties at once
+   <motion.div animate={{
+     x: 100, y: 50, scale: 1.2, rotate: 45,
+     opacity: 0.8, blur: 5, brightness: 1.5
+   }} />
+   
+   // ✅ GOOD: Focus on 2-3 key properties
+   <motion.div animate={{ opacity: 1, y: 0 }} />
+   ```
+
+9. **Inconsistent animation patterns**
+   ```tsx
+   // ❌ BAD: Different durations/easings for similar elements
+   <Modal1 transition={{ duration: 0.5 }} />
+   <Modal2 transition={{ duration: 0.2 }} />
+   
+   // ✅ GOOD: Consistent patterns using variants
+   const modalVariants = { ... };
+   <Modal1 variants={modalVariants} />
+   <Modal2 variants={modalVariants} />
+   ```
+
+10. **Animating on every render**
+    ```tsx
+    // ❌ BAD: Animation triggers on every state change
+    <motion.div animate={{ scale: data.length > 0 ? 1 : 0.9 }} />
+    
+    // ✅ GOOD: Only animate on meaningful changes
+    <motion.div 
+      animate={hasData ? "show" : "hide"}
+      variants={{ show: { scale: 1 }, hide: { scale: 0.9 } }}
+    />
+    ```
+
+## When NOT to Animate
+
+**NEVER** animate:
+- Keyboard-initiated actions (arrow keys, shortcuts)
+- Frequently-used interactions (command menus, list navigation)
+- Actions performed hundreds of times per day
+- When the purpose is unclear
+- When it would slow down the user's workflow
+- Focus changes during keyboard navigation
+- Route changes for frequently-visited pages
+
+**REMEMBER**: The best animation is sometimes no animation. The goal is to build great user interfaces that users will happily use daily, not to animate for animation's sake.
+
+## Framer Motion Best Practices
+
+### 30. Library-Specific Patterns
+
+**MUST**: Use Framer Motion's optimized features when available.
+
+**AnimatePresence for enter/exit:**
+```tsx
+<AnimatePresence mode="wait">
+  {isVisible && (
+    <motion.div
+      key="content"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      Content
+    </motion.div>
+  )}
+</AnimatePresence>
+```
+
+**Layout animations:**
+```tsx
+<motion.div layout>
+  {/* Automatically animates position changes */}
+</motion.div>
+```
+
+**Shared layout animations:**
+```tsx
+<motion.div layoutId="unique-id">
+  {/* Can be shared across components */}
+</motion.div>
+```
+
+**Key guidelines:**
+- Use `AnimatePresence` for conditional rendering
+- Use `layout` prop for automatic position animations
+- Use `layoutId` for shared element transitions
+- Prefer variants for complex animations
+- Use `useInView` hook for scroll-triggered animations
+
+### 31. Performance with Framer Motion
+
+**MUST**: Optimize Framer Motion animations for performance.
+
+**Best practices:**
+- Use `will-change` sparingly (Framer Motion handles this)
+- Prefer `transform` and `opacity` (already covered)
+- Use `layout` prop instead of animating `top/left`
+- Batch animations with variants
+- Use `useReducedMotion` hook for accessibility
+
+**Implementation:**
+```tsx
+import { useReducedMotion } from "framer-motion";
+
+function Component() {
+  const shouldReduceMotion = useReducedMotion();
+  
+  return (
+    <motion.div
+      animate={shouldReduceMotion ? {} : { scale: 1.1 }}
+      transition={{ duration: shouldReduceMotion ? 0 : 0.2 }}
+    />
+  );
+}
+```
+
+## Summary Checklist
+
+When implementing an animation, ask:
+
+1. ✅ **Purpose**: Does this animation serve a clear purpose?
+2. ✅ **Frequency**: How often will users see this? (If very frequent, skip animation)
+3. ✅ **Speed**: Is it under 300ms? (Faster is usually better)
+4. ✅ **Easing**: Am I using `ease-out` or spring physics?
+5. ✅ **Origin**: Is the transform-origin correct?
+6. ✅ **Scale**: Am I avoiding `scale(0)` and using `0.9+`?
+7. ✅ **Performance**: Am I using `transform` and `opacity`?
+8. ✅ **Accessibility**: Am I honoring `prefers-reduced-motion`?
+9. ✅ **Interruptibility**: Can this animation be interrupted?
+10. ✅ **Choreography**: Are multiple animations properly staggered/timed?
+11. ✅ **States**: Have I defined clear animation variants?
+12. ✅ **Testing**: Have I tested on low-end devices and with reduced motion?
+13. ✅ **Delight vs. Annoyance**: Will this delight or annoy users over time?
+
+---
+
+## See Also
+
+- **[Web Interface Guidelines](mdc:.cursor/rules/web-interface-guidelines.mdc)**: General UI/UX guidelines including animation basics
+- **[Design Inspirations](mdc:.cursor/rules/design-inspirations.mdc)**: Design references from leading companies
+- **[Performance Optimization](mdc:.cursor/rules/performance-optimization.mdc)**: Performance best practices for animations
+
+## References
+
+- [You Don't Need Animations](https://emilkowal.ski/ui/you-dont-need-animations) - Emil Kowalski
+- [7 Practical Animation Tips](https://emilkowal.ski/ui/7-practical-animation-tips) - Emil Kowalski
+- [Developing Taste](https://emilkowal.ski/ui/developing-taste) - Emil Kowalski
+- [Easings.co](https://easings.co) - Custom easing functions

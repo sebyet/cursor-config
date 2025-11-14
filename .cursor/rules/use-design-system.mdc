@@ -1,8 +1,7 @@
 ---
-description: Guidelines for using the Vibecamps design system with shadcn/ui components and custom CSS variables
-globs: *.tsx,*.ts,*.css
+description: Guidelines for using the Vibecamp design system with shadcn/ui components and custom CSS variables. Use when building UI components to ensure consistency with the design system.
+alwaysApply: false
 ---
-
 Concise rules for using the Vibecamp design system. Use MUST/SHOULD/NEVER to guide decisions.
 
 ## Components
@@ -40,6 +39,6 @@ Concise rules for using the Vibecamp design system. Use MUST/SHOULD/NEVER to gui
 
 ## See Also
 
+- **[Design Inspirations](mdc:.cursor/rules/design-inspirations.mdc)**: Design inspirations and references from leading companies (OpenAI, Apple, Airbnb)
 - **[UX Principles](mdc:.cursor/rules/dont-make-me-think.mdc)**: Understanding user behavior and cognitive principles to guide design decisions
 - **[Technical Guidelines](mdc:.cursor/rules/web-interface-guidelines.mdc)**: Detailed implementation guidance for interactions, animations, accessibility, and performance
-- **[Review Checklist](mdc:.cursor/rules/review-ui-ux.mdc)**: Quality assurance checklist before merging code

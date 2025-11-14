@@ -1,0 +1,191 @@
+---
+description: Data validation guidelines using Zod and other validation patterns. Use when validating user input, form data, or API requests. Ensures type-safe validation on both client and server.
+alwaysApply: false
+---
+# Data Validation
+
+Concise rules for validating data at runtime. Use MUST/SHOULD/NEVER to guide decisions.
+
+## Validation Strategy
+
+- Validation layers
+  - MUST: Validate data on the server (Server Actions, Route Handlers)
+  - SHOULD: Validate on the client for better UX
+  - MUST: Never rely solely on client-side validation
+  - SHOULD: Use the same validation schema on client and server
+  - MUST: Validate input before processing or storing
+
+- Validation library
+  - MUST: Use Zod for schema validation
+  - SHOULD: Create reusable validation schemas
+  - SHOULD: Share schemas between client and server
+  - SHOULD: Use Zod with React Hook Form via `@hookform/resolvers`
+
+## Zod Schemas
+
+- Schema definition
+  - MUST: Define schemas using Zod's API
+  - SHOULD: Create schemas in dedicated files (e.g., `lib/validations.ts`)
+  - SHOULD: Export schemas for reuse
+  - SHOULD: Use descriptive schema names
+  - SHOULD: Add `.describe()` for better error messages
+
+- Schema composition
+  - SHOULD: Use `.extend()` to create variations of schemas
+  - SHOULD: Use `.pick()` and `.omit()` to select/exclude fields
+  - SHOULD: Use `.merge()` to combine schemas
+  - SHOULD: Create base schemas and extend for specific use cases
+
+- Type inference
+  - SHOULD: Infer TypeScript types from Zod schemas using `z.infer<typeof schema>`
+  - SHOULD: Export inferred types alongside schemas
+  - SHOULD: Use inferred types for function parameters and return types
+
+## Common Validation Patterns
+
+- String validation
+  - MUST: Validate string length (min, max)
+  - SHOULD: Use `.trim()` to remove whitespace
+  - SHOULD: Validate format with `.regex()` or built-in validators
+  - SHOULD: Use `.email()` for email validation
+  - SHOULD: Use `.url()` for URL validation
+  - SHOULD: Use `.uuid()` for UUID validation
+
+- Number validation
+  - SHOULD: Validate number range (min, max)
+  - SHOULD: Use `.int()` for integers
+  - SHOULD: Use `.positive()` or `.nonnegative()` when appropriate
+  - SHOULD: Use `.finite()` to exclude Infinity
+
+- Date validation
+  - SHOULD: Use Zod date validation for date inputs
+  - SHOULD: Validate date ranges when applicable
+  - SHOULD: Parse dates consistently (ISO 8601 format)
+
+- Array validation
+  - SHOULD: Validate array length (min, max)
+  - SHOULD: Validate array items with `.array().of(schema)`
+  - SHOULD: Use `.nonempty()` for required arrays
+
+- Object validation
+  - SHOULD: Use `.object()` for structured data
+  - SHOULD: Use `.passthrough()` to allow extra fields when needed
+  - SHOULD: Use `.strict()` to reject extra fields in production
+  - SHOULD: Use `.partial()` for optional objects
+
+## Form Validation
+
+- React Hook Form integration
+  - MUST: Use `zodResolver` from `@hookform/resolvers` with React Hook Form
+  - SHOULD: Define form schemas with Zod
+  - SHOULD: Use inferred types for form data
+  - MUST: Validate on submit
+  - SHOULD: Validate on blur for better UX
+
+- Form error handling
+  - MUST: Display validation errors inline
+  - SHOULD: Focus first error field after validation
+  - SHOULD: Clear errors when user starts correcting
+  - MUST: Prevent form submission with invalid data
+  - SHOULD: Show field-specific error messages
+
+## Server-Side Validation
+
+- Server Actions
+  - MUST: Validate input in Server Actions using Zod
+  - SHOULD: Use `.parse()` for strict validation (throws on error)
+  - SHOULD: Use `.safeParse()` for error handling without throwing
+  - MUST: Return validation errors to client
+  - SHOULD: Use consistent error format
+
+- Route Handlers
+  - MUST: Validate request body in Route Handlers
+  - MUST: Validate query parameters
+  - MUST: Validate route parameters
+  - SHOULD: Return 400 status for validation errors
+  - SHOULD: Include validation error details in response
+
+- Database validation
+  - SHOULD: Validate data before database operations
+  - SHOULD: Use database constraints as additional validation layer
+  - MUST: Handle constraint violations gracefully
+  - SHOULD: Validate foreign key references
+
+## Client-Side Validation
+
+- Input validation
+  - SHOULD: Validate on blur for immediate feedback
+  - SHOULD: Validate on change for real-time feedback
+  - MUST: Validate on submit before sending to server
+  - SHOULD: Show helpful error messages
+  - SHOULD: Provide examples of valid input
+
+- Async validation
+  - SHOULD: Validate uniqueness (email, username) on server
+  - SHOULD: Show loading state during async validation
+  - SHOULD: Debounce async validation requests
+  - MUST: Handle validation errors gracefully
+
+## Error Messages
+
+- User-friendly messages
+  - SHOULD: Use `.refine()` with custom error messages
+  - SHOULD: Provide specific error messages per validation rule
+  - MUST: Use plain language (no technical jargon)
+  - SHOULD: Explain what went wrong and how to fix it
+  - SHOULD: Match error message tone to application
+
+- Error formatting
+  - SHOULD: Format errors consistently
+  - SHOULD: Group related errors together
+  - SHOULD: Highlight invalid fields visually
+  - SHOULD: Use error codes for programmatic handling
+
+## Advanced Patterns
+
+- Conditional validation
+  - SHOULD: Use `.refine()` for complex validation rules
+  - SHOULD: Use `.superRefine()` for multiple custom validations
+  - SHOULD: Use `.when()` for conditional validation (if available)
+  - SHOULD: Validate based on other field values
+
+- Transformation
+  - SHOULD: Use `.transform()` to modify values during validation
+  - SHOULD: Use `.preprocess()` for data transformation before validation
+  - SHOULD: Normalize data (trim, lowercase) during validation
+  - MUST: Validate after transformation
+
+- Custom validators
+  - SHOULD: Create reusable custom validators
+  - SHOULD: Use `.refine()` for custom validation logic
+  - SHOULD: Export custom validators for reuse
+  - SHOULD: Document custom validators
+
+## Best Practices
+
+- Schema organization
+  - SHOULD: Group related schemas together
+  - SHOULD: Create base schemas and extend them
+  - SHOULD: Keep schemas close to where they're used
+  - SHOULD: Export schemas from index files for easier imports
+
+- Performance
+  - SHOULD: Cache compiled schemas when possible
+  - SHOULD: Validate only necessary fields
+  - SHOULD: Use `.lazy()` for recursive schemas
+  - SHOULD: Avoid deep nesting when possible
+
+- Type safety
+  - SHOULD: Infer types from schemas
+  - SHOULD: Use inferred types throughout the application
+  - SHOULD: Keep schemas and types in sync
+  - MUST: Validate at runtime even with TypeScript types
+
+---
+
+## See Also
+
+- **[Zod Documentation](https://zod.dev/)**: Official Zod documentation
+- **[React Hook Form](https://react-hook-form.com/)**: Form library with Zod integration
+- **[TypeScript Best Practices](mdc:.cursor/rules/typescript-best-practices.mdc)**: Type safety guidelines
+- **[Error Handling](mdc:.cursor/rules/error-handling-logging.mdc)**: Error handling patterns

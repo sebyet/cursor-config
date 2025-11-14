@@ -1,0 +1,240 @@
+---
+description: Git workflow, commit conventions, and version control best practices. Use when committing code, creating branches, or managing version control. Follows Conventional Commits standard.
+alwaysApply: false
+---
+# Git Workflow Guidelines
+
+Concise rules for using Git effectively. Use MUST/SHOULD/NEVER to guide decisions.
+
+## Git Workflow
+
+- Branch strategy
+  - MUST: Use feature branches for all changes
+  - SHOULD: Use `main` or `master` as production branch
+  - SHOULD: Use `develop` as integration branch (if using Git Flow)
+  - SHOULD: Use descriptive branch names
+
+- Branch naming
+  - MUST: Use kebab-case for branch names
+  - SHOULD: Prefix branches with type (feature/, fix/, hotfix/)
+  - SHOULD: Include ticket/issue number if applicable
+  - SHOULD: Keep branch names concise but descriptive
+
+- Examples:
+```bash
+feature/user-authentication
+fix/login-error-handling
+hotfix/security-patch
+chore/update-dependencies
+docs/api-documentation
+```
+
+- Branch lifecycle
+  - SHOULD: Create branch from latest main/develop
+  - SHOULD: Keep branch up-to-date with main (rebase or merge)
+  - MUST: Delete branch after merge
+  - SHOULD: Use pull requests for merging
+
+## Commit Messages
+
+- Commit message format (Conventional Commits)
+  - MUST: Use conventional commit format
+  - MUST: Start with type (feat, fix, docs, style, refactor, test, chore)
+  - SHOULD: Include scope (component, module) when relevant
+  - MUST: Use imperative mood ("add" not "added" or "adds")
+  - SHOULD: Keep subject line under 50 characters
+  - SHOULD: Add body for complex changes (separated by blank line)
+
+- Commit types
+  - `feat`: New feature
+  - `fix`: Bug fix
+  - `docs`: Documentation changes
+  - `style`: Code style changes (formatting, missing semicolons)
+  - `refactor`: Code refactoring
+  - `test`: Adding or updating tests
+  - `chore`: Maintenance tasks (dependencies, config)
+  - `perf`: Performance improvements
+  - `ci`: CI/CD changes
+  - `build`: Build system changes
+
+- Examples:
+```bash
+feat(auth): add user login functionality
+
+fix(api): handle null response in user endpoint
+
+docs(readme): update installation instructions
+
+refactor(components): extract user card into separate component
+
+test(utils): add tests for date formatting
+```
+
+- Commit message body
+  - SHOULD: Explain what and why (not how)
+  - SHOULD: Reference issues/tickets
+  - SHOULD: Include breaking changes if applicable
+  - SHOULD: Keep lines under 72 characters
+
+- Example with body:
+```bash
+feat(api): add user profile endpoint
+
+Add GET /api/users/:id endpoint to retrieve user profile.
+Includes user details, preferences, and activity summary.
+
+Closes #123
+BREAKING CHANGE: Removes deprecated /api/profile endpoint
+```
+
+## Commit Best Practices
+
+- Atomic commits
+  - MUST: Make commits atomic (one logical change per commit)
+  - SHOULD: Commit frequently (after completing small tasks)
+  - SHOULD NOT: Commit multiple unrelated changes together
+  - SHOULD: Use `git add -p` to stage specific changes
+
+- Commit size
+  - SHOULD: Keep commits focused and small
+  - SHOULD: Split large changes into multiple commits
+  - SHOULD: Group related changes in one commit
+  - SHOULD NOT: Commit incomplete work (use WIP commits if needed)
+
+- Commit content
+  - MUST: Only commit working code (tests pass)
+  - SHOULD: Run linter before committing
+  - SHOULD: Write meaningful commit messages
+  - SHOULD NOT: Commit commented-out code
+  - SHOULD NOT: Commit debug statements
+
+## Pull Requests
+
+- PR creation
+  - MUST: Create PR for all changes (no direct commits to main)
+  - SHOULD: Create PR early (mark as draft if WIP)
+  - SHOULD: Link PR to related issues
+  - SHOULD: Request specific reviewers
+  - SHOULD: Fill out PR template completely
+
+- PR description
+  - MUST: Include clear description of changes
+  - SHOULD: Explain why changes were made
+  - SHOULD: Include screenshots for UI changes
+  - SHOULD: Document testing performed
+  - SHOULD: List breaking changes if any
+
+- PR size
+  - SHOULD: Keep PRs small (< 400 lines, < 20 files)
+  - SHOULD: Split large features into multiple PRs
+  - SHOULD: Use feature flags for large features
+  - MUST: Reject PRs that are too large to review
+
+## Merging Strategy
+
+- Merge methods
+  - SHOULD: Use merge commit for feature branches (preserves history)
+  - SHOULD: Use squash merge for small fixes (cleaner history)
+  - SHOULD: Use rebase for keeping history linear (if team prefers)
+  - SHOULD: Be consistent with merge strategy
+
+- Before merging
+  - MUST: All CI checks pass
+  - MUST: All reviews approved
+  - MUST: Branch is up-to-date with target branch
+  - SHOULD: Resolve merge conflicts locally
+  - SHOULD: Test merged code locally
+
+- After merging
+  - SHOULD: Delete merged branch
+  - SHOULD: Verify deployment
+  - SHOULD: Close related issues
+  - SHOULD: Update documentation if needed
+
+## Rebase vs Merge
+
+- When to rebase
+  - SHOULD: Rebase feature branches before merging
+  - SHOULD: Rebase to clean up commit history
+  - SHOULD NOT: Rebase shared/public branches
+  - SHOULD NOT: Rebase if others are working on the branch
+
+- When to merge
+  - SHOULD: Merge to preserve complete history
+  - SHOULD: Merge for integration branches
+  - SHOULD: Merge when rebase would be complex
+
+## Git Hygiene
+
+- .gitignore
+  - MUST: Keep .gitignore up-to-date
+  - MUST: Ignore node_modules, .env files, build artifacts
+  - SHOULD: Use global gitignore for IDE files
+  - SHOULD: Review .gitignore periodically
+
+- File management
+  - SHOULD: Commit related files together
+  - SHOULD: Remove unused files
+  - SHOULD: Keep repository clean
+  - SHOULD NOT: Commit large binary files (use LFS if needed)
+
+- History
+  - SHOULD: Keep commit history clean and meaningful
+  - SHOULD: Use interactive rebase to clean up commits
+  - SHOULD: Write clear commit messages
+  - SHOULD NOT: Rewrite public/shared history
+
+## Hotfixes
+
+- Hotfix process
+  - MUST: Create hotfix branch from main/master
+  - SHOULD: Fix issue and test thoroughly
+  - MUST: Merge hotfix to main and develop
+  - SHOULD: Deploy hotfix immediately
+  - SHOULD: Create follow-up issue for proper fix
+
+- Hotfix naming
+  - SHOULD: Use `hotfix/` prefix
+  - SHOULD: Include issue description
+  - Example: `hotfix/security-patch-cve-2024-123`
+
+## Tags and Releases
+
+- Version tags
+  - SHOULD: Tag releases with semantic versioning (v1.0.0)
+  - SHOULD: Create annotated tags with messages
+  - SHOULD: Tag from main/master branch
+  - SHOULD: Push tags to remote
+
+- Release process
+  - SHOULD: Create release notes
+  - SHOULD: Document breaking changes
+  - SHOULD: Test release candidate
+  - SHOULD: Deploy to staging before production
+
+## Best Practices
+
+- Daily workflow
+  - SHOULD: Pull latest changes before starting work
+  - SHOULD: Commit frequently (after completing tasks)
+  - SHOULD: Push commits regularly (don't keep only locally)
+  - SHOULD: Keep branches up-to-date with main
+
+- Collaboration
+  - SHOULD: Communicate about large changes
+  - SHOULD: Coordinate on shared files
+  - SHOULD: Use PR comments for discussion
+  - SHOULD: Resolve conflicts promptly
+
+- Troubleshooting
+  - SHOULD: Use `git status` to check current state
+  - SHOULD: Use `git log` to review history
+  - SHOULD: Use `git diff` to see changes
+  - SHOULD: Ask for help when stuck (don't force push to fix mistakes)
+
+---
+
+## See Also
+
+- **[Code Review Guidelines](mdc:.cursor/rules/code-review-guidelines.mdc)**: PR review process
+- **[Conventional Commits](https://www.conventionalcommits.org/)**: Commit message specification

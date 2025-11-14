@@ -1,6 +1,6 @@
 ---
-description: Comprehensive web interface guidelines for interactions, animations, layout, content, forms, performance, and design
-globs: *.tsx,*.ts,*.jsx,*.js,*.css,*.scss
+description: Comprehensive web interface guidelines for interactions, animations, layout, content, forms, performance, and design. Use when implementing UI components, forms, interactions, or accessibility features.
+alwaysApply: false
 ---
 Concise rules for building accessible, fast, delightful UIs Use MUST/SHOULD/NEVER to guide decisions
 
@@ -121,6 +121,6 @@ Concise rules for building accessible, fast, delightful UIs Use MUST/SHOULD/NEVE
 
 ## See Also
 
+- **[Design Inspirations](mdc:.cursor/rules/design-inspirations.mdc)**: Design inspirations and references from leading companies (OpenAI, Apple, Airbnb)
 - **[Using the Design System](mdc:.cursor/rules/use-design-system.mdc)**: Which components and tokens to use from the design system
 - **[UX Principles](mdc:.cursor/rules/dont-make-me-think.mdc)**: Understanding user behavior and cognitive principles to guide design decisions
-- **[Review Checklist](mdc:.cursor/rules/review-ui-ux.mdc)**: Quality assurance checklist before merging code

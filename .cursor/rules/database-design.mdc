@@ -1,0 +1,242 @@
+---
+description: Database design principles and best practices for Postgres. Use when designing schemas, creating tables, defining relationships, or optimizing queries. Apply during initial design and when extending the database.
+alwaysApply: false
+---
+# Database Design Principles
+
+Concise rules for designing scalable, maintainable database schemas. Use MUST/SHOULD/NEVER to guide decisions.
+
+## Schema Design
+
+- Table design
+  - MUST: Use singular names for tables (e.g., `user`, not `users`)
+  - MUST: Use snake_case for table and column names
+  - MUST: Include `id` column as primary key (use `bigint generated always as identity`)
+  - SHOULD: Add `created_at` and `updated_at` timestamps to all tables
+  - SHOULD: Add table comments describing purpose
+  - MUST: Use appropriate data types (avoid `text` when `varchar` is sufficient)
+
+- Column design
+  - MUST: Use singular names for columns
+  - MUST: Use descriptive column names
+  - SHOULD: Use appropriate data types and constraints
+  - SHOULD: Add `NOT NULL` constraints when appropriate
+  - SHOULD: Add column comments for complex fields
+  - MUST: Use foreign keys for relationships
+
+- Relationships
+  - MUST: Define foreign key constraints explicitly
+  - SHOULD: Use `ON DELETE CASCADE` or `ON DELETE SET NULL` appropriately
+  - SHOULD: Index foreign key columns
+  - SHOULD: Use junction tables for many-to-many relationships
+  - SHOULD: Name foreign key columns as `{table}_id` (e.g., `user_id`)
+
+## Normalization
+
+- Normalization levels
+  - SHOULD: Normalize to at least 3NF (Third Normal Form)
+  - SHOULD: Avoid over-normalization (balance with query performance)
+  - SHOULD: Denormalize only when performance requires it
+  - SHOULD: Document denormalization decisions
+
+- Common patterns
+  - SHOULD: Extract repeated data into separate tables
+  - SHOULD: Avoid storing calculated values (calculate on read)
+  - SHOULD: Store atomic values (one piece of data per column)
+  - SHOULD: Avoid redundant data across tables
+
+## Indexing Strategy
+
+- Primary keys
+  - MUST: Have primary key on every table
+  - SHOULD: Use `bigint generated always as identity` for IDs
+  - SHOULD: Use UUIDs only when distributed systems require it
+  - SHOULD: Keep primary keys simple (single column when possible)
+
+- Indexes
+  - MUST: Index foreign key columns
+  - SHOULD: Index columns used in WHERE clauses frequently
+  - SHOULD: Index columns used in JOIN conditions
+  - SHOULD: Index columns used for sorting (ORDER BY)
+  - SHOULD: Use composite indexes for multi-column queries
+  - SHOULD NOT: Over-index (each index adds write overhead)
+
+- Index types
+  - SHOULD: Use B-tree indexes for most cases (default)
+  - SHOULD: Use GIN indexes for array/JSONB columns
+  - SHOULD: Use GiST indexes for full-text search
+  - SHOULD: Use partial indexes for filtered queries
+
+- Example:
+```sql
+-- Index foreign keys
+create index idx_posts_user_id on posts(user_id);
+
+-- Composite index for common query pattern
+create index idx_posts_user_created on posts(user_id, created_at desc);
+
+-- Partial index for active records
+create index idx_users_active on users(id) where is_active = true;
+```
+
+## Data Types
+
+- Numeric types
+  - SHOULD: Use `bigint` for IDs and large integers
+  - SHOULD: Use `integer` for small integers
+  - SHOULD: Use `decimal` or `numeric` for money/precise calculations
+  - SHOULD: Use `real` or `double precision` for approximate numbers
+
+- Text types
+  - SHOULD: Use `text` for variable-length strings
+  - SHOULD: Use `varchar(n)` when length limit is important
+  - SHOULD: Use `char(n)` only for fixed-length strings
+  - SHOULD: Use `citext` for case-insensitive text when needed
+
+- Date/time types
+  - MUST: Use `timestamptz` (timestamp with time zone) for all timestamps
+  - SHOULD: Use `date` for date-only values
+  - SHOULD: Use `time` for time-only values
+  - SHOULD: Use `interval` for durations
+
+- Boolean and JSON
+  - SHOULD: Use `boolean` for true/false values
+  - SHOULD: Use `jsonb` for JSON data (not `json`)
+  - SHOULD: Index JSONB columns with GIN indexes when queried
+  - SHOULD: Extract frequently queried JSON fields to columns
+
+## Constraints
+
+- Primary keys
+  - MUST: Define primary key on every table
+  - SHOULD: Use single-column primary keys when possible
+  - SHOULD: Use composite keys only when necessary
+
+- Foreign keys
+  - MUST: Define foreign key constraints for relationships
+  - SHOULD: Use `ON DELETE CASCADE` for dependent data
+  - SHOULD: Use `ON DELETE SET NULL` for optional relationships
+  - SHOULD: Use `ON DELETE RESTRICT` to prevent deletion when referenced
+
+- Check constraints
+  - SHOULD: Use check constraints for domain validation
+  - SHOULD: Validate data at database level
+  - SHOULD: Add check constraints for enum-like values
+
+- Unique constraints
+  - SHOULD: Add unique constraints for business rules (email, username)
+  - SHOULD: Create unique indexes for unique constraints
+  - SHOULD: Use partial unique indexes for conditional uniqueness
+
+- Example:
+```sql
+create table users (
+  id bigint generated always as identity primary key,
+  email text not null unique,
+  username text not null unique,
+  age integer check (age >= 0 and age <= 150),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+```
+
+## Query Optimization
+
+- Query patterns
+  - SHOULD: Use EXPLAIN ANALYZE to analyze query performance
+  - SHOULD: Avoid SELECT * (select only needed columns)
+  - SHOULD: Use LIMIT for large result sets
+  - SHOULD: Use appropriate JOIN types (INNER, LEFT, etc.)
+
+- N+1 queries
+  - MUST: Avoid N+1 query problems
+  - SHOULD: Use JOINs or batch queries to fetch related data
+  - SHOULD: Use database functions for complex queries
+  - SHOULD: Consider using CTEs for complex queries
+
+- Query performance
+  - SHOULD: Index columns used in WHERE clauses
+  - SHOULD: Use prepared statements (Supabase handles this)
+  - SHOULD: Avoid functions in WHERE clauses when possible
+  - SHOULD: Use EXPLAIN to understand query plans
+
+## Migration Best Practices
+
+- Migration files
+  - MUST: Use migrations for all schema changes
+  - MUST: Make migrations reversible when possible
+  - SHOULD: Name migrations descriptively
+  - SHOULD: Test migrations on staging before production
+
+- Migration safety
+  - MUST: Never modify existing migrations (create new ones)
+  - SHOULD: Make migrations idempotent when possible
+  - SHOULD: Add rollback logic for destructive changes
+  - SHOULD: Migrate data incrementally for large changes
+
+- Migration patterns
+  - SHOULD: Add columns as nullable first, then populate, then make NOT NULL
+  - SHOULD: Add indexes concurrently for large tables
+  - SHOULD: Drop columns in separate migration after code deployment
+  - SHOULD: Use transactions for multi-step migrations
+
+## Security
+
+- Row Level Security (RLS)
+  - MUST: Enable RLS on all tables in Supabase
+  - MUST: Create RLS policies for all operations
+  - SHOULD: Test RLS policies thoroughly
+  - SHOULD: Use `auth.uid()` for user-based policies
+
+- Data protection
+  - MUST: Encrypt sensitive data (passwords, tokens)
+  - SHOULD: Use database functions for sensitive operations
+  - SHOULD: Limit access to sensitive columns
+  - SHOULD: Audit sensitive data access
+
+## Performance Considerations
+
+- Table size
+  - SHOULD: Partition large tables by date or range
+  - SHOULD: Archive old data to separate tables
+  - SHOULD: Use table inheritance for related tables
+  - SHOULD: Monitor table growth and plan for scaling
+
+- Connection pooling
+  - SHOULD: Use connection pooling (Supabase handles this)
+  - SHOULD: Limit connection pool size appropriately
+  - SHOULD: Use read replicas for read-heavy workloads
+
+- Caching
+  - SHOULD: Cache frequently accessed data
+  - SHOULD: Use database query caching when available
+  - SHOULD: Invalidate cache after data mutations
+
+## Best Practices
+
+- Documentation
+  - SHOULD: Document complex schemas and relationships
+  - SHOULD: Add comments to tables and columns
+  - SHOULD: Document business rules enforced by constraints
+  - SHOULD: Maintain ER diagrams for complex schemas
+
+- Testing
+  - SHOULD: Test migrations on staging environment
+  - SHOULD: Test RLS policies with different user roles
+  - SHOULD: Load test queries for performance
+  - SHOULD: Test backup and recovery procedures
+
+- Monitoring
+  - SHOULD: Monitor query performance
+  - SHOULD: Monitor index usage
+  - SHOULD: Monitor table growth
+  - SHOULD: Set up alerts for slow queries
+
+---
+
+## See Also
+
+- **[Postgres SQL Style Guide](mdc:.cursor/rules/postgres-sql-style-guide.mdc)**: SQL syntax and formatting
+- **[Create Migrations](mdc:.cursor/rules/create-migration.mdc)**: How to write migrations
+- **[RLS Policies](mdc:.cursor/rules/create-rls-policies.mdc)**: Row Level Security patterns
+- **[Supabase SQL](mdc:.cursor/rules/supabase-sql.mdc)**: Supabase-specific SQL guidelines

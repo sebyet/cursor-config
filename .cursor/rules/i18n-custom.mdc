@@ -1,0 +1,338 @@
+---
+description: Guidelines for custom internationalization (i18n) implementation in Next.js App Router. Use when working with dictionary JSON files, locale routing, middleware, and type-safe translations. Ensures consistent i18n patterns and maintainability.
+alwaysApply: false
+---
+
+# Custom i18n Implementation
+
+Concise rules for implementing custom internationalization in Next.js App Router. Use MUST/SHOULD/NEVER to guide decisions. Based on Next.js App Router patterns and best practices.
+
+## Dictionary Structure & Organization
+
+- Dictionary files
+  - MUST: Store translations in JSON files per locale (e.g., `en.json`, `fr.json`, `de.json`)
+  - MUST: Place dictionary files in `app/[lang]/dictionaries/` directory
+  - SHOULD: Organize translations into namespaces (e.g., `common`, `header`, `footer`, `forms`)
+  - SHOULD: Use consistent key naming conventions (dot notation for nested keys)
+  - MUST: Keep dictionary structure consistent across all locales
+  - SHOULD: Use descriptive key names: `section.component.action` (e.g., `hero.title`, `hero.description`)
+
+- Dictionary structure
+  - SHOULD: Group related translations into logical namespaces
+  - SHOULD: Use flat structure for simple translations
+  - SHOULD: Use nested structure for complex translations
+  - MUST: Ensure all locales have the same key structure
+  - SHOULD: Document translation keys in comments or separate documentation
+
+```json
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading..."
+  },
+  "hero": {
+    "title": "Welcome",
+    "description": "Get started today",
+    "cta": "Join Now"
+  }
+}
+```
+
+## Type-Safe Dictionary Access
+
+- Dictionary loading
+  - MUST: Use dynamic imports for lazy loading translations
+  - MUST: Mark dictionary loading functions with `"server-only"` directive
+  - SHOULD: Use async functions for dictionary loading
+  - MUST: Provide fallback to default locale if locale not found
+  - SHOULD: Cache loaded dictionaries when appropriate
+
+- Type definitions
+  - MUST: Export `Dictionary` type from dictionary file
+  - MUST: Use `Awaited<ReturnType<typeof dictionaries.en>>` pattern for type inference
+  - SHOULD: Export `Locale` type from i18n config
+  - MUST: Ensure type safety for dictionary access
+  - SHOULD: Use TypeScript to catch missing translation keys at compile time
+
+```typescript
+import "server-only"
+import type { Locale } from "@/i18n-config"
+
+const dictionaries = {
+  en: () => import("./dictionaries/en.json").then((module) => module.default),
+  fr: () => import("./dictionaries/fr.json").then((module) => module.default),
+  de: () => import("./dictionaries/de.json").then((module) => module.default),
+}
+
+export const getDictionary = async (locale: Locale) => 
+  dictionaries[locale]?.() ?? dictionaries.en()
+
+export type Dictionary = Awaited<ReturnType<typeof dictionaries.en>>
+```
+
+- Dictionary usage
+  - MUST: Await dictionary loading in Server Components
+  - SHOULD: Load dictionary at the page/layout level
+  - MUST: Pass dictionary as props to Client Components
+  - SHOULD: Type dictionary props explicitly
+  - MUST: Use dictionary values instead of hardcoded strings
+
+```typescript
+// Server Component
+export default async function Page({ params }: { params: Promise<{ lang: Locale }> }) {
+  const { lang } = await params
+  const dict = await getDictionary(lang)
+  
+  return <ClientComponent dict={dict} />
+}
+```
+
+## Locale Configuration
+
+- i18n config
+  - MUST: Define supported locales in a central config file
+  - MUST: Define default locale
+  - SHOULD: Use `as const` for type safety
+  - MUST: Export `Locale` type from config
+  - SHOULD: Keep locale codes consistent (ISO 639-1 format)
+
+```typescript
+export const i18n = {
+  defaultLocale: "en",
+  locales: ["en", "fr", "de"],
+} as const
+
+export type Locale = (typeof i18n)["locales"][number]
+```
+
+## Locale Routing
+
+- Route structure
+  - MUST: Use `[lang]` dynamic segment for locale routing
+  - MUST: Structure routes as `app/[lang]/page.tsx`
+  - MUST: Await `params` in async components: `const { lang } = await params`
+  - SHOULD: Create locale-specific layouts in `app/[lang]/layout.tsx`
+  - MUST: Generate static params for all locales when using static generation
+
+- Static params generation
+  - MUST: Export `generateStaticParams` function for dynamic routes
+  - MUST: Return array of locale objects: `{ lang: Locale }[]`
+  - SHOULD: Use for routes that can be prerendered
+  - MUST: Return all supported locales
+
+```typescript
+export async function generateStaticParams() {
+  return i18n.locales.map((locale) => ({ lang: locale }))
+}
+```
+
+- URL structure
+  - MUST: Include locale in URL path: `/en/about`, `/fr/about`
+  - SHOULD: Preserve path when switching locales
+  - MUST: Redirect to locale-prefixed URL if locale missing
+  - SHOULD: Use locale in metadata URLs
+
+## Middleware for Locale Detection
+
+- Locale detection
+  - MUST: Implement middleware for locale detection and redirection
+  - SHOULD: Detect locale from `Accept-Language` header
+  - SHOULD: Check for stored locale preference in cookies
+  - SHOULD: Fallback to default locale if detection fails
+  - MUST: Redirect to locale-prefixed URL if missing
+
+- Middleware implementation
+  - MUST: Create `middleware.ts` in project root
+  - MUST: Export default function that receives `NextRequest`
+  - MUST: Export `config` with `matcher` property
+  - SHOULD: Exclude static files and Next.js internals from matcher
+  - MUST: Return `NextResponse.redirect()` for locale redirection
+
+```typescript
+import { NextRequest, NextResponse } from "next/server"
+import { matchLocale } from "@formatjs/intl-localematcher"
+import { i18n } from "@/i18n-config"
+
+export function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+  const pathnameIsMissingLocale = i18n.locales.every(
+    (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
+  )
+
+  if (pathnameIsMissingLocale) {
+    const locale = getLocale(request)
+    return NextResponse.redirect(
+      new URL(`/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}`, request.url)
+    )
+  }
+}
+
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+}
+```
+
+## Locale Switching
+
+- Language switcher component
+  - MUST: Create Client Component for locale switching
+  - SHOULD: Update URL when language changes
+  - MUST: Preserve current route path when switching
+  - SHOULD: Use `useRouter` and `usePathname` from `next/navigation`
+  - SHOULD: Handle locale switching gracefully
+  - MUST: Mark component with `"use client"` directive
+
+```typescript
+"use client"
+import { useRouter, usePathname } from "next/navigation"
+
+export function LanguageSwitcher({ current }: { current: string }) {
+  const router = useRouter()
+  const pathname = usePathname()
+
+  function handleSelect(lang: string) {
+    if (lang && lang !== current) {
+      const segments = pathname.split("/")
+      segments[1] = lang
+      router.push(segments.join("/"), { scroll: false })
+    }
+  }
+
+  return (
+    // Language switcher UI
+  )
+}
+```
+
+## Date and Number Formatting
+
+- Locale-specific formatting
+  - SHOULD: Use `Intl.DateTimeFormat` for date formatting
+  - SHOULD: Use `Intl.NumberFormat` for number formatting
+  - MUST: Pass locale to formatting functions
+  - SHOULD: Create helper functions for common formatting patterns
+  - SHOULD: Format dates/numbers per locale in components
+
+```typescript
+export function formatDate(date: Date, locale: Locale): string {
+  return new Intl.DateTimeFormat(locale, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(date)
+}
+
+export function formatNumber(value: number, locale: Locale): string {
+  return new Intl.NumberFormat(locale).format(value)
+}
+```
+
+## Metadata and SEO
+
+- Dynamic metadata
+  - MUST: Use `generateMetadata` for locale-specific metadata
+  - MUST: Await `params` before using: `const { lang } = await params`
+  - SHOULD: Load dictionary in `generateMetadata`
+  - SHOULD: Include locale in metadata URLs
+  - MUST: Set appropriate `locale` in OpenGraph metadata
+
+```typescript
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ lang: Locale }> 
+}): Promise<Metadata> {
+  const { lang } = await params
+  const dict = await getDictionary(lang)
+  
+  return {
+    title: dict.metadata.title,
+    description: dict.metadata.description,
+    openGraph: {
+      locale: lang,
+      // ...
+    },
+  }
+}
+```
+
+## Testing and Quality
+
+- Translation completeness
+  - SHOULD: Verify all locales have all required keys
+  - SHOULD: Test application in all supported locales
+  - SHOULD: Check for missing translations at build time
+  - SHOULD: Verify translations don't break layouts
+  - SHOULD: Test locale switching functionality
+
+- Layout considerations
+  - SHOULD: Test with longer translations (German, French)
+  - SHOULD: Verify RTL support if needed
+  - SHOULD: Check text overflow in all locales
+  - SHOULD: Verify date/number formatting in all locales
+
+## Best Practices
+
+- Translation key naming
+  - SHOULD: Use descriptive, hierarchical key names
+  - SHOULD: Group related keys together
+  - SHOULD: Use consistent naming conventions
+  - MUST: Avoid generic keys like `text1`, `text2`
+  - SHOULD: Document complex translation keys
+
+- Dictionary maintenance
+  - SHOULD: Keep dictionaries in sync across locales
+  - SHOULD: Review translations regularly
+  - SHOULD: Use translation management tools for large projects
+  - SHOULD: Validate dictionary structure
+  - SHOULD: Add new translations to all locales simultaneously
+
+- Performance
+  - SHOULD: Lazy load translations (already implemented with dynamic imports)
+  - SHOULD: Cache loaded dictionaries when appropriate
+  - SHOULD: Minimize dictionary file size
+  - SHOULD: Split large dictionaries into namespaces
+
+## Common Patterns
+
+- Server Component pattern
+```typescript
+export default async function Page({ params }: { params: Promise<{ lang: Locale }> }) {
+  const { lang } = await params
+  const dict = await getDictionary(lang)
+  
+  return (
+    <div>
+      <h1>{dict.hero.title}</h1>
+      <p>{dict.hero.description}</p>
+    </div>
+  )
+}
+```
+
+- Client Component pattern
+```typescript
+"use client"
+interface ComponentProps {
+  dict: Dictionary
+}
+
+export function ClientComponent({ dict }: ComponentProps) {
+  return <div>{dict.common.save}</div>
+}
+```
+
+- Locale-aware formatting
+```typescript
+const formattedDate = formatDate(new Date(), lang)
+const formattedPrice = formatNumber(99.99, lang)
+```
+
+---
+
+## See Also
+
+- **[Next.js Internationalization](https://nextjs.org/docs/app/guides/internationalization)**: Official Next.js i18n guide
+- **[TypeScript Best Practices](mdc:.cursor/rules/typescript-best-practices.mdc)**: Type safety guidelines
+- **[Next.js App Router](mdc:.cursor/rules/nextjs-app-router.mdc)**: Next.js routing patterns

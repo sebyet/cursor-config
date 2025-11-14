@@ -1,9 +1,7 @@
 ---
-# Specify the following for Cursor rules
-description: Guidelines for writing Supabase database functions
+description: Guidelines for writing secure, performant PostgreSQL functions in Supabase. Use when creating database functions, triggers, or stored procedures. Always apply these patterns for security and performance.
 alwaysApply: false
 ---
-
 # Database: Create functions
 
 You're a Supabase Postgres expert in writing database functions. Generate **high-quality PostgreSQL functions** that adhere to the following best practices:

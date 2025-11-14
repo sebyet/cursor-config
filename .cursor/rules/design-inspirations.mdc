@@ -1,0 +1,71 @@
+---
+description: Design inspirations and references from leading companies. Use when designing interfaces, creating user flows, or making UI/UX decisions. Provides reference points for design patterns, visual style, and interaction patterns.
+alwaysApply: false
+---
+Concise design inspirations from industry leaders. Use MUST/SHOULD/NEVER to guide decisions.
+
+## Primary Design Inspirations
+
+- **OpenAI**
+  - SHOULD: Reference OpenAI's clean, minimal interface design
+  - SHOULD: Study their conversational UI patterns and chat interfaces
+  - SHOULD: Emulate their use of whitespace and typography hierarchy
+  - SHOULD: Reference their approach to complex information presentation
+  - Reference: [OpenAI Platform](https://platform.openai.com)
+
+- **Apple**
+  - SHOULD: Reference Apple's design language for clarity and simplicity
+  - SHOULD: Study their attention to detail in micro-interactions
+  - SHOULD: Emulate their use of subtle animations and transitions
+  - SHOULD: Reference their approach to product presentation and storytelling
+  - Reference: [Apple Design Resources](https://developer.apple.com/design/)
+
+- **Airbnb**
+  - SHOULD: Reference Airbnb's approach to trust-building and user experience
+  - SHOULD: Study their use of high-quality imagery and visual storytelling
+  - SHOULD: Emulate their search and filtering patterns
+  - SHOULD: Reference their approach to mobile-first responsive design
+  - Reference: [Airbnb Design](https://airbnb.design/)
+
+## Design Principles to Extract
+
+- Visual hierarchy
+  - SHOULD: Study how these companies use size, color, and spacing to guide attention
+  - SHOULD: Reference their typography choices and text hierarchy
+  - SHOULD: Emulate their use of whitespace for breathing room
+
+- Interaction patterns
+  - SHOULD: Study their button styles, hover states, and feedback mechanisms
+  - SHOULD: Reference their form design and validation patterns
+  - SHOULD: Emulate their navigation patterns and information architecture
+
+- Content presentation
+  - SHOULD: Study how they present complex information simply
+  - SHOULD: Reference their use of progressive disclosure
+  - SHOULD: Emulate their approach to empty states and error handling
+
+- Visual polish
+  - SHOULD: Study their attention to detail in spacing and alignment
+  - SHOULD: Reference their use of subtle shadows and depth
+  - SHOULD: Emulate their consistent use of design tokens
+
+## Application
+
+- When designing new features
+  - SHOULD: Reference these inspirations for similar patterns
+  - SHOULD: Adapt their approaches to fit our design system
+  - MUST: Maintain consistency with our existing design system
+  - NEVER: Copy designs directly without adaptation
+
+- When making design decisions
+  - SHOULD: Ask "How would [OpenAI/Apple/Airbnb] handle this?"
+  - SHOULD: Reference their solutions for similar problems
+  - MUST: Ensure solutions fit our brand and user needs
+
+---
+
+## See Also
+
+- **[Using the Design System](mdc:.cursor/rules/use-design-system.mdc)**: Which components and tokens to use from the design system
+- **[UX Principles](mdc:.cursor/rules/dont-make-me-think.mdc)**: Understanding user behavior and cognitive principles to guide design decisions
+- **[Technical Guidelines](mdc:.cursor/rules/web-interface-guidelines.mdc)**: Detailed implementation guidance for interactions, animations, accessibility, and performance

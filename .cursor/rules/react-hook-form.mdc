@@ -1,0 +1,346 @@
+---
+description: Guidelines for using react-hook-form with Next.js App Router, Zod validation, and Server Actions. Use when building forms, handling form state, validation, and form submission. Ensures performant, accessible, and type-safe forms.
+alwaysApply: false
+---
+
+# React Hook Form Guidelines
+
+Concise rules for using react-hook-form in Next.js App Router applications. Use MUST/SHOULD/NEVER to guide decisions. Based on react-hook-form best practices and Next.js App Router patterns.
+
+## Performance Optimization
+
+- Uncontrolled components
+  - MUST: Use `register` function for native HTML inputs
+  - SHOULD: Prefer uncontrolled components over controlled components
+  - MUST: Use `register` to minimize re-renders
+  - SHOULD: Use `register` for most form inputs (text, email, password, etc.)
+  - NEVER: Use `register` with third-party controlled components (use `Controller` instead)
+
+```typescript
+const { register } = useForm()
+
+// ✅ Good: Uncontrolled with register
+<input {...register('email')} />
+
+// ❌ Bad: Controlled component
+<input value={value} onChange={onChange} />
+```
+
+- Controller usage
+  - MUST: Use `<Controller>` only for third-party controlled components
+  - SHOULD: Prefer `register` over `Controller` when possible
+  - MUST: Use `Controller` for components that require controlled props
+  - SHOULD: Minimize `Controller` usage for better performance
+
+```typescript
+import { Controller } from "react-hook-form"
+
+// ✅ Good: Controller for third-party component
+<Controller
+  name="date"
+  control={control}
+  render={({ field }) => <DatePicker {...field} />}
+/>
+
+// ✅ Good: register for native input
+<input {...register('email')} />
+```
+
+## Validation with Zod
+
+- Schema definition
+  - MUST: Use Zod schemas for form validation
+  - MUST: Use `zodResolver` from `@hookform/resolvers/zod`
+  - SHOULD: Define schemas in dedicated validation files
+  - SHOULD: Share schemas between client and server
+  - MUST: Use inferred types from schemas
+
+```typescript
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+
+const formSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+})
+
+type FormData = z.infer<typeof formSchema>
+
+const form = useForm<FormData>({
+  resolver: zodResolver(formSchema),
+})
+```
+
+- Validation modes
+  - SHOULD: Use `mode: 'onBlur'` for better performance (default)
+  - SHOULD: Use `mode: 'onChange'` for real-time validation when needed
+  - SHOULD: Use `mode: 'onSubmit'` for minimal validation
+  - SHOULD: Use `mode: 'all'` for comprehensive validation
+  - MUST: Choose validation mode based on UX requirements
+
+```typescript
+const form = useForm({
+  resolver: zodResolver(schema),
+  mode: 'onBlur', // Validate on blur (default)
+})
+```
+
+## Form State Management
+
+- Async data loading
+  - MUST: Use `values` prop (not `defaultValues`) for async data
+  - SHOULD: Use `values` when data loads after form initialization
+  - MUST: Use `defaultValues` only for static initial values
+  - SHOULD: Update form when async data loads
+
+```typescript
+// ✅ Good: values for async data
+const form = useForm({
+  values: asyncData, // Updates when data changes
+})
+
+// ❌ Bad: defaultValues for async data
+const form = useForm({
+  defaultValues: asyncData, // Won't update when data loads
+})
+```
+
+- Dynamic fields
+  - MUST: Use `useFieldArray` for forms with dynamic fields (add/remove items)
+  - SHOULD: Use `useFieldArray` for arrays of form fields
+  - MUST: Provide unique `key` prop for each field
+  - SHOULD: Handle add, remove, and reorder operations
+
+```typescript
+import { useFieldArray } from "react-hook-form"
+
+const { fields, append, remove } = useFieldArray({
+  control,
+  name: 'items',
+})
+
+return (
+  <>
+    {fields.map((field, index) => (
+      <div key={field.id}>
+        <input {...register(`items.${index}.name`)} />
+        <button type="button" onClick={() => remove(index)}>Remove</button>
+      </div>
+    ))}
+    <button type="button" onClick={() => append({ name: '' })}>Add</button>
+  </>
+)
+```
+
+- Nested forms
+  - SHOULD: Use `FormProvider` and `useFormContext` for nested forms
+  - SHOULD: Use `useFormContext` to avoid prop drilling
+  - MUST: Wrap nested components with `FormProvider`
+  - SHOULD: Use for forms split across multiple components
+
+```typescript
+import { FormProvider, useFormContext } from "react-hook-form"
+
+function ParentForm() {
+  const form = useForm()
+  
+  return (
+    <FormProvider {...form}>
+      <NestedFormComponent />
+    </FormProvider>
+  )
+}
+
+function NestedFormComponent() {
+  const { register } = useFormContext() // No prop drilling needed
+  return <input {...register('nestedField')} />
+}
+```
+
+## Next.js App Router Integration
+
+- Server Actions integration
+  - MUST: Use Server Actions for form submission
+  - SHOULD: Pass Server Action to form's `onSubmit`
+  - MUST: Handle errors and success states
+  - SHOULD: Show loading state during submission
+  - MUST: Use `handleSubmit` wrapper from react-hook-form
+
+```typescript
+"use client"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { submitForm } from "./actions" // Server Action
+
+export function FormComponent() {
+  const form = useForm({
+    resolver: zodResolver(schema),
+  })
+  
+  const onSubmit = form.handleSubmit(async (data) => {
+    try {
+      await submitForm(data)
+      form.reset()
+      // Show success message
+    } catch (error) {
+      // Handle error
+    }
+  })
+  
+  return (
+    <form onSubmit={onSubmit}>
+      {/* form fields */}
+    </form>
+  )
+}
+```
+
+- Progressive enhancement
+  - SHOULD: Ensure forms work without JavaScript
+  - SHOULD: Use native form submission as fallback
+  - SHOULD: Enhance with React Hook Form when JavaScript is available
+  - MUST: Use proper form attributes (`action`, `method`)
+
+## Accessibility
+
+- Label association
+  - MUST: Associate `<label>` with inputs using `htmlFor` attribute
+  - MUST: Use `id` attribute on inputs matching `htmlFor`
+  - SHOULD: Use descriptive label text
+  - MUST: Ensure screen reader compatibility
+
+```typescript
+<label htmlFor="email">Email Address</label>
+<input 
+  id="email"
+  type="email"
+  {...register('email')}
+/>
+```
+
+- ARIA attributes
+  - MUST: Use `aria-invalid` for error states
+  - MUST: Use `aria-describedby` to associate error messages
+  - SHOULD: Provide clear error messages
+  - MUST: Ensure error messages are accessible
+
+```typescript
+<input
+  {...register('email')}
+  aria-invalid={errors.email ? 'true' : 'false'}
+  aria-describedby={errors.email ? 'email-error' : undefined}
+/>
+{errors.email && (
+  <span id="email-error" role="alert">
+    {errors.email.message}
+  </span>
+)}
+```
+
+- Error display
+  - MUST: Display validation errors clearly
+  - SHOULD: Show errors inline with fields
+  - SHOULD: Use semantic HTML for error messages
+  - MUST: Associate error messages with inputs
+  - SHOULD: Focus first error field after validation
+
+## Form Submission
+
+- Submission handling
+  - MUST: Use `handleSubmit` wrapper from react-hook-form
+  - SHOULD: Handle loading states during submission
+  - SHOULD: Show success/error feedback
+  - MUST: Prevent double submission
+  - SHOULD: Reset form after successful submission
+
+```typescript
+const [isSubmitting, setIsSubmitting] = useState(false)
+
+const onSubmit = form.handleSubmit(async (data) => {
+  setIsSubmitting(true)
+  try {
+    await submitForm(data)
+    form.reset()
+    toast.success('Form submitted successfully!')
+  } catch (error) {
+    toast.error('Submission failed. Please try again.')
+  } finally {
+    setIsSubmitting(false)
+  }
+})
+
+return (
+  <form onSubmit={onSubmit}>
+    <button type="submit" disabled={isSubmitting}>
+      {isSubmitting ? 'Submitting...' : 'Submit'}
+    </button>
+  </form>
+)
+```
+
+- Form reset
+  - SHOULD: Reset form after successful submission
+  - SHOULD: Use `form.reset()` method
+  - SHOULD: Clear validation errors on reset
+  - SHOULD: Reset to initial values or empty state
+
+- Dirty fields tracking
+  - SHOULD: Use `formState.isDirty` to track changes
+  - SHOULD: Show unsaved changes warnings
+  - SHOULD: Prevent accidental navigation with unsaved changes
+  - SHOULD: Use `formState.dirtyFields` for specific field tracking
+
+## Error Handling
+
+- Validation errors
+  - MUST: Display validation errors to users
+  - SHOULD: Show field-specific error messages
+  - SHOULD: Clear errors when user starts correcting
+  - MUST: Prevent form submission with invalid data
+
+- Server errors
+  - MUST: Handle server-side validation errors
+  - SHOULD: Display server errors in form
+  - SHOULD: Use `setError` to set field-specific errors
+  - SHOULD: Handle network errors gracefully
+
+```typescript
+try {
+  await submitForm(data)
+} catch (error) {
+  if (error.fieldErrors) {
+    Object.entries(error.fieldErrors).forEach(([field, message]) => {
+      form.setError(field, { message })
+    })
+  }
+}
+```
+
+## Best Practices
+
+- Form organization
+  - SHOULD: Keep form logic in dedicated components
+  - SHOULD: Separate validation schemas from components
+  - SHOULD: Use TypeScript for type safety
+  - SHOULD: Reuse form components when possible
+
+- Performance
+  - SHOULD: Use uncontrolled components with `register`
+  - SHOULD: Minimize `Controller` usage
+  - SHOULD: Use appropriate validation mode
+  - SHOULD: Avoid unnecessary re-renders
+
+- Type safety
+  - MUST: Use TypeScript with react-hook-form
+  - SHOULD: Infer types from Zod schemas
+  - SHOULD: Type form data explicitly
+  - SHOULD: Use generic types for `useForm`
+
+---
+
+## See Also
+
+- **[React Hook Form Documentation](https://react-hook-form.com/)**: Official react-hook-form docs
+- **[Data Validation](mdc:.cursor/rules/data-validation.mdc)**: Zod validation patterns
+- **[Next.js App Router](mdc:.cursor/rules/nextjs-app-router.mdc)**: Server Actions patterns
+- **[Web Interface Guidelines](mdc:.cursor/rules/web-interface-guidelines.mdc)**: Accessibility patterns

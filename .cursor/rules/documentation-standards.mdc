@@ -1,0 +1,213 @@
+---
+description: Documentation standards for code, APIs, and project documentation. Use when writing code comments, API docs, README files, or documenting features. Ensures clear, maintainable documentation.
+alwaysApply: false
+---
+# Documentation Standards
+
+Concise rules for writing clear, maintainable documentation. Use MUST/SHOULD/NEVER to guide decisions.
+
+## Code Documentation
+
+- Comments
+  - SHOULD: Explain "why", not "what" (code should be self-documenting)
+  - SHOULD: Add comments for complex logic or business rules
+  - SHOULD: Update comments when code changes
+  - SHOULD NOT: Comment obvious code
+  - SHOULD NOT: Leave outdated comments
+
+- JSDoc comments
+  - SHOULD: Use JSDoc for public functions and APIs
+  - SHOULD: Document parameters and return types
+  - SHOULD: Include examples for complex functions
+  - SHOULD: Document exceptions and error cases
+
+- Example:
+```typescript
+/**
+ * Calculates the total price including tax and discounts.
+ * 
+ * @param items - Array of items with price and quantity
+ * @param taxRate - Tax rate as decimal (e.g., 0.08 for 8%)
+ * @param discount - Discount amount in cents
+ * @returns Total price in cents
+ * @throws {Error} If items array is empty
+ * 
+ * @example
+ * ```ts
+ * const total = calculateTotal([{ price: 1000, quantity: 2 }], 0.08, 100)
+ * // Returns: 2060 (2000 + 160 tax - 100 discount)
+ * ```
+ */
+function calculateTotal(items: Item[], taxRate: number, discount: number): number {
+  // Implementation
+}
+```
+
+- Inline documentation
+  - SHOULD: Document complex algorithms
+  - SHOULD: Explain non-obvious decisions
+  - SHOULD: Reference external documentation when relevant
+  - SHOULD: Use TODO comments for future improvements (with context)
+
+## README Documentation
+
+- README structure
+  - MUST: Include project description
+  - MUST: Include installation instructions
+  - SHOULD: Include usage examples
+  - SHOULD: Include development setup
+  - SHOULD: Include contribution guidelines
+  - SHOULD: Include license information
+
+- README sections
+  - SHOULD: Start with project title and brief description
+  - SHOULD: Include features or key highlights
+  - SHOULD: Include prerequisites and installation
+  - SHOULD: Include configuration and environment variables
+  - SHOULD: Include usage examples
+  - SHOULD: Include development instructions
+  - SHOULD: Include testing instructions
+  - SHOULD: Include deployment instructions
+
+- README best practices
+  - SHOULD: Keep README up-to-date
+  - SHOULD: Use clear, concise language
+  - SHOULD: Include code examples
+  - SHOULD: Use proper markdown formatting
+  - SHOULD: Include badges (build status, coverage, etc.)
+
+## API Documentation
+
+- API documentation
+  - SHOULD: Document all public APIs
+  - SHOULD: Include request/response examples
+  - SHOULD: Document error responses
+  - SHOULD: Include authentication requirements
+  - SHOULD: Document rate limits and quotas
+
+- Route Handler documentation
+  - SHOULD: Document HTTP methods and paths
+  - SHOULD: Document request parameters and body
+  - SHOULD: Document response format and status codes
+  - SHOULD: Include example requests and responses
+
+- Server Action documentation
+  - SHOULD: Document action parameters
+  - SHOULD: Document return types
+  - SHOULD: Document side effects
+  - SHOULD: Include usage examples
+
+## Component Documentation
+
+- Component documentation
+  - SHOULD: Document component props with TypeScript
+  - SHOULD: Include usage examples
+  - SHOULD: Document component behavior and states
+  - SHOULD: Document accessibility features
+
+- Example:
+```typescript
+/**
+ * Button component with multiple variants and sizes.
+ * 
+ * @example
+ * ```tsx
+ * <Button variant="primary" size="lg" onClick={handleClick}>
+ *   Click me
+ * </Button>
+ * ```
+ */
+interface ButtonProps {
+  /** Button variant style */
+  variant?: 'primary' | 'secondary' | 'outline'
+  /** Button size */
+  size?: 'sm' | 'md' | 'lg'
+  /** Click handler */
+  onClick?: () => void
+  /** Button content */
+  children: React.ReactNode
+}
+```
+
+## Database Documentation
+
+- Schema documentation
+  - SHOULD: Document table purposes and relationships
+  - SHOULD: Document column meanings and constraints
+  - SHOULD: Include ER diagrams for complex schemas
+  - SHOULD: Document indexes and their purposes
+
+- Migration documentation
+  - MUST: Include migration description
+  - SHOULD: Explain why migration is needed
+  - SHOULD: Document data transformations
+  - SHOULD: Include rollback instructions
+
+## Architecture Documentation
+
+- Architecture decision records (ADRs)
+  - SHOULD: Document significant architectural decisions
+  - SHOULD: Explain context and alternatives considered
+  - SHOULD: Document consequences of decisions
+  - SHOULD: Store ADRs in `docs/adr/` directory
+
+- ADR format
+  - SHOULD: Use numbered format (0001-decision-name.md)
+  - SHOULD: Include status (proposed, accepted, deprecated)
+  - SHOULD: Include context, decision, and consequences
+
+## Documentation Maintenance
+
+- Keeping docs updated
+  - MUST: Update documentation when code changes
+  - SHOULD: Review documentation during code review
+  - SHOULD: Remove outdated documentation
+  - SHOULD: Update examples when APIs change
+
+- Documentation review
+  - SHOULD: Include documentation in PR reviews
+  - SHOULD: Verify examples work correctly
+  - SHOULD: Check for broken links
+  - SHOULD: Ensure documentation is accessible
+
+## Documentation Tools
+
+- Documentation generators
+  - SHOULD: Use TypeDoc for TypeScript documentation
+  - SHOULD: Use JSDoc for JavaScript documentation
+  - SHOULD: Generate API docs automatically
+  - SHOULD: Host documentation (GitHub Pages, Vercel, etc.)
+
+- Markdown
+  - MUST: Use Markdown for documentation files
+  - SHOULD: Use proper markdown syntax
+  - SHOULD: Use code blocks with language tags
+  - SHOULD: Use tables for structured data
+
+## Best Practices
+
+- Writing style
+  - SHOULD: Use clear, concise language
+  - SHOULD: Write for your audience (developers, users, etc.)
+  - SHOULD: Use active voice
+  - SHOULD: Avoid jargon (or define it)
+  - SHOULD: Use examples liberally
+
+- Organization
+  - SHOULD: Organize documentation logically
+  - SHOULD: Use consistent structure
+  - SHOULD: Include table of contents for long docs
+  - SHOULD: Cross-reference related documentation
+
+- Accessibility
+  - SHOULD: Use proper heading hierarchy
+  - SHOULD: Use descriptive link text
+  - SHOULD: Include alt text for images
+  - SHOULD: Ensure documentation is readable
+
+---
+
+## See Also
+
+- **[Code Style & Formatting](mdc:.cursor/rules/code-style-formatting.mdc)**: Code formatting standards
+- **[TypeScript Best Practices](mdc:.cursor/rules/typescript-best-practices.mdc)**: Type documentation

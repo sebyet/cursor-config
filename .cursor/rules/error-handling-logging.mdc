@@ -1,0 +1,179 @@
+---
+description: Comprehensive error handling and logging guidelines for production-ready applications. Use when handling errors, creating error boundaries, or implementing logging. Ensures robust error handling and observability.
+alwaysApply: false
+---
+# Error Handling & Logging
+
+Concise rules for handling errors and logging in production applications. Use MUST/SHOULD/NEVER to guide decisions.
+
+## Error Handling Principles
+
+- Error boundaries
+  - MUST: Create error boundaries for route segments using `error.tsx` files
+  - MUST: Accept `error` and `reset` props in error boundary components
+  - MUST: Log errors to error reporting service in `useEffect` hook
+  - SHOULD: Provide user-friendly error messages (no technical jargon)
+  - SHOULD: Offer recovery options (retry, go home, contact support)
+  - MUST: Never expose sensitive information in error messages
+  - SHOULD: Include error digest for tracking (Next.js provides `error.digest`)
+
+- Error types
+  - MUST: Distinguish between expected errors (validation, not found) and unexpected errors (system failures)
+  - SHOULD: Create custom error classes for domain-specific errors
+  - MUST: Handle async errors in Server Components with try-catch
+  - MUST: Handle errors in Server Actions and Route Handlers
+  - SHOULD: Use error codes for programmatic error handling
+
+- Error recovery
+  - SHOULD: Provide retry mechanisms for transient failures
+  - SHOULD: Implement exponential backoff for retries
+  - MUST: Always provide a way forward (no dead ends)
+  - SHOULD: Auto-recover from recoverable errors when possible
+  - MUST: Gracefully degrade functionality when errors occur
+
+## Server-Side Error Handling
+
+- Server Components
+  - MUST: Wrap data fetching in try-catch blocks
+  - MUST: Use `notFound()` for 404 errors
+  - MUST: Use `redirect()` for authentication errors
+  - SHOULD: Return meaningful error states to Client Components
+  - MUST: Never throw errors with sensitive data (passwords, tokens, API keys)
+
+- Server Actions
+  - MUST: Validate input before processing
+  - MUST: Return error objects instead of throwing when possible
+  - SHOULD: Use `Result` pattern for operations that can fail
+  - MUST: Handle database errors gracefully
+  - SHOULD: Provide user-friendly error messages
+  - MUST: Log errors with context (user ID, operation, timestamp)
+
+- Route Handlers
+  - MUST: Return appropriate HTTP status codes (400, 401, 403, 404, 500)
+  - MUST: Use `Response.json()` for error responses
+  - SHOULD: Include error details in development, generic messages in production
+  - MUST: Handle CORS errors appropriately
+  - MUST: Validate request data before processing
+
+## Client-Side Error Handling
+
+- React Error Boundaries
+  - MUST: Use `error.tsx` files for route-level error boundaries
+  - MUST: Log errors to error reporting service
+  - SHOULD: Show fallback UI that matches design system
+  - MUST: Provide reset functionality via `reset()` prop
+  - SHOULD: Track error frequency to detect patterns
+
+- Event Handlers
+  - MUST: Wrap async operations in try-catch
+  - SHOULD: Show user-friendly error messages
+  - SHOULD: Provide loading states during async operations
+  - MUST: Handle network errors gracefully
+  - SHOULD: Implement retry logic for failed requests
+
+- Form Validation
+  - MUST: Validate on submit and show errors inline
+  - SHOULD: Validate on blur for better UX
+  - MUST: Clear errors when user starts correcting input
+  - SHOULD: Focus first error field after validation
+  - MUST: Prevent form submission with invalid data
+
+## Logging Strategy
+
+- Log levels
+  - MUST: Use appropriate log levels (error, warn, info, debug)
+  - MUST: Log errors with `console.error()` or error reporting service
+  - SHOULD: Use `console.warn()` for warnings (deprecations, fallbacks)
+  - SHOULD: Use `console.info()` for important events (user actions, state changes)
+  - SHOULD: Use `console.debug()` for development-only logs
+  - MUST: Remove or guard debug logs in production
+
+- Structured logging
+  - SHOULD: Use structured logging format (JSON) for production
+  - SHOULD: Include context in logs (user ID, request ID, timestamp, operation)
+  - MUST: Never log sensitive information (passwords, tokens, API keys, PII)
+  - SHOULD: Log request/response metadata for debugging
+  - SHOULD: Log performance metrics (duration, memory usage)
+
+- Error reporting
+  - SHOULD: Integrate error reporting service (Sentry, LogRocket, etc.)
+  - MUST: Log errors to error reporting service in production
+  - SHOULD: Include user context (user ID, session ID) in error reports
+  - SHOULD: Include stack traces for debugging
+  - MUST: Sanitize sensitive data before sending to error reporting service
+  - SHOULD: Group similar errors to reduce noise
+
+## Error Messages
+
+- User-facing messages
+  - MUST: Use plain language (no technical jargon)
+  - MUST: Explain what went wrong and why
+  - SHOULD: Suggest how to fix the problem
+  - MUST: Be specific but not overwhelming
+  - SHOULD: Match the tone of your application
+  - NEVER: Blame the user for errors
+
+- Developer-facing messages
+  - SHOULD: Include error codes for programmatic handling
+  - SHOULD: Include stack traces in development
+  - SHOULD: Include request/response data for debugging
+  - MUST: Sanitize sensitive data before logging
+  - SHOULD: Use consistent error message format
+
+## Common Error Patterns
+
+- Network errors
+  - MUST: Handle timeout errors
+  - MUST: Handle connection errors
+  - SHOULD: Retry with exponential backoff
+  - SHOULD: Show user-friendly message ("Unable to connect. Please check your internet connection.")
+  - SHOULD: Provide manual retry option
+
+- Validation errors
+  - MUST: Show field-specific error messages
+  - SHOULD: Highlight invalid fields visually
+  - MUST: Prevent submission with invalid data
+  - SHOULD: Provide examples of valid input
+
+- Authentication errors
+  - MUST: Redirect to login for 401 errors
+  - SHOULD: Clear invalid session data
+  - SHOULD: Show message explaining why authentication failed
+  - MUST: Never expose authentication details in error messages
+
+- Database errors
+  - MUST: Handle constraint violations gracefully
+  - MUST: Handle connection errors
+  - SHOULD: Retry transient database errors
+  - MUST: Never expose database schema details in error messages
+  - SHOULD: Log database errors with query context (sanitized)
+
+## Best Practices
+
+- Error handling
+  - SHOULD: Fail fast for invalid input
+  - SHOULD: Validate early (client-side and server-side)
+  - MUST: Handle all error cases (don't assume success)
+  - SHOULD: Use TypeScript to catch errors at compile time
+  - MUST: Test error scenarios, not just happy paths
+
+- Logging
+  - SHOULD: Log at appropriate level (not everything is an error)
+  - SHOULD: Include enough context to debug issues
+  - MUST: Remove or guard console.log in production
+  - SHOULD: Use structured logging for easier parsing
+  - SHOULD: Rotate logs to prevent disk space issues
+
+- Monitoring
+  - SHOULD: Set up alerts for error rate thresholds
+  - SHOULD: Monitor error trends over time
+  - SHOULD: Track error resolution time
+  - SHOULD: Review error logs regularly
+
+---
+
+## See Also
+
+- **[Next.js Error Handling](https://nextjs.org/docs/app/api-reference/file-conventions/error)**: Next.js error boundary documentation
+- **[React Error Boundaries](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary)**: React error boundary patterns
+- **[Web Interface Guidelines](mdc:.cursor/rules/web-interface-guidelines.mdc)**: Error UI patterns and accessibility

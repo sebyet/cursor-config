@@ -1,9 +1,7 @@
 ---
-# Specify the following for Cursor rules
-description: Guidelines for writing Postgres SQL
+description: Guidelines for writing Postgres SQL with consistent style and formatting. Use when writing SQL queries, migrations, or database code to maintain readability and consistency.
 alwaysApply: false
 ---
-
 # Postgres SQL Style Guide
 
 ## General

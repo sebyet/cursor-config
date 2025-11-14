@@ -1,0 +1,250 @@
+---
+description: Testing standards and best practices for unit, integration, and E2E tests. Use when writing tests, setting up test infrastructure, or ensuring code quality through testing.
+alwaysApply: false
+---
+# Testing Guidelines
+
+Concise rules for writing effective, maintainable tests. Use MUST/SHOULD/NEVER to guide decisions.
+
+## Testing Strategy
+
+- Test pyramid
+  - MUST: Write more unit tests than integration tests
+  - SHOULD: Write more integration tests than E2E tests
+  - SHOULD: Use E2E tests for critical user flows only
+  - SHOULD: Balance test coverage with test execution time
+
+- Test types
+  - MUST: Write unit tests for functions, utilities, and components
+  - SHOULD: Write integration tests for API routes and Server Actions
+  - SHOULD: Write E2E tests for critical user journeys
+  - SHOULD: Write snapshot tests sparingly (only for stable UI)
+
+- Test coverage
+  - SHOULD: Aim for 80%+ code coverage
+  - SHOULD: Focus coverage on business logic, not implementation details
+  - SHOULD: Track coverage but don't obsess over 100%
+  - MUST: Test error cases and edge cases
+
+## Unit Testing
+
+- Testing library
+  - MUST: Use Jest or Vitest for unit tests
+  - MUST: Use React Testing Library for React components
+  - SHOULD: Use `@testing-library/jest-dom` for DOM matchers
+  - SHOULD: Use `@testing-library/user-event` for user interactions
+
+- Test structure (AAA pattern)
+  - MUST: Structure tests with Arrange, Act, Assert pattern
+  - SHOULD: Use `describe` blocks to group related tests
+  - SHOULD: Use descriptive test names (what is being tested and expected outcome)
+  - SHOULD: Keep tests focused and single-purpose
+
+- Example:
+```typescript
+describe('calculateTotal', () => {
+  it('should return sum of all items', () => {
+    // Arrange
+    const items = [10, 20, 30]
+    
+    // Act
+    const result = calculateTotal(items)
+    
+    // Assert
+    expect(result).toBe(60)
+  })
+})
+```
+
+- Component testing
+  - MUST: Test user-facing behavior, not implementation
+  - SHOULD: Query elements by role, label, or text (prefer `getByRole`)
+  - SHOULD NOT: Test internal state or implementation details
+  - SHOULD: Test accessibility (keyboard navigation, ARIA attributes)
+  - SHOULD: Test error states and loading states
+
+- Mocking
+  - SHOULD: Mock external dependencies (APIs, modules)
+  - SHOULD: Mock Next.js components (`next/image`, `next/link`)
+  - SHOULD: Use `jest.mock()` for module mocks
+  - SHOULD: Keep mocks simple and focused
+  - SHOULD NOT: Over-mock (prefer real implementations when possible)
+
+- Test organization
+  - MUST: Place test files next to source files or in `__tests__` directories
+  - SHOULD: Use `.test.ts` or `.test.tsx` extension
+  - SHOULD: Mirror source file structure in test files
+  - SHOULD: Group related tests in `describe` blocks
+
+## Integration Testing
+
+- API route testing
+  - SHOULD: Test Route Handlers with test requests
+  - SHOULD: Test authentication and authorization
+  - SHOULD: Test request validation and error handling
+  - SHOULD: Test response formats and status codes
+
+- Server Actions testing
+  - SHOULD: Test Server Actions with mocked dependencies
+  - SHOULD: Test validation logic
+  - SHOULD: Test error handling and rollback
+  - SHOULD: Test cache invalidation
+
+- Database testing
+  - SHOULD: Use test database for integration tests
+  - SHOULD: Clean up test data after tests
+  - SHOULD: Use transactions for test isolation
+  - SHOULD: Test RLS policies with different user roles
+
+## E2E Testing
+
+- E2E framework
+  - SHOULD: Use Playwright for E2E tests (recommended)
+  - SHOULD: Use Cypress as alternative
+  - SHOULD: Run E2E tests in CI/CD pipeline
+  - SHOULD: Keep E2E tests fast and reliable
+
+- E2E test structure
+  - SHOULD: Test critical user journeys (signup, checkout, etc.)
+  - SHOULD: Test cross-browser compatibility
+  - SHOULD: Test responsive design on different viewports
+  - SHOULD: Keep E2E tests independent and isolated
+
+- E2E best practices
+  - SHOULD: Use data-testid sparingly (prefer semantic queries)
+  - SHOULD: Wait for elements explicitly (avoid fixed timeouts)
+  - SHOULD: Clean up test data after E2E tests
+  - SHOULD: Run E2E tests in parallel when possible
+  - SHOULD NOT: Test implementation details in E2E tests
+
+## Test Naming Conventions
+
+- Test names
+  - MUST: Use descriptive test names
+  - SHOULD: Use format: "should [expected behavior] when [condition]"
+  - SHOULD: Avoid implementation details in test names
+  - SHOULD: Use present tense ("should return" not "returns")
+
+- Examples:
+```typescript
+// Good
+it('should display error message when email is invalid', () => {})
+it('should redirect to login when user is not authenticated', () => {})
+
+// Avoid
+it('test email validation', () => {})
+it('works correctly', () => {})
+```
+
+## Test Data and Fixtures
+
+- Test data
+  - SHOULD: Create test fixtures for complex data structures
+  - SHOULD: Use factories for generating test data
+  - SHOULD: Keep test data minimal and focused
+  - SHOULD: Use realistic but not production data
+
+- Fixtures
+  - SHOULD: Store fixtures in `__fixtures__` directories
+  - SHOULD: Export fixtures for reuse
+  - SHOULD: Type fixtures with TypeScript
+  - SHOULD: Keep fixtures up-to-date with schema changes
+
+## Async Testing
+
+- Async operations
+  - MUST: Wait for async operations to complete
+  - SHOULD: Use `async/await` for async tests
+  - SHOULD: Use `waitFor` from React Testing Library for async updates
+  - SHOULD: Set appropriate timeouts for async operations
+
+- Example:
+```typescript
+it('should load user data', async () => {
+  render(<UserProfile userId="123" />)
+  
+  await waitFor(() => {
+    expect(screen.getByText('John Doe')).toBeInTheDocument()
+  })
+})
+```
+
+## Error Testing
+
+- Error cases
+  - MUST: Test error states and error handling
+  - SHOULD: Test network errors and API failures
+  - SHOULD: Test validation errors
+  - SHOULD: Test edge cases (empty data, null values, etc.)
+
+- Error assertions
+  - SHOULD: Assert error messages are displayed
+  - SHOULD: Assert error states are handled gracefully
+  - SHOULD: Test error recovery mechanisms
+
+## Snapshot Testing
+
+- When to use
+  - SHOULD: Use snapshots sparingly (only for stable UI)
+  - SHOULD NOT: Use snapshots for frequently changing components
+  - SHOULD: Update snapshots intentionally, not automatically
+  - SHOULD: Review snapshot changes carefully
+
+- Snapshot best practices
+  - SHOULD: Use snapshots for configuration or data structures
+  - SHOULD: Keep snapshots small and focused
+  - SHOULD: Use inline snapshots for small assertions
+
+## Test Performance
+
+- Fast tests
+  - SHOULD: Keep unit tests fast (< 100ms each)
+  - SHOULD: Mock slow operations (API calls, file I/O)
+  - SHOULD: Run tests in parallel when possible
+  - SHOULD: Use `--maxWorkers` to optimize test execution
+
+- Slow tests
+  - SHOULD: Mark slow tests with `jest.setTimeout()`
+  - SHOULD: Separate slow tests from fast tests
+  - SHOULD: Run slow tests less frequently in CI/CD
+
+## Test Maintenance
+
+- Keeping tests updated
+  - MUST: Update tests when code changes
+  - SHOULD: Remove obsolete tests
+  - SHOULD: Refactor tests when they become hard to maintain
+  - SHOULD: Keep tests DRY (extract common setup)
+
+- Test debugging
+  - SHOULD: Use `console.log` sparingly in tests
+  - SHOULD: Use `--verbose` flag for detailed output
+  - SHOULD: Use `--no-coverage` for faster debugging
+  - SHOULD: Use test debugging tools in IDE
+
+## Best Practices
+
+- Test quality
+  - MUST: Tests should be readable and maintainable
+  - SHOULD: Tests should be independent (no shared state)
+  - SHOULD: Tests should be deterministic (same result every run)
+  - SHOULD: Tests should be fast
+
+- Test organization
+  - SHOULD: Group related tests together
+  - SHOULD: Use `beforeEach` and `afterEach` for setup/teardown
+  - SHOULD: Use `beforeAll` and `afterAll` for expensive setup
+  - SHOULD: Clean up after tests (remove test data, reset mocks)
+
+- Test documentation
+  - SHOULD: Add comments for complex test scenarios
+  - SHOULD: Document why certain tests exist
+  - SHOULD: Keep test names descriptive (they serve as documentation)
+
+---
+
+## See Also
+
+- **[Refactoring Guidelines](mdc:.cursor/rules/refactoring-guidelines.mdc)**: How to refactor with tests
+- **[Error Handling](mdc:.cursor/rules/error-handling-logging.mdc)**: Testing error scenarios
+- **[React Testing Library](https://testing-library.com/react)**: Official documentation

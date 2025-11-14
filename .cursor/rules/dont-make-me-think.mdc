@@ -1,8 +1,7 @@
 ---
-description: UX/UI principles primarily based on "Don't Make Me Think" by Steve Krug, with complementary usability principles
-globs: *.tsx,*.ts,*.jsx,*.js,*.css,*.scss
+description: UX/UI principles based on "Don't Make Me Think" by Steve Krug. Use when designing interfaces, creating user flows, or making UI/UX decisions. Ensures intuitive, self-evident user experiences.
+alwaysApply: false
 ---
-
 Concise UX/UI principles for building self-evident, intuitive interfaces. Primarily based on Steve Krug's "Don't Make Me Think" framework, with complementary principles from cognitive psychology and modern UX patterns. Use MUST/SHOULD/NEVER to guide decisions.
 
 ## Self-Evident Design
@@ -120,6 +119,6 @@ The goal: Create interfaces so intuitive that users accomplish their tasks witho
 
 ## See Also
 
+- **[Design Inspirations](mdc:.cursor/rules/design-inspirations.mdc)**: Design inspirations and references from leading companies (OpenAI, Apple, Airbnb)
 - **[Using the Design System](mdc:.cursor/rules/use-design-system.mdc)**: Which components and tokens to use from the design system
 - **[Technical Guidelines](mdc:.cursor/rules/web-interface-guidelines.mdc)**: How to implement interactions, animations, accessibility, and performance optimizations
-- **[Review Checklist](mdc:.cursor/rules/review-ui-ux.mdc)**: Quality assurance checklist before merging code

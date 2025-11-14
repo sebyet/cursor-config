@@ -1,0 +1,188 @@
+---
+description: Dependency management, updates, and security practices. Use when adding, updating, or auditing npm packages. Ensures secure, maintainable dependency management.
+alwaysApply: false
+---
+# Dependency Management Guidelines
+
+Concise rules for managing dependencies safely and effectively. Use MUST/SHOULD/NEVER to guide decisions.
+
+## Dependency Selection
+
+- Choosing dependencies
+  - SHOULD: Prefer well-maintained packages
+  - SHOULD: Check package popularity and community support
+  - SHOULD: Review package license (ensure compatibility)
+  - SHOULD: Check package size and bundle impact
+  - SHOULD: Review package security history
+  - SHOULD NOT: Add dependencies for simple functionality
+
+- Dependency evaluation
+  - SHOULD: Review package documentation
+  - SHOULD: Check package update frequency
+  - SHOULD: Review package issues and PRs
+  - SHOULD: Check for TypeScript support
+  - SHOULD: Verify package compatibility with project
+
+## Version Management
+
+- Version pinning
+  - SHOULD: Pin exact versions for production dependencies
+  - SHOULD: Use version ranges for development dependencies
+  - SHOULD: Use lock files (package-lock.json, pnpm-lock.yaml)
+  - SHOULD: Commit lock files to version control
+  - SHOULD NOT: Use `latest` or `*` in production
+
+- Version strategies
+  - SHOULD: Use semantic versioning (semver)
+  - SHOULD: Understand version ranges (^, ~, >=)
+  - SHOULD: Test updates before deploying
+  - SHOULD: Update dependencies incrementally
+
+- Examples:
+```json
+{
+  "dependencies": {
+    "react": "^19.2.0",  // Allow patch and minor updates
+    "zod": "3.24.1"      // Pin exact version
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.2"  // Allow minor updates
+  }
+}
+```
+
+## Dependency Updates
+
+- Update strategy
+  - SHOULD: Update dependencies regularly (monthly or quarterly)
+  - SHOULD: Update security vulnerabilities immediately
+  - SHOULD: Test updates in development first
+  - SHOULD: Update one major version at a time
+  - SHOULD: Review changelogs before updating
+
+- Update process
+  - SHOULD: Create branch for dependency updates
+  - SHOULD: Update dependencies incrementally
+  - SHOULD: Run tests after each update
+  - SHOULD: Review breaking changes
+  - SHOULD: Update code if needed for breaking changes
+
+- Automated updates
+  - SHOULD: Use Dependabot or Renovate for automated updates
+  - SHOULD: Configure update frequency
+  - SHOULD: Review automated PRs before merging
+  - SHOULD: Set up security alerts
+
+## Security
+
+- Vulnerability management
+  - MUST: Address critical security vulnerabilities immediately
+  - SHOULD: Address high-severity vulnerabilities within 1 week
+  - SHOULD: Address medium-severity vulnerabilities within 1 month
+  - SHOULD: Monitor security advisories
+  - SHOULD: Use `npm audit` or similar tools
+
+- Security scanning
+  - SHOULD: Run security scans in CI/CD pipeline
+  - SHOULD: Block deployment on critical vulnerabilities
+  - SHOULD: Use Snyk, npm audit, or similar tools
+  - SHOULD: Review security reports regularly
+
+- Supply chain security
+  - SHOULD: Verify package integrity
+  - SHOULD: Use package managers with security features
+  - SHOULD: Monitor for supply chain attacks
+  - SHOULD: Review package maintainers
+
+## Dependency Organization
+
+- Dependency categories
+  - MUST: Separate dependencies and devDependencies
+  - SHOULD: Group related dependencies
+  - SHOULD: Keep dependencies organized alphabetically
+  - SHOULD: Remove unused dependencies
+
+- Peer dependencies
+  - SHOULD: Use peer dependencies for plugins
+  - SHOULD: Document peer dependency requirements
+  - SHOULD: Check peer dependency compatibility
+
+- Optional dependencies
+  - SHOULD: Use optional dependencies sparingly
+  - SHOULD: Handle missing optional dependencies gracefully
+  - SHOULD: Document why dependencies are optional
+
+## Lock Files
+
+- Lock file management
+  - MUST: Commit lock files to version control
+  - MUST: Use same package manager across team
+  - SHOULD: Regenerate lock files after dependency changes
+  - SHOULD: Review lock file changes in PRs
+  - SHOULD NOT: Manually edit lock files
+
+- Lock file conflicts
+  - SHOULD: Resolve lock file conflicts by regenerating
+  - SHOULD: Use `npm install` or `pnpm install` to regenerate
+  - SHOULD: Test after resolving conflicts
+  - SHOULD: Commit resolved lock file
+
+## Breaking Changes
+
+- Handling breaking changes
+  - SHOULD: Review changelogs for breaking changes
+  - SHOULD: Test thoroughly after major updates
+  - SHOULD: Update code to match new API
+  - SHOULD: Document breaking changes in PR
+  - SHOULD: Plan migration path for large updates
+
+- Migration strategy
+  - SHOULD: Migrate incrementally when possible
+  - SHOULD: Use feature flags for gradual migration
+  - SHOULD: Test migration on staging first
+  - SHOULD: Have rollback plan
+
+## Dependency Audit
+
+- Regular audits
+  - SHOULD: Audit dependencies quarterly
+  - SHOULD: Review dependency usage
+  - SHOULD: Remove unused dependencies
+  - SHOULD: Consolidate duplicate dependencies
+  - SHOULD: Review dependency licenses
+
+- Audit checklist
+  - SHOULD: Check for security vulnerabilities
+  - SHOULD: Check for outdated dependencies
+  - SHOULD: Check for unused dependencies
+  - SHOULD: Check for duplicate dependencies
+  - SHOULD: Review dependency licenses
+
+## Best Practices
+
+- Dependency hygiene
+  - SHOULD: Keep dependencies up-to-date
+  - SHOULD: Remove unused dependencies
+  - SHOULD: Minimize dependency count
+  - SHOULD: Prefer smaller, focused packages
+  - SHOULD: Document why dependencies are needed
+
+- Team coordination
+  - SHOULD: Coordinate major dependency updates
+  - SHOULD: Communicate breaking changes
+  - SHOULD: Review dependency updates in PRs
+  - SHOULD: Document dependency decisions
+
+- Performance
+  - SHOULD: Monitor bundle size impact
+  - SHOULD: Use tree-shaking friendly packages
+  - SHOULD: Lazy load heavy dependencies
+  - SHOULD: Analyze bundle composition
+
+---
+
+## See Also
+
+- **[Security Guidelines](mdc:.cursor/rules/security-guidelines.mdc)**: Security in dependencies
+- **[CI/CD & Deployment](mdc:.cursor/rules/ci-cd-deployment.mdc)**: Dependency checks in CI
+- **[Performance Optimization](mdc:.cursor/rules/performance-optimization.mdc)**: Bundle optimization

@@ -1,0 +1,211 @@
+---
+description: Security guidelines for protecting applications, data, and users. Use when handling authentication, authorization, input validation, or sensitive data. Always apply security best practices.
+alwaysApply: false
+---
+# Security Guidelines
+
+Concise rules for building secure applications. Use MUST/SHOULD/NEVER to guide decisions.
+
+## Authentication & Authorization
+
+- Authentication
+  - MUST: Use secure authentication methods (OAuth, password hashing)
+  - MUST: Never store passwords in plain text
+  - MUST: Use secure session management
+  - SHOULD: Implement rate limiting for login attempts
+  - MUST: Use HTTPS for all authentication flows
+  - SHOULD: Implement multi-factor authentication (MFA) for sensitive operations
+  - MUST: Invalidate sessions on logout
+  - SHOULD: Implement session timeout
+
+- Authorization
+  - MUST: Verify user permissions before sensitive operations
+  - MUST: Use Row Level Security (RLS) in Supabase for database access
+  - MUST: Validate authorization on both client and server
+  - SHOULD: Use role-based access control (RBAC) when appropriate
+  - MUST: Never trust client-side authorization checks alone
+  - SHOULD: Implement principle of least privilege
+
+## Input Validation & Sanitization
+
+- Input validation
+  - MUST: Validate all user input on the server
+  - MUST: Validate input type, format, and length
+  - SHOULD: Use Zod or similar for schema validation
+  - MUST: Reject invalid input early
+  - SHOULD: Validate on client for better UX, but never rely on it
+  - MUST: Sanitize user input before storing in database
+  - SHOULD: Use parameterized queries to prevent SQL injection
+
+- Output encoding
+  - MUST: Escape user-generated content before rendering
+  - MUST: Use React's built-in XSS protection (automatic escaping)
+  - SHOULD: Sanitize HTML if allowing user-generated HTML
+  - MUST: Validate URLs before redirecting
+  - SHOULD: Use Content Security Policy (CSP) headers
+
+## Data Protection
+
+- Sensitive data
+  - MUST: Never expose API keys, secrets, or tokens to the client
+  - MUST: Use environment variables for sensitive configuration
+  - MUST: Never commit secrets to version control
+  - SHOULD: Use secret management services in production
+  - MUST: Encrypt sensitive data at rest
+  - MUST: Use HTTPS for data in transit
+  - SHOULD: Implement data encryption for PII (Personally Identifiable Information)
+
+- Environment variables
+  - MUST: Use `NEXT_PUBLIC_` prefix only for public variables
+  - MUST: Never use `NEXT_PUBLIC_` for secrets or API keys
+  - SHOULD: Validate environment variables at startup
+  - MUST: Use different secrets for different environments
+  - SHOULD: Rotate secrets regularly
+
+## API Security
+
+- API endpoints
+  - MUST: Authenticate API requests
+  - MUST: Authorize API requests (check permissions)
+  - SHOULD: Implement rate limiting
+  - MUST: Validate request data
+  - SHOULD: Use HTTPS for all API endpoints
+  - SHOULD: Implement request signing for sensitive operations
+  - MUST: Return appropriate HTTP status codes
+
+- CORS
+  - MUST: Configure CORS properly
+  - SHOULD: Restrict allowed origins to known domains
+  - MUST: Never use `Access-Control-Allow-Origin: *` in production
+  - SHOULD: Specify allowed methods and headers explicitly
+
+## Database Security
+
+- SQL injection prevention
+  - MUST: Use parameterized queries (Supabase client handles this)
+  - MUST: Never concatenate user input into SQL queries
+  - SHOULD: Use ORM or query builder when possible
+  - MUST: Validate input before database operations
+
+- Row Level Security (RLS)
+  - MUST: Enable RLS on all tables in Supabase
+  - MUST: Create granular RLS policies per operation
+  - MUST: Test RLS policies thoroughly
+  - SHOULD: Use `auth.uid()` for user-based policies
+  - MUST: Never disable RLS in production
+
+- Database functions
+  - MUST: Use `SECURITY INVOKER` by default
+  - MUST: Use `SECURITY DEFINER` only when necessary and review carefully
+  - MUST: Set `search_path = ''` in database functions
+  - MUST: Use fully qualified names in functions
+
+## Client-Side Security
+
+- Client-side code
+  - MUST: Never expose secrets in client-side code
+  - SHOULD: Minimize sensitive logic in client components
+  - MUST: Validate data on client for UX, but never rely on it
+  - SHOULD: Use Server Actions for sensitive operations
+  - MUST: Sanitize user input before displaying
+
+- XSS prevention
+  - MUST: Use React's built-in XSS protection
+  - MUST: Never use `dangerouslySetInnerHTML` with user input
+  - SHOULD: Use Content Security Policy (CSP)
+  - MUST: Validate and sanitize URLs before using in links
+
+## Headers & HTTP Security
+
+- Security headers
+  - SHOULD: Set security headers in Next.js middleware or `next.config.mjs`
+  - SHOULD: Use `X-Frame-Options: DENY` to prevent clickjacking
+  - SHOULD: Use `X-Content-Type-Options: nosniff`
+  - SHOULD: Use `Referrer-Policy: strict-origin-when-cross-origin`
+  - SHOULD: Use `Permissions-Policy` to restrict browser features
+  - SHOULD: Implement Content Security Policy (CSP)
+
+- HTTPS
+  - MUST: Use HTTPS in production
+  - SHOULD: Enforce HTTPS redirects
+  - SHOULD: Use HSTS (HTTP Strict Transport Security)
+
+## Error Handling Security
+
+- Error messages
+  - MUST: Never expose sensitive information in error messages
+  - MUST: Use generic error messages in production
+  - SHOULD: Log detailed errors server-side only
+  - MUST: Never expose stack traces to users in production
+  - SHOULD: Use error codes for programmatic error handling
+
+- Logging
+  - MUST: Never log sensitive data (passwords, tokens, API keys)
+  - SHOULD: Sanitize logs before storing
+  - SHOULD: Use structured logging with redaction
+  - MUST: Secure log storage and access
+
+## Dependency Security
+
+- Dependencies
+  - SHOULD: Keep dependencies up to date
+  - SHOULD: Regularly audit dependencies for vulnerabilities
+  - SHOULD: Use `npm audit` or similar tools
+  - SHOULD: Prefer well-maintained packages
+  - MUST: Review dependencies before adding to project
+  - SHOULD: Use lock files (package-lock.json, pnpm-lock.yaml)
+
+- Supply chain security
+  - SHOULD: Verify package integrity
+  - SHOULD: Use package managers with security features
+  - SHOULD: Monitor for security advisories
+  - SHOULD: Have a process for updating vulnerable dependencies
+
+## File Upload Security
+
+- File uploads
+  - MUST: Validate file types (check MIME type, not just extension)
+  - MUST: Validate file size
+  - MUST: Scan files for malware if handling user uploads
+  - SHOULD: Store uploaded files outside web root
+  - SHOULD: Use unique filenames to prevent overwrites
+  - MUST: Never execute uploaded files
+  - SHOULD: Use Supabase Storage with RLS for file uploads
+
+## Session Security
+
+- Session management
+  - MUST: Use secure, HTTP-only cookies for sessions
+  - SHOULD: Implement session expiration
+  - SHOULD: Rotate session tokens regularly
+  - MUST: Invalidate sessions on logout
+  - SHOULD: Implement concurrent session limits
+  - MUST: Use SameSite cookie attribute
+
+## Best Practices
+
+- Security review
+  - SHOULD: Review security implications of new features
+  - SHOULD: Test security measures regularly
+  - SHOULD: Keep security documentation up to date
+  - SHOULD: Have a security incident response plan
+
+- Defense in depth
+  - SHOULD: Implement multiple layers of security
+  - SHOULD: Never rely on a single security measure
+  - SHOULD: Assume any single layer can be compromised
+  - MUST: Validate and authorize at every layer
+
+- Security updates
+  - SHOULD: Stay informed about security vulnerabilities
+  - SHOULD: Apply security patches promptly
+  - SHOULD: Have a process for handling security updates
+  - MUST: Test security updates before deploying
+
+---
+
+## See Also
+
+- **[OWASP Top 10](https://owasp.org/www-project-top-ten/)**: Common security vulnerabilities
+- **[Next.js Security](https://nextjs.org/docs/app/building-your-application/configuring/security-headers)**: Next.js security features
+- **[RLS Policies](mdc:.cursor/rules/create-rls-policies.mdc)**: Database security policies

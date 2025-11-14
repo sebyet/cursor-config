@@ -1,6 +1,5 @@
 ---
-# Specify the following for Cursor rules
-description: Coding rules for Supabase Realtime
+description: Coding rules for Supabase Realtime. Use when implementing real-time features, live updates, presence tracking, or broadcast messaging. Prefer broadcast over postgres_changes for scalability.
 alwaysApply: false
 ---
 

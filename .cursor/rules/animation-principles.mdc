@@ -1,0 +1,123 @@
+---
+description: Core animation principles and philosophy based on Emil Kowalski's work. Use when deciding whether to animate, understanding animation purpose, or developing animation taste. Ensures animations enhance rather than hinder user experience.
+alwaysApply: false
+---
+
+# Animation Principles
+
+Based on principles from Emil Kowalski's work on animation design. These guidelines help create purposeful, performant animations that enhance user experience.
+
+## Core Principles
+
+### 1. Purposeful Animations
+
+**MUST**: Every animation must serve a clear purpose. Before animating, ask:
+- Does this animation provide feedback?
+- Does it help users understand what's happening?
+- Does it create spatial consistency?
+- Does it add deliberate delight (sparingly)?
+
+**NEVER**: Animate for animation's sake. Unnecessary animations make interfaces feel unpredictable, slow, and annoying.
+
+**Examples of purposeful animations:**
+- Button press feedback (scale down to `0.97`)
+- Toast enter/exit (spatial consistency for swipe-to-dismiss)
+- Feature explanations (helping users understand functionality)
+- Morphing components (delight for rarely-used interactions)
+
+### 2. Frequency of Use
+
+**MUST**: Consider how often users will see an animation:
+- **High frequency** (hundreds of times per day): Remove animations entirely
+- **Medium frequency** (multiple times per day): Use minimal, fast animations
+- **Low frequency** (rarely used): Can use more elaborate animations for delight
+
+**NEVER**: Animate keyboard-initiated actions. These actions are repeated frequently and animations make them feel slow, delayed, and disconnected.
+
+**NEVER**: Animate frequently-used interactions like:
+- Command menus opened multiple times daily
+- List navigation with arrow keys
+- Hover effects on items used repeatedly
+
+**Example**: Raycast has no animation on its command menu because it's used hundreds of times per day. The optimal experience is instant.
+
+### 3. Perception of Speed
+
+**MUST**: Keep UI animations fast to improve perceived performance:
+- **General rule**: Animations should stay under `300ms`
+- **Dropdowns/selects**: `180ms` feels more responsive than `400ms`
+- **Spinners**: Faster spinning makes apps seem to load faster (even with same load time)
+
+**MUST**: Tooltips should have a slight delay before appearing to prevent accidental activation. Once a tooltip is open, hovering over other tooltips should open them with **no delay and no animation**.
+
+**SHOULD**: Remove animations or hover interactions altogether if seen tens or hundreds of times per day. They'll quickly become annoying and make the interface feel slower.
+
+## Developing Animation Taste
+
+### 4. Study Great Work
+
+**SHOULD**: Surround yourself with great animation work:
+- Study apps with excellent animations (Linear, Raycast, Apple products)
+- Analyze why specific interactions feel good
+- Build a curated list of tastemakers in animation design
+- Use their apps, study their patterns
+
+### 5. Think Deeply About Why
+
+**SHOULD**: Don't just label animations as good or bad. Instead:
+- Rationalize why something feels great
+- Analyze and understand patterns
+- Go beyond surface level
+- Be curious about the mechanics
+
+**SHOULD**: Practice your craft. Create animations. Seek feedback from others. Good critique accelerates learning more than trial and error alone.
+
+### 6. The Taste Gap
+
+**SHOULD**: Recognize that your early work won't be good, and that's normal. Your taste is good enough to tell that your work isn't on par yet. Don't quit—it gets better over time.
+
+## When NOT to Animate
+
+**NEVER** animate:
+- Keyboard-initiated actions (arrow keys, shortcuts)
+- Frequently-used interactions (command menus, list navigation)
+- Actions performed hundreds of times per day
+- When the purpose is unclear
+- When it would slow down the user's workflow
+- Focus changes during keyboard navigation
+- Route changes for frequently-visited pages
+
+**REMEMBER**: The best animation is sometimes no animation. The goal is to build great user interfaces that users will happily use daily, not to animate for animation's sake.
+
+## Summary Checklist
+
+When implementing an animation, ask:
+
+1. ✅ **Purpose**: Does this animation serve a clear purpose?
+2. ✅ **Frequency**: How often will users see this? (If very frequent, skip animation)
+3. ✅ **Speed**: Is it under 300ms? (Faster is usually better)
+4. ✅ **Easing**: Am I using `ease-out` or spring physics?
+5. ✅ **Origin**: Is the transform-origin correct?
+6. ✅ **Scale**: Am I avoiding `scale(0)` and using `0.9+`?
+7. ✅ **Performance**: Am I using `transform` and `opacity`?
+8. ✅ **Accessibility**: Am I honoring `prefers-reduced-motion`?
+9. ✅ **Interruptibility**: Can this animation be interrupted?
+10. ✅ **Choreography**: Are multiple animations properly staggered/timed?
+11. ✅ **States**: Have I defined clear animation variants?
+12. ✅ **Testing**: Have I tested on low-end devices and with reduced motion?
+13. ✅ **Delight vs. Annoyance**: Will this delight or annoy users over time?
+
+---
+
+## See Also
+
+- **[Animation Patterns](mdc:.cursor/rules/animation-patterns.mdc)**: Implementation patterns and choreography
+- **[Framer Motion Guide](mdc:.cursor/rules/animation-framer-motion.mdc)**: Framer Motion best practices and performance
+- **[Web Interface Guidelines](mdc:.cursor/rules/web-interface-guidelines.mdc)**: General UI/UX guidelines including animation basics
+- **[Design Inspirations](mdc:.cursor/rules/design-inspirations.mdc)**: Design references from leading companies
+
+## References
+
+- [You Don't Need Animations](https://emilkowal.ski/ui/you-dont-need-animations) - Emil Kowalski
+- [7 Practical Animation Tips](https://emilkowal.ski/ui/7-practical-animation-tips) - Emil Kowalski
+- [Developing Taste](https://emilkowal.ski/ui/developing-taste) - Emil Kowalski
