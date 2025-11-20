@@ -9,23 +9,39 @@ _Summary: Route every UX/UI/motion question to the right section, then apply the
 
 | Trigger or question | Jump to | Key actions |
 | --- | --- | --- |
-| “Need UX heuristics or copy rules?” | [Self-Evident Experience](#self-evident-experience) | Design for scanning, clarity, recovery. |
-| “How should navigation/forms behave?” | [Navigation & Forms](#navigation-and-forms) | Provide progress, smart defaults, inline errors. |
-| “Which components/tokens/utilities do I use?” | [Design System & Tailwind Delivery](#design-system-and-tailwind-delivery) | Reuse vibecamp components, semantic tokens, responsive Tailwind. |
-| “What are our accessibility and interaction baselines?” | [Interactions & Accessibility](#interactions-and-accessibility) | Keyboard support, focus, hit targets, feedback. |
-| “Should/How do we animate this?” | [Motion Principles](#motion-principles) & [Motion Patterns](#motion-patterns) | Confirm purpose, frequency, speed, choreography. |
-| “How do we implement/test animations?” | [Framer Motion & Testing](#framer-motion-and-testing) | Use variants, AnimatePresence, reduced motion, performance QA. |
+| "What design references should I study?" | [Design Inspirations](#design-inspirations) | Study proven patterns from leading products. |
+| "Need UX heuristics or copy rules?" | [Self-Evident Experience](#self-evident-experience) | Design for scanning, clarity, recovery. |
+| "How should navigation/forms behave?" | [Navigation & Forms](#navigation-and-forms) | Provide progress, smart defaults, inline errors. |
+| "Which components/tokens/utilities do I use?" | [Design System & Tailwind Delivery](#design-system-and-tailwind-delivery) | Reuse vibecamp components, semantic tokens. |
+| "What are our accessibility and interaction baselines?" | [Interactions & Accessibility](#interactions-and-accessibility) | Keyboard support, focus, hit targets, feedback. |
+| "Should/How do we animate this?" | [Motion Principles](#motion-principles) & [Motion Patterns](#motion-patterns) | Confirm purpose, frequency, speed, choreography. |
+| "How do we implement/test animations?" | [Framer Motion & Testing](#framer-motion-and-testing) | Testing and QA for motion. |
+
+## Design Inspirations {#design-inspirations}
+
+_Summary: Reference these products for proven patterns, interaction design, and visual excellence. Study their approaches before inventing new patterns._
+
+- **Default references**
+  - **Airbnb** – Exceptional search and filtering UX, image-first content presentation, trust-building through reviews and verification, clear pricing transparency, mobile-first responsive design.
+  - **OpenAI** – Clean, minimal interfaces for complex AI interactions, clear information hierarchy, excellent loading states and progressive disclosure, thoughtful error handling and user guidance.
+  - **Dia Browser** – Modern browser UI patterns, efficient space utilization, smooth transitions, intuitive navigation, polished micro-interactions.
+- **How to use**
+  - MUST study these references before designing similar features; understand the "why" behind their patterns, not just copy the "what".
+  - SHOULD analyze their information architecture, interaction patterns, and visual hierarchy when facing similar design challenges.
+  - SHOULD reference specific patterns (e.g., "Airbnb's date picker approach" or "OpenAI's streaming response pattern") when proposing solutions.
+  - AVOID copying without understanding context; adapt patterns to fit your product's unique needs and constraints.
 
 ## Experience Delivery Flow
 
 _Summary: Follow this order whenever shaping UX/UI work to keep intent, implementation, and polish aligned._
 
-1. **Context first** – Clarify the task, entry points, success metric, and how often the surface is used. Reference [Self-Evident Experience](#self-evident-experience).
-2. **Structure the narrative** – Map information hierarchy, navigation depth, and form flows ([Navigation & Forms](#navigation-and-forms)).
-3. **Apply the system** – Choose existing vibecamp components, semantic tokens, Tailwind utilities, and responsive/dark rules ([Design System & Tailwind Delivery](#design-system-and-tailwind-delivery)).
-4. **Refine interactions** – Ensure accessibility, feedback, URL/state sync, and touch behaviors ([Interactions & Accessibility](#interactions-and-accessibility)).
-5. **Add motion deliberately** – Only if it clarifies cause/effect or adds rare delight; select the right pattern and tooling ([Motion Principles](#motion-principles), [Motion Patterns](#motion-patterns), [Framer Motion & Testing](#framer-motion-and-testing)).
-6. **Benchmark & QA** – Compare against inspiration references, test reduced motion, low-power devices, and copy polish before shipping.
+1. **Study references** – Review relevant patterns from [Design Inspirations](#design-inspirations) to understand proven approaches before designing.
+2. **Context first** – Clarify the task, entry points, success metric, and how often the surface is used. Reference [Self-Evident Experience](#self-evident-experience).
+3. **Structure the narrative** – Map information hierarchy, navigation depth, and form flows ([Navigation & Forms](#navigation-and-forms)).
+4. **Apply the system** – Choose existing vibecamp components and semantic tokens ([Design System & Tailwind Delivery](#design-system-and-tailwind-delivery)).
+5. **Refine interactions** – Ensure accessibility, feedback, URL/state sync, and touch behaviors ([Interactions & Accessibility](#interactions-and-accessibility)).
+6. **Add motion deliberately** – Only if it clarifies cause/effect or adds rare delight; select the right pattern and tooling ([Motion Principles](#motion-principles), [Motion Patterns](#motion-patterns), [Framer Motion & Testing](#framer-motion-and-testing)). See [Frontend Developer > Animations](mdc:.cursor/rules/full-stack-engineering.mdc#animations) for implementation.
+7. **Benchmark & QA** – Compare against [Design Inspirations](#design-inspirations) references, test reduced motion, low-power devices, and copy polish before shipping.
 
 ## Self-Evident Experience {#self-evident-experience}
 
@@ -90,21 +106,14 @@ _Summary: Baseline interaction contract drawn from the web interface guidelines�
 
 ## Design System & Tailwind Delivery {#design-system-and-tailwind-delivery}
 
-_Summary: Ship everything through the vibecamp system, semantic tokens, and Tailwind best practices._
+_Summary: Ship everything through the vibecamp system, semantic tokens, and Tailwind best practices. For implementation details, see [Frontend Developer > UI Components & Styling](mdc:.cursor/rules/full-stack-engineering.mdc#ui-components--styling)._
 
 - **Component reuse**
   - MUST pull from `components/ui/*` before attempting bespoke builds; NEVER fork when a design-system primitive exists.
-  - MUST use built-in variants (`default`, `outline`, `destructive`, `ghost`, etc.) before inventing new props, and reuse the `cn()` helper for class merging.
+  - MUST use built-in variants (`default`, `outline`, `destructive`, `ghost`, etc.) before inventing new props.
 - **Tokens & colors**
   - MUST reference semantic tokens (`bg-background`, `text-foreground`, `bg-primary`, etc.) instead of hard-coded hex/rgb/hsl.
   - MUST define tokens as CSS variables in `globals.css` and consume them through Tailwind config; NEVER inline brand colors inside components.
-- **Tailwind hygiene**
-  - MUST keep `tailwind.config.ts` content paths in sync with app/components/pages directories and extend the theme rather than overriding defaults.
-  - SHOULD group utility classes logically, rely on JIT/automatic purging, and prefer component extraction or CVA variants over `@apply`.
-  - MUST keep responsive styles mobile-first (`base` → `sm:` → `md:` → …) and verify across breakpoints + dark mode (`dark:` with `next-themes`).
-- **Class management**
-  - MUST use `cn()` (clsx + tailwind-merge) for conditional utilities to prevent conflicts.
-  - SHOULD limit arbitrary values; if a custom spacing/color recurs, add it to the theme.
 - **Accessibility with utilities**
   - MUST provide focus rings (`focus:ring-2 focus:ring-primary focus:ring-offset-2`) and enforce contrast (APCA preferred) in both light/dark themes.
 
@@ -153,16 +162,8 @@ _Summary: Canonical patterns for feedback, overlays, lists, loading, and gesture
 
 ## Framer Motion & Testing {#framer-motion-and-testing}
 
-_Summary: Implementation hygiene plus perf/accessibility QA for motion-heavy surfaces._
+_Summary: Testing and QA guidance for motion-heavy surfaces. For implementation details, see [Frontend Developer > Animations](mdc:.cursor/rules/full-stack-engineering.mdc#animations)._
 
-- **Library usage**
-  - MUST leverage variants for consistent states, `AnimatePresence` for enter/exit, `layout` for automatic position animation, and `layoutId` for shared transitions.
-  - SHOULD batch transitions through parent variants to stagger children rather than ad-hoc timers.
-- **Performance**
-  - MUST prefer `transform`/`opacity`, let Framer manage `will-change`, and avoid animating `top/left`.
-  - SHOULD keep springs tuned (stiffness/damping presets) and reuse shared configs to prevent drift.
-- **Reduced motion**
-  - MUST read `useReducedMotion()` and strip or shorten animations when enabled; also provide CSS fallbacks for non-Framer zones.
 - **Testing regimen**
   - SHOULD test motion on low-end hardware, throttled CPU/network, Safari, and with `prefers-reduced-motion` toggled.
   - MUST verify screen readers announce content changes (not animation), keyboard paths stay instant, and interrupted animations recover gracefully.
