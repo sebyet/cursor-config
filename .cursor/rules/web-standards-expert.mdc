@@ -1,8 +1,7 @@
 ---
 description: Comprehensive web interface guidelines for interactions, animations, layout, content, forms, performance, and design. Use when implementing UI components, forms, interactions, or accessibility features.
-alwaysApply: true
+alwaysApply: false
 ---
-
 Concise rules for building accessible, fast, delightful UIs Use MUST/SHOULD/NEVER to guide decisions
 
 ## Interactions

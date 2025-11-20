@@ -154,13 +154,19 @@ I prioritize **10 core commands** that cover everything you need:
    - Run tests explicitly
    - Verify everything works
 
-9. **`@plan-product`** - When you need to:
+9. **`@test-automated`** - When you need to:
+   - Automatically test the last feature you worked on
+   - Test the complete user journey
+   - Get comprehensive feedback on what works and what doesn't
+   - Catch bugs before they reach production
+
+10. **`@plan-product`** - When you need to:
    - Generate comprehensive user flows for your platform
    - Map out system setup and user interactions
    - Create product documentation with acceptance criteria
    - Plan product features before building
 
-10. **`@help`** - When you need to:
+11. **`@help`** - When you need to:
    - Find the right command
    - Understand what each command does
 
@@ -198,7 +204,8 @@ I match requests to commands based on:
 **Intent keywords:**
 - "add", "create", "build", "implement" → `@add-feature`
 - "fix", "broken", "error", "bug" → `@fix-everything`
-- "test", "check", "verify" → `@run-tests`
+- "test", "check", "verify" → `@run-tests` or `@test-automated`
+- "automated test", "playwright", "e2e", "end-to-end", "test journey" → `@test-automated`
 - "deploy", "publish", "release", "go live" → `@publish-production` or `@publish-feature`
 - "setup", "configure", "initialize", "new project" → `@setup-new-project`
 - "delete", "remove" → `@delete-feature`
@@ -222,6 +229,7 @@ I match requests to commands based on:
 - **[Add Feature](add-feature.md)**: Build features
 - **[Fix Everything](fix-everything.md)**: Fix problems
 - **[Run Tests](run-tests.md)**: Test and quality
+- **[Automated Testing](test-automated.md)**: Automated testing with Playwright
 - **[Publish Production](publish-production.md)**: Deploy to production
 - **[Publish Feature](publish-feature.md)**: Deploy preview
 - **[Setup New Project](setup-new-project.md)**: Set up projects

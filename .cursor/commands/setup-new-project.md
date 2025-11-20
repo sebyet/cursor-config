@@ -1,341 +1,247 @@
 # Setup New Project
 
-Set up a brand new project from scratch so you can start building your website or app.
+Get your brand new Next.js project ready to go! I'll check everything you need, install all the packages, set up your database connection, and make sure you're ready to start building. Just run this command and I'll handle all the technical setup automatically!
 
-**For Non-Technical Users:** Don't worry about the technical details below - I'll guide you through everything step-by-step in simple terms. Just follow along and I'll handle all the complicated stuff!
+## What This Does
 
-## What This Does (In Simple Terms)
+1. **Check your tools** - Make sure Node.js, Git, and Vercel CLI are installed (I'll help install them if needed!)
+2. **Install all packages** - Get everything from your tech stack ready to use, including all the UI components
+3. **Set up Supabase** - Connect your database and get your credentials configured
+4. **Show you what's ready** - Give you a clear summary of everything that's set up
 
-I'm going to:
-1. Check if you have the basic tools installed (like checking if you have a word processor)
-2. Create a folder for your project (like creating a new folder on your computer)
-3. Set up everything your website needs (like installing all the parts)
-4. Connect it to online services (so you can save your work and make it live)
-5. Make it look nice (customize colors and styles)
-
-**You'll just need to:** Answer a few questions and sign in to some services when I ask.
+**Note:** This command gets everything ready, but doesn't start your server or customize your design system - we'll do those separately!
 
 ---
 
-## Technical Steps (I handle these automatically)
+## Technical Steps
 
-1. **Verify prerequisites before starting**
-   - **Check if project name provided:** Ask the user what they want to name their project if not provided
-   - **Verify Node.js is installed:** Check with `node --version` (if not, guide them: "I need to install the tools that run websites - this is like installing an app. I'll guide you through it.")
-   - **Verify pnpm is installed:** Check with `pnpm --version` (if not, guide them: "I need to install a package manager - this helps organize all the parts your website needs. I'll install it for you.")
-   - **Verify Git is installed:** Check with `git --version` (if not, guide them: "I need to install Git - this saves your work automatically so you don't lose anything. Think of it like auto-save in Google Docs.")
-   - **Verify Git is latest stable version:** 
-     - Get current version: `git --version`
-     - Check latest stable version: On macOS with Homebrew, use `brew info git | grep "stable"` or check if outdated with `brew outdated git`
-     - If outdated or not installed via Homebrew: Update with `brew upgrade git` (if installed via Homebrew) or install latest with `brew install git`
-     - On other platforms: Check latest version from git-scm.com and guide manual update if needed
-   - **Verify Git is authenticated:** Check with `git config --global user.name` and `git config --global user.email` (if not configured, help them set it up)
-   - **Verify Vercel CLI is installed:** Check with `vercel --version` (if not, guide them: "I need to install Vercel - this makes your website live on the internet. Think of it like the tool that publishes your blog post so everyone can see it.")
-   - **Verify Vercel CLI is latest stable version:**
-     - Get current version: `vercel --version`
-     - Check latest stable version: `npm view vercel version` or `pnpm view vercel version`
-     - Compare versions and if outdated, update with `npm install -g vercel@latest` or `pnpm add -g vercel@latest`
-   - **Verify Vercel is logged in:** Check with `vercel whoami` (if not logged in, use `expect` to automate login with Google - arrow down once from default GitHub option, then Enter)
-   - **Verify GitHub CLI is installed:** Check with `gh --version` (if not, guide them: "I need to install GitHub - this stores your project online so you can access it from anywhere. Think of it like Google Drive for your website files.")
-   - **Verify GitHub is logged in:** Check with `gh auth status` (if not logged in, guide them to log in with `gh auth login`)
-  - **Do not proceed with installation until all prerequisites are met**
-  - **If Vercel not logged in:** Automate login using `expect` to select Google:
-    ```bash
-    expect -c "
-    set timeout 60
-    spawn vercel login
-    expect {
-        \"Log in to Vercel\" {
-            send \"\\033\[B\\r\"
-        }
-        timeout {
-            puts \"Timeout waiting for login menu\"
-            exit 1
-        }
-    }
-    expect eof
-    "
-    ```
-    - This automatically selects "Continue with Google" (arrow down once from default GitHub option, then Enter)
-    - The browser will open for Google authentication - wait for user to complete authentication
-  - Tell the user what you found and what needs to be installed/configured
+### 1. Check/Install Node.js & pnpm
 
-2. **Get project name and initialize**
-   - **If project name not provided:** Ask the user what they want to name their project
-   - Navigate to or create the `Projects/sebastien/` folder
-   - **Run the initialization with automated prompts:** Use `expect` inline to handle all interactive prompts automatically:
-     ```bash
-     cd /Users/sebastien.payet/Projects/sebastien
-     expect -c "
-     set timeout 60
-     spawn pnpm dlx shadcn@latest init
-     expect {
-         \"Would you like to start a new project?\" {
-             send \"\033\[B\r\"
-         }
-         timeout {
-             puts \"Timeout waiting for project type prompt\"
-             exit 1
-         }
-     }
-     expect {
-         \"What is your project named?\" {
-             send \"$project_name\r\"
-         }
-         timeout {
-             puts \"Timeout waiting for project name prompt\"
-             exit 1
-         }
-     }
-     expect {
-         \"Which color would you like to use as the base color?\" {
-             send \"neutral\r\"
-         }
-         timeout {
-             puts \"Timeout waiting for color prompt\"
-             exit 1
-         }
-     }
-     expect eof
-     "
-     ```
-     - Replace `$project_name` with the actual project name provided by the user
-   - The initialization will automatically:
-     - Detect that there's no package.json file in the current directory
-     - Select "Next.js 16" (arrow down once from default "Next.js 15")
-     - Enter the project name you provided
-     - Choose "Neutral" as the base color
-     - Create a new Next.js 16 project in a folder named after your project
-     - Write `components.json` configuration file
-     - Check the registry
-     - Update CSS variables in `app/globals.css`
-     - Install dependencies automatically
-     - Create `lib/utils.ts` file
+**Check if Node.js is installed:**
+- Run `node --version` to see if it's there
+- If not installed: I'll guide you to install Node.js from nodejs.org (it's free and easy!)
+- If installed but outdated: I'll recommend updating to the latest LTS version
 
-3. **Copy .cursor folder**
-   - Navigate to the project folder (created in step 2)
-   - Copy the `.cursor` folder from `/Users/sebastien.payet/Projects/sebastien/.cursor` to the newly created project folder
-   - This includes all Cursor commands and rules that should be available in the new project
-   - Use: `cp -r /Users/sebastien.payet/Projects/sebastien/.cursor /Users/sebastien.payet/Projects/sebastien/$project_name/`
-   - Verify the `.cursor` folder was copied successfully
+**Check if pnpm is installed:**
+- Run `pnpm --version` to see if it's there
+- If not installed: I'll install it for you with `npm install -g pnpm`
+- pnpm is faster than npm, so we'll use it for everything!
 
-4. **Install all shadcn components**
-   - Navigate to the project folder (created in step 2)
-   - Install all available shadcn/ui components: `pnpm dlx shadcn@latest add --all --yes`
-   - `--all`: Adds all available components from the registry
-   - `--yes`: Skips confirmation prompts for each component
-   - Verify installation completed successfully
+**Don't proceed until both are ready:**
+- I'll make sure everything is installed before moving on
+- If something needs your help, I'll tell you exactly what to do!
 
-5. **Set up Supabase**
-   - Navigate to the project folder (created in step 2)
-   - **Ask user to create/select Supabase project:** "Let's set up Supabase for your database and authentication. Please create a new project (or select an existing one) in the Supabase dashboard and update your MCP configuration with the project ID and access token."
-   - **Install Supabase client:** Run `pnpm dlx shadcn@latest add @supabase/supabase-client-nextjs` automatically
-   - **Retrieve credentials via MCP:** Use `mcp_supabase_get_project_url` and `mcp_supabase_get_publishable_keys` to get project URL and anon key
-   - **Configure environment:** Automatically append both values to `.env.local` (create if it doesn't exist)
-   - **Remind about deployment:** Remind user to mirror these values in every deployment secret store (Vercel, etc.)
-   - Verify installation completed successfully
+### 2. Check/Install Git
 
-6. **Check project state**
-   - Check if project already exists (if yes, ask if they want to start fresh)
-   - Check if Git is already initialized in project (if yes, ask if they want to use it or start fresh)
-   - Check if Vercel is already connected to project (if yes, ask if they want to use it or start fresh)
+**Check if Git is installed:**
+- Run `git --version` to see if it's there
+- If not installed: I'll help you install it:
+  - macOS: `brew install git`
+  - Linux: Use your package manager (apt, yum, etc.)
+  - Windows: Download from git-scm.com
 
-7. **Set up Git in project**
-   - **If Git not initialized:** Initialize Git and create `.gitignore`
-   - **If Git already initialized:** Ask if they want to use it or start fresh
-   - Make the first save (commit) of your project
+**Check Git authentication:**
+- Check if you've set up your name: `git config --global user.name`
+- Check if you've set up your email: `git config --global user.email`
+- If not authenticated: I'll help you configure it:
+  - `git config --global user.name "Your Name"`
+  - `git config --global user.email "your.email@example.com"`
 
-8. **Connect to GitHub**
-   - Check if repository already exists
-   - **If no repository:** Help them create a new repository on GitHub
-   - Connect their local project to GitHub
-   - Upload the first version to GitHub
+**Don't proceed until Git is ready:**
+- Git needs to know who you are to save your work properly
+- I'll make sure everything is set up before moving on!
 
-9. **Connect to Vercel**
-   - Check if Vercel project already exists
-   - **If Vercel not connected:** Initialize Vercel project (`vercel init` or `vercel link`)
-   - **If first time:** Guide them through Vercel setup step-by-step
-   - Connect project to Vercel account
-   - Set up automatic deployments from GitHub (connect GitHub repo to Vercel)
-   - Configure project settings (framework preset, build settings, environment variables if needed)
-   - Tell them their deployment URL once connected
+### 3. Check/Install Vercel CLI & Verify Connection
 
-10. **Verify dependencies**
-   - Dependencies are automatically installed during `pnpm dlx shadcn@latest init --template next-16 --base-color neutral --yes`
-   - shadcn/ui components were installed in step 4 using `pnpm dlx shadcn@latest add --all --yes`
-   - Supabase dependencies were installed in step 5
-   - Verify that all installations completed successfully
-   - **If installation failed:** Run `pnpm install` manually to retry
-   - **If already installed:** Verify everything is up to date
-   - Tell them if anything goes wrong
-   - Make sure everything installed correctly
+**Check if Vercel CLI is installed:**
+- Run `vercel --version` to see if it's there
+- If not installed: I'll install it with `npm install -g vercel` or `pnpm add -g vercel`
+- If installed but outdated: I'll update it to the latest version
 
-11. **Customize design system** (automatic after project setup)
-   - After project is set up, automatically route to `customize-design-system.md`
-   - Guide user through customizing colors, fonts, and styles
-   - This happens automatically - don't ask, just do it
-   - Tell user: "Great! Your project is set up. Now let me customize your design system - I'll ask you a few questions about colors and styles to make it look great!"
+**Verify MCP connection to Vercel:**
+- I'll check if I can connect to Vercel using `mcp_vercel_list_deployments`
+- If successful: Great! Everything is connected and ready
+- If connection fails: I'll let you know that the MCP Vercel connection needs to be configured
 
-12. **Test it works**
-   - Try to start the project locally
-   - Tell them if it works or if there are problems
-   - Optionally trigger a test deployment to Vercel to verify everything works
+**Don't proceed until everything is ready:**
+- I'll make sure Vercel CLI is installed and I can connect to it
+- This lets us deploy your app later without any issues!
 
-13. **Document setup**
-   - Create `doc/` folder if it doesn't exist
-   - Create file: `doc/init-project-YYYY-MM-DD.md`
-   - Document: project initialization, tools and versions used, configuration
-   - Include setup details, what was installed (including all shadcn/ui components and Supabase), design system customization, initial configuration, GitHub repo URL, and Vercel deployment URL
+### 4. Install All Tech Stack Packages
+
+I'll install all the packages you need for your project:
+
+```bash
+# Styling Utilities
+pnpm add clsx tailwind-merge
+
+# State Management
+pnpm add zustand nuqs
+
+# Forms & Validation
+pnpm add react-hook-form zod @hookform/resolvers
+
+# Animations
+pnpm add framer-motion
+
+# AI SDK
+pnpm add ai
+
+# Database
+pnpm add @supabase/supabase-js @supabase/ssr
+
+# Internationalization
+pnpm add next-intl
+
+# Email
+pnpm add resend react-email @react-email/components
+
+# Utilities
+pnpm add date-fns
+
+# Development Tools
+pnpm add -D prettier eslint-config-prettier
+
+# UI Components (shadcn/ui)
+# First initialize shadcn/ui
+pnpm dlx shadcn@latest init
+
+# Then install all components
+pnpm dlx shadcn@latest add --all --yes
+```
+
+**What happens:**
+- The `shadcn@latest init` command sets up shadcn/ui configuration (creates `components.json`, updates CSS, etc.)
+- The `add --all --yes` command installs all available components from the registry
+- Components are added to `components/ui/` directory and all dependencies are automatically installed
+- This gives you a complete set of beautiful, accessible UI components ready to use!
+
+### 5. Set Up Supabase
+
+**Install Supabase client via shadcn:**
+```bash
+pnpm dlx shadcn@latest add @supabase/supabase-client-nextjs
+```
+
+**Retrieve credentials via MCP:**
+- I'll get your project URL using `mcp_supabase_get_project_url`
+- I'll get your anon key using `mcp_supabase_get_publishable_keys`
+- These are like your database's address and password - I'll handle them securely!
+
+**Configure environment:**
+- I'll create a `.env.local` file if it doesn't exist (this is where we store secrets)
+- I'll add your Supabase credentials:
+  ```
+  SUPABASE_URL=<project_url_from_mcp>
+  SUPABASE_ANON_KEY=<anon_key_from_mcp>
+  ```
+- This file stays on your computer and never gets shared - it's safe!
+
+**Verify everything is set up:**
+- I'll confirm `.env.local` was created/updated with the correct values
+- Your database connection is now ready to use!
+
+### 6. Summary
+
+At the end, I'll give you a clear summary of everything that's ready:
+
+```
+✅ Setup Complete
+
+What was installed:
+- Node.js: [version]
+- Git: [version]
+- Vercel CLI: [version]
+- State Management: Zustand, Nuqs
+- Forms: React Hook Form, Zod
+- Animations: Framer Motion
+- AI SDK: Vercel AI SDK
+- Database: Supabase client (@supabase/supabase-js, @supabase/ssr, @supabase/supabase-client-nextjs)
+- i18n: next-intl
+- Email: Resend, React Email
+- Utilities: date-fns, clsx, tailwind-merge
+- Development Tools: Prettier, ESLint config
+- UI Components: All shadcn/ui components
+
+Environment configured:
+- `.env.local` created with Supabase credentials (SUPABASE_URL, SUPABASE_ANON_KEY)
+```
+
+---
 
 ## What to Tell the User
 
-**For Non-Technical Users:**
-- Start by asking for the project name if not provided
-- **Explain what we're doing:** "I'm going to set up your new project. This will create all the files and folders needed for your website. I'll guide you through each step!"
-- **Verify prerequisites FIRST:** Before starting, check what tools are installed. Explain in simple terms:
-  - "Let me check if you have the basic tools installed..."
-  - "I need to install [tool name] - this is like installing an app on your computer. I'll guide you through it."
-  - **Never use technical jargon** - Instead of "Node.js", say "the programming language runtime" or just "the tools needed to run your website"
-  - **Explain why we need each tool:**
-    - Git = "Saves your work so you don't lose it"
-    - GitHub = "Stores your project online so you can access it anywhere"
-    - Vercel = "Makes your website live on the internet"
-    - Supabase = "Stores your data and handles user accounts"
-- **Check and update versions:** If tools are outdated, explain: "I need to update [tool] to the latest version - this ensures everything works smoothly"
-- Do not proceed with project initialization until all prerequisites are met
-- **Explain each step simply:**
-  - "Now I'm creating your project folder..."
-  - "I'm installing all the building blocks your website needs..."
-  - "I'm connecting your project to GitHub so it's saved online..."
-- Only set up what's needed - skip steps that are already done
-- **If something needs user action:** Explain clearly what they need to do and why
-  - "I need you to log into GitHub - this lets me save your project online"
-  - "I'll open your browser for you to sign in - just follow the prompts"
-- If there are errors, explain what they mean in simple terms: "Something went wrong with [X]. Here's what happened: [simple explanation]. I'll fix it by [action]"
-- Celebrate when everything works: "All done! Your project is ready. You can now start building features!"
+**When starting:**
+- "Let me set up your new project! I'll check everything you need and install all the packages."
+- "First, let me make sure you have all the tools installed..."
+- "Checking Node.js, Git, and Vercel CLI..."
 
-## Smart Setup Strategy
+**When checking tools:**
+- "Great! Node.js is installed ([version])"
+- "I see pnpm isn't installed yet - let me install it for you!"
+- "Git looks good! Let me check if it's configured..."
+- "I need to set up your Git name and email - this helps save your work properly"
 
-**Check in this order:**
-1. Ask for project name if not provided
-2. **Verify prerequisites (REQUIRED before proceeding):**
-   - Check Node.js is installed (`node --version`)
-   - Check pnpm is installed (`pnpm --version`)
-   - Check Git is installed (`git --version`)
-   - Check Git is latest stable version:
-     - Get current version: `git --version`
-     - Check latest: On macOS with Homebrew, use `brew outdated git` or `brew info git`
-     - If outdated: Update with `brew upgrade git` (if via Homebrew) or install latest with `brew install git`
-   - Check Git is authenticated (`git config --global user.name` and `git config --global user.email`)
-   - Check Vercel CLI is installed (`vercel --version`)
-   - Check Vercel CLI is latest stable version:
-     - Get current version: `vercel --version`
-     - Check latest: `npm view vercel version` or `pnpm view vercel version`
-     - If outdated: Update with `npm install -g vercel@latest` or `pnpm add -g vercel@latest`
-   - Check Vercel is logged in (`vercel whoami`)
-   - Check GitHub CLI is installed (`gh --version`)
-   - Check GitHub is logged in (`gh auth status`)
-   - **Do not proceed until all prerequisites are met**
-3. Navigate to `Projects/sebastien/` folder
-4. Create project directory and initialize with shadcn/ui:
-   - Create the project directory: `mkdir -p /Users/sebastien.payet/Projects/sebastien/$project_name`
-   - Navigate into the project directory: `cd /Users/sebastien.payet/Projects/sebastien/$project_name`
-   - Run initialization with CLI flags: `pnpm dlx shadcn@latest init --template next-16 --base-color neutral --yes`
-   - The CLI will automatically detect if no package.json exists in current directory
-   - Creates Next.js project, sets up configuration, and installs dependencies
-5. Copy `.cursor` folder from parent directory to new project
-6. Install all shadcn/ui components (`pnpm dlx shadcn@latest add --all --yes`)
-7. Set up Supabase (install @supabase/supabase-js)
-8. Project state (Git initialized in project, dependencies installed)
-9. Repository (GitHub repo exists)
-10. Deployment (Vercel project connected)
+**When installing packages:**
+- "Now I'll install all the packages you need - this might take a minute!"
+- "Installing state management tools..."
+- "Setting up forms and validation..."
+- "Installing all the UI components - this gives you beautiful buttons, forms, and more!"
+- "Almost done! Just setting up a few more things..."
 
-**Prerequisites must be met before starting:**
-- If Node.js not installed → Guide installation, then stop
-- If pnpm not installed → Guide installation (`npm install -g pnpm`), then stop
-- If Git not installed → Guide installation, then stop
-- If Git not latest stable version → Check latest version and update:
-  - On macOS with Homebrew: Check with `brew outdated git`, update with `brew upgrade git` or install with `brew install git`
-  - On other platforms: Check latest from git-scm.com and guide manual update
-  - Then stop
-- If Git not authenticated → Help configure (`git config --global user.name` and `git config --global user.email`), then stop
-- If Vercel CLI not installed → Guide installation (`npm i -g vercel` or `pnpm add -g vercel`), then stop
-- If Vercel CLI not latest stable version → Check latest with `npm view vercel version` or `pnpm view vercel version`, update with `npm install -g vercel@latest` or `pnpm add -g vercel@latest`, then stop
-- If Vercel not logged in → Use `expect` to automate login with Google (arrow down once to select Google, then Enter), then wait for browser authentication, then stop
-- If GitHub CLI not installed → Guide installation (`brew install gh` on macOS, or see github.com/cli/cli for other platforms), then stop
-- If GitHub not logged in → Guide login (`gh auth login`), then stop
+**When setting up Supabase:**
+- "Now let me connect your database..."
+- "Getting your Supabase credentials..."
+- "Setting up your environment file - this keeps your secrets safe!"
+- "Perfect! Your database is connected and ready to use!"
 
-**Only set up what's needed:**
-- If project already initialized → Ask if they want to use it or start fresh
-- If Git already initialized in project → Ask if they want to use it
-- If Vercel already connected to project → Ask if they want to use it
-- If dependencies already installed → Skip or verify up to date
+**When done:**
+- "All set! Your project is ready to go! 🎉"
+- "Here's everything I set up for you:"
+- **Show the summary clearly**
+- "You're all ready to start building! Want me to help you add your first feature?"
+
+**If something needs user help:**
+- "I need your help with one thing..."
+- "Could you install Node.js from nodejs.org? It's free and takes just a few minutes!"
+- "I need to set up your Git name and email - what should I use?"
+- "The MCP Vercel connection needs to be configured - here's how to fix it..."
+
+**If something goes wrong:**
+- "Hmm, I ran into an issue. Let me explain what happened..."
+- "Don't worry, I'll help you fix this!"
+- "Once that's fixed, we can continue!"
+
+---
 
 ## Checklist
 
-- [ ] Asked for project name (if not provided)
-- [ ] **Verified prerequisites (BEFORE starting installation):**
-  - [ ] Node.js is installed (`node --version`)
-  - [ ] pnpm is installed (`pnpm --version`)
-  - [ ] Git is installed (`git --version`)
-  - [ ] Git is latest stable version (checked with `brew outdated git` on macOS, updated if needed)
-  - [ ] Git is authenticated (`git config --global user.name` and `git config --global user.email`)
-  - [ ] Vercel CLI is installed (`vercel --version`)
-  - [ ] Vercel CLI is latest stable version (checked with `npm view vercel version` or `pnpm view vercel version`, updated if needed)
-  - [ ] Vercel is logged in (`vercel whoami`) - if not, automated login with Google via expect
-  - [ ] GitHub CLI is installed (`gh --version`)
-  - [ ] GitHub is logged in (`gh auth status`)
-- [ ] Navigated to `Projects/sebastien/` folder
-- [ ] Initialized project with shadcn/ui using expect to automate `pnpm dlx shadcn@latest init`:
-  - [ ] Used inline expect command to handle all prompts automatically
-  - [ ] Selected "Next.js 16" via expect (arrow down once from default, then Enter)
-  - [ ] Entered project name via expect
-  - [ ] Selected "neutral" as base color via expect
-  - [ ] Project folder created automatically with project name
-  - [ ] Dependencies installed automatically
-- [ ] Copied .cursor folder to new project
-- [ ] Installed all shadcn/ui components:
-  - [ ] Ran `pnpm dlx shadcn@latest add --all --yes`
-  - [ ] Verified installation completed successfully
-- [ ] Set up Supabase:
-  - [ ] Installed @supabase/supabase-js
-- [ ] Checked project state (project exists, Git initialized, Vercel connected)
-- [ ] Git initialized in project
-- [ ] Project files saved locally
-- [ ] Connected to GitHub
-- [ ] Connected to Vercel
-- [ ] Automatic deployments configured (GitHub → Vercel)
-- [ ] Project starts without errors locally
-- [ ] Test deployment works (optional)
-- [ ] Customized design system (automatically after project setup)
-- [ ] Created documentation file: `doc/init-project-YYYY-MM-DD.md`
+- [ ] Checked Node.js installation (`node --version`)
+- [ ] Installed Node.js if needed
+- [ ] Checked pnpm installation (`pnpm --version`)
+- [ ] Installed pnpm if needed (`npm install -g pnpm`)
+- [ ] Checked Git installation (`git --version`)
+- [ ] Installed Git if needed
+- [ ] Checked Git authentication (`git config --global user.name` and `git config --global user.email`)
+- [ ] Configured Git authentication if needed
+- [ ] Checked Vercel CLI installation (`vercel --version`)
+- [ ] Installed Vercel CLI if needed
+- [ ] Verified MCP connection to Vercel (checked last deployment via `mcp_vercel_list_deployments`)
+- [ ] Installed all tech stack packages (including shadcn/ui components)
+- [ ] Installed Supabase client via shadcn
+- [ ] Retrieved Supabase credentials via MCP
+- [ ] Configured `.env.local` with Supabase credentials
+- [ ] Provided summary of what was installed
+
+---
 
 ## Important Notes
 
-- **Prerequisites Required:** Before starting any installation, verify that Node.js, pnpm, Git (latest stable), Vercel CLI (latest stable), and GitHub CLI are installed, and that Git, Vercel, and GitHub are authenticated/logged in. Do not proceed with project initialization until all prerequisites are met.
-- **Git Version Check:** Verify Git is at the latest stable version. On macOS with Homebrew: Check with `brew outdated git`, update with `brew upgrade git` or install latest with `brew install git`. On other platforms: Check latest version from git-scm.com and guide manual update if needed.
-- **Git Authentication:** Check with `git config --global user.name` and `git config --global user.email`. If not set, help configure with `git config --global user.name "Your Name"` and `git config --global user.email "your.email@example.com"`.
-- **Vercel CLI Version Check:** Verify Vercel CLI is at the latest stable version. Check latest with `npm view vercel version` or `pnpm view vercel version`. Compare with current version from `vercel --version`. If outdated, update with `npm install -g vercel@latest` or `pnpm add -g vercel@latest`.
-- **Vercel Authentication:** Check with `vercel whoami`. If not logged in, use `expect` to automate `vercel login` with Google selection (arrow down once from default GitHub option, then Enter). The browser will open for Google authentication - wait for user to complete authentication in the browser.
-- **GitHub Authentication:** Check with `gh auth status`. If not logged in, guide user to run `gh auth login` before proceeding. GitHub CLI can be installed with `brew install gh` on macOS, or see github.com/cli/cli for other platforms.
-- **Project Name:** Ask the user for the project name if not provided
-- **Project Location:** Run from `Projects/sebastien/` folder - the tool will create the project folder automatically (typically `~/Projects/sebastien/{project-name}/` or `/Users/sebastien/Projects/sebastien/{project-name}/`)
-- **Project Initialization Process:**
-  - Use `expect` inline command to automate `pnpm dlx shadcn@latest init` - see step 2 for the complete expect command
-  - The tool automatically checks if current directory has a package.json file
-  - Expect handles all interactive prompts automatically:
-    - **Project Type Selection:** Detects "Would you like to start a new project?" prompt, sends arrow down (ESC[B) to select "Next.js 16", then Enter
-    - **Project Name:** Detects "What is your project named?" prompt, sends the project name and Enter
-    - **Base Color:** Detects "Which color would you like to use as the base color?" prompt, sends "neutral" and Enter
-  - The tool automatically creates Next.js 16 project with shadcn/ui configured
-  - Creates `components.json`, updates `app/globals.css`, installs dependencies, creates `lib/utils.ts`
-- **No User Interaction Required:** All prompts are handled automatically via expect - do not ask the user to interact with the terminal. The expect command handles arrow key navigation and text input programmatically.
-- **Package Manager:** Use `pnpm` as the package manager (install with `npm install -g pnpm` if needed)
-- **.cursor Folder:** Before installing shadcn components, copy the `.cursor` folder from `/Users/sebastien.payet/Projects/sebastien/.cursor` to the new project to include all Cursor commands and rules
-- **shadcn Components:** After copying the `.cursor` folder, install all available shadcn/ui components using `pnpm dlx shadcn@latest add --all --yes`
-- **Supabase Setup:** After installing all shadcn components, install the Supabase JavaScript client
-- **Vercel Setup:** Vercel login is automated using `expect` to select Google authentication. The browser will open for Google OAuth - wait for user to complete authentication in the browser.
-- **Automatic Deployments:** Once GitHub and Vercel are connected, pushes to main/master branch will automatically deploy
-- **Deployment URL:** Vercel will provide a deployment URL (e.g., `your-project.vercel.app`)
-- **Free Tier:** Vercel is free for personal projects with generous limits
-
+- **Prerequisites:** Node.js (LTS), pnpm, Git, and Vercel CLI must be installed before proceeding - but don't worry, I'll help you install them if needed!
+- **Git Authentication:** Git needs to know who you are - I'll help you set this up if it's not already configured
+- **MCP Vercel Connection:** I need to be able to connect to Vercel - if this isn't set up, I'll let you know how to fix it
+- **Package Manager:** I'll use `pnpm` for everything (it's faster!) - I'll install it if you don't have it
+- **No Server Start:** This command gets everything ready, but doesn't start your development server - you can do that separately!
+- **No Customization:** This command doesn't customize your design system - we'll do that in another step!
+- **Summary Required:** I'll always show you a clear summary at the end so you know exactly what's ready
+- **Note:** This assumes you're already in a Next.js project directory - make sure you're in your project root when you run this!
