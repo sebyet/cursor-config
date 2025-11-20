@@ -1,0 +1,176 @@
+---
+description: Unified UX, UI, inspiration, and motion rulebook for shipping interfaces that feel obvious, consistent, and expressive.
+alwaysApply: false
+---
+## How to Use This Document
+
+_Summary: Route every UX/UI/motion question to the right section, then apply the MUST/SHOULD/NEVER rules inside._
+
+| Trigger or question | Jump to | Key actions |
+| --- | --- | --- |
+| “Need UX heuristics or copy rules?” | [Self-Evident Experience](#self-evident-experience) | Design for scanning, clarity, recovery. |
+| “How should navigation/forms behave?” | [Navigation & Forms](#navigation-and-forms) | Provide progress, smart defaults, inline errors. |
+| “Which components/tokens/utilities do I use?” | [Design System & Tailwind Delivery](#design-system-and-tailwind-delivery) | Reuse vibecamp components, semantic tokens, responsive Tailwind. |
+| “What are our accessibility and interaction baselines?” | [Interactions & Accessibility](#interactions-and-accessibility) | Keyboard support, focus, hit targets, feedback. |
+| “Should/How do we animate this?” | [Motion Principles](#motion-principles) & [Motion Patterns](#motion-patterns) | Confirm purpose, frequency, speed, choreography. |
+| “How do we implement/test animations?” | [Framer Motion & Testing](#framer-motion-and-testing) | Use variants, AnimatePresence, reduced motion, performance QA. |
+
+## Experience Delivery Flow
+
+_Summary: Follow this order whenever shaping UX/UI work to keep intent, implementation, and polish aligned._
+
+1. **Context first** – Clarify the task, entry points, success metric, and how often the surface is used. Reference [Self-Evident Experience](#self-evident-experience).
+2. **Structure the narrative** – Map information hierarchy, navigation depth, and form flows ([Navigation & Forms](#navigation-and-forms)).
+3. **Apply the system** – Choose existing vibecamp components, semantic tokens, Tailwind utilities, and responsive/dark rules ([Design System & Tailwind Delivery](#design-system-and-tailwind-delivery)).
+4. **Refine interactions** – Ensure accessibility, feedback, URL/state sync, and touch behaviors ([Interactions & Accessibility](#interactions-and-accessibility)).
+5. **Add motion deliberately** – Only if it clarifies cause/effect or adds rare delight; select the right pattern and tooling ([Motion Principles](#motion-principles), [Motion Patterns](#motion-patterns), [Framer Motion & Testing](#framer-motion-and-testing)).
+6. **Benchmark & QA** – Compare against inspiration references, test reduced motion, low-power devices, and copy polish before shipping.
+
+## Self-Evident Experience {#self-evident-experience}
+
+_Summary: Interfaces must explain themselves instantly—borrowed from “Don’t Make Me Think.”_
+
+- **Clarity**
+  - MUST keep each screen self-evident: primary action is obvious, grouping follows hierarchy, entry points are unmistakable.
+  - MUST size/position the most important elements for immediate recognition; NEVER make users guess what’s clickable.
+  - SHOULD reuse proven patterns; new paradigms require explicit cues.
+- **User behavior truths**
+  - MUST design for scanning (headlines, bullets, whitespace) because users skim.
+  - MUST assume mistakes will happen; provide undo, retries, and autosave for long inputs.
+  - MUST give instant feedback for every action (loading, success, error).
+- **Content & copy**
+  - MUST remove fluff: active voice, concrete nouns, no jargon.
+  - MUST make headlines descriptive and keyword-rich; match page content exactly.
+  - MUST ensure color is never the sole carrier of meaning; pair icons/text/patterns.
+  - SHOULD cut instructions in half and show examples rather than paragraphs.
+- **Performance perception**
+  - MUST use skeletons/placeholders over blank states, show progress for long work, and favor optimistic UI with reconciliation/rollback paths.
+
+## Navigation & Forms {#navigation-and-forms}
+
+_Summary: Keep users oriented, reduce steps, and give crystal-clear validation guidance._
+
+- **Navigation**
+  - MUST provide persistent nav with active states/breadcrumbs; MUST match labels to user mental models.
+  - MUST indicate progress for multi-step flows, and NEVER create dead ends—always offer next/recovery actions.
+  - SHOULD surface search prominently and make thumb-friendly primary actions on mobile.
+- **Forms & inputs**
+  - MUST pair every input with an explicit label (never rely on placeholder-only); required fields are clearly marked.
+  - MUST pre-fill known data, validate in real time, and allow submissions even if validation fails so errors surface inline.
+  - MUST place errors nearest the field, include why + fix instructions, and focus the first error upon submit.
+  - MUST keep inputs hydration-safe, allow paste (especially OTPs/passwords), support password managers/2FA, and warn before abandoning unsaved work.
+  - SHOULD include examples via placeholders that end with ellipsis, trim trailing spaces, and disable spellcheck for usernames/emails/codes.
+
+## Interactions & Accessibility {#interactions-and-accessibility}
+
+_Summary: Baseline interaction contract drawn from the web interface guidelines—keyboard, touch, feedback, and content resilience._
+
+- **Keyboard & focus**
+  - MUST implement full keyboard support per WAI-ARIA APG, including focus traps/return for dialogs.
+  - MUST show visible focus via `:focus-visible` (and `:focus-within` on groups); NEVER hide focus for keyboard paths.
+- **Hit targets & touch**
+  - MUST provide ≥24px hit targets (mobile comfort ≥44px) even if the visual target is smaller.
+  - MUST set `touch-action: manipulation`, respect browser zoom, and never disable pinch/zoom.
+  - MUST handle drag/scroll with `overscroll-behavior: contain` in modals and disable text selection during drags.
+  - SHOULD delay the first tooltip, then show subsequent peers instantly with no animation.
+- **State & navigation**
+  - MUST keep URLs in sync with shareable state (filters, tabs, pagination) and honor back/forward history + scroll position.
+  - MUST use anchors for navigation (supporting Cmd/Ctrl/middle-click); buttons mutate state only.
+- **Feedback & messaging**
+  - SHOULD prefer optimistic UI while syncing with the server; on failure, show actionable error + rollback or Undo.
+  - MUST confirm destructive work or provide an Undo window; MUST use polite `aria-live` for toasts/inline validation.
+- **Content resilience**
+  - MUST craft empty, sparse, dense, loading, and error states.
+  - MUST ensure icons without text have `aria-label`, decorative items are `aria-hidden`, and headings use a proper hierarchy with `scroll-margin-top` for anchors.
+  - MUST design for UGC extremes (very short/long strings) and keep locale-aware formatting for dates/times/numbers/currency.
+- **Performance & layout**
+  - MUST animate only compositor-friendly props (`transform`, `opacity`), virtualize large lists, reserve image space, and batch layout reads/writes.
+  - SHOULD test iOS Low Power Mode, Safari, and throttled CPU/network to ensure responsiveness.
+
+## Design System & Tailwind Delivery {#design-system-and-tailwind-delivery}
+
+_Summary: Ship everything through the vibecamp system, semantic tokens, and Tailwind best practices._
+
+- **Component reuse**
+  - MUST pull from `components/ui/*` before attempting bespoke builds; NEVER fork when a design-system primitive exists.
+  - MUST use built-in variants (`default`, `outline`, `destructive`, `ghost`, etc.) before inventing new props, and reuse the `cn()` helper for class merging.
+- **Tokens & colors**
+  - MUST reference semantic tokens (`bg-background`, `text-foreground`, `bg-primary`, etc.) instead of hard-coded hex/rgb/hsl.
+  - MUST define tokens as CSS variables in `globals.css` and consume them through Tailwind config; NEVER inline brand colors inside components.
+- **Tailwind hygiene**
+  - MUST keep `tailwind.config.ts` content paths in sync with app/components/pages directories and extend the theme rather than overriding defaults.
+  - SHOULD group utility classes logically, rely on JIT/automatic purging, and prefer component extraction or CVA variants over `@apply`.
+  - MUST keep responsive styles mobile-first (`base` → `sm:` → `md:` → …) and verify across breakpoints + dark mode (`dark:` with `next-themes`).
+- **Class management**
+  - MUST use `cn()` (clsx + tailwind-merge) for conditional utilities to prevent conflicts.
+  - SHOULD limit arbitrary values; if a custom spacing/color recurs, add it to the theme.
+- **Accessibility with utilities**
+  - MUST provide focus rings (`focus:ring-2 focus:ring-primary focus:ring-offset-2`) and enforce contrast (APCA preferred) in both light/dark themes.
+
+## Motion Principles {#motion-principles}
+
+_Summary: Motion exists to clarify, not distract—drawn from Emil Kowalski’s philosophy._
+
+- **Purpose first**
+  - MUST ensure every animation delivers feedback, explains state change, or adds rare delight; NEVER animate for its own sake.
+- **Frequency**
+  - MUST remove animations from high-frequency interactions (command menus, keyboard navigation, hover loops); medium frequency gets minimal motion; low frequency can host richer delight.
+  - NEVER animate keyboard-initiated focus changes or routes visited dozens of times per day.
+- **Perceived speed & easing**
+  - MUST keep UI motion under 300 ms (dropdowns ≈180 ms, tooltips 125 ms) and default to `ease-out` or tuned springs.
+  - SHOULD avoid `scale(0)` starts—begin near 0.9 for natural feels; set transform origins to the trigger point.
+- **Taste & critique**
+  - SHOULD regularly study Linear, Raycast, Apple, etc., and articulate _why_ an animation feels right or wrong.
+  - SHOULD embrace the “taste gap”: early attempts may lag behind taste; iterate and solicit critique.
+- **Accessibility & control**
+  - MUST honor `prefers-reduced-motion` with reduced variants or near-instant transitions.
+  - MUST make animations interruptible/input-driven; autoplay only when absolutely necessary (e.g., passive ambient loops).
+
+## Motion Patterns {#motion-patterns}
+
+_Summary: Canonical patterns for feedback, overlays, lists, loading, and gesture-heavy surfaces._
+
+- **Micro-feedback**
+  - MUST add subtle `whileTap` scale (~0.97) or active-state transforms on buttons.
+  - SHOULD add shake/scale cues for error/success yet keep them ≤500 ms and non-startling.
+- **Tooltips & overlays**
+  - MUST delay the first tooltip, then show subsequent ones instantly; scale/pop from trigger origin with `transform-origin` tokens.
+  - MUST animate modal backdrops (≈200 ms fade) and content (spring from `scale 0.95 → 1`, small `y` offset); exits slightly faster.
+- **Lists & layout**
+  - MUST animate list add/remove with `layout` + `AnimatePresence` to preserve spatial memory; keep exit durations ≤200 ms.
+  - SHOULD stagger small lists (50–100 ms) but NEVER for high-frequency feeds.
+- **Page & route transitions**
+  - SHOULD use subtle (≤20px) translations around 150–250 ms when spatial context matters; skip for frequently visited routes/back navigation where immediacy wins.
+- **Loading & progress**
+  - MUST animate skeleton shimmer, spinner rotation via `transform`, and progress bars with smooth `ease-out`. Faster spinning increases perceived speed.
+- **Scroll & gesture triggers**
+  - SHOULD use `useInView` / Intersection Observer with `once: true` for scroll reveals (20–50 px travel) and springs for drag/snap gestures.
+  - MUST disable text selection during drag, set thresholds for swipe actions, and provide elastic resistance.
+- **Composition & pitfalls**
+  - MUST focus on 2–3 properties per animation, avoid animating layout props, and never block pointer events while animating.
+  - SHOULD use blur as a last-resort blend between states when other tweaks fail.
+
+## Framer Motion & Testing {#framer-motion-and-testing}
+
+_Summary: Implementation hygiene plus perf/accessibility QA for motion-heavy surfaces._
+
+- **Library usage**
+  - MUST leverage variants for consistent states, `AnimatePresence` for enter/exit, `layout` for automatic position animation, and `layoutId` for shared transitions.
+  - SHOULD batch transitions through parent variants to stagger children rather than ad-hoc timers.
+- **Performance**
+  - MUST prefer `transform`/`opacity`, let Framer manage `will-change`, and avoid animating `top/left`.
+  - SHOULD keep springs tuned (stiffness/damping presets) and reuse shared configs to prevent drift.
+- **Reduced motion**
+  - MUST read `useReducedMotion()` and strip or shorten animations when enabled; also provide CSS fallbacks for non-Framer zones.
+- **Testing regimen**
+  - SHOULD test motion on low-end hardware, throttled CPU/network, Safari, and with `prefers-reduced-motion` toggled.
+  - MUST verify screen readers announce content changes (not animation), keyboard paths stay instant, and interrupted animations recover gracefully.
+  - SHOULD profile with Chrome Performance, watch for layout thrash, and keep frame rates near 60 fps.
+
+---
+
+## See Also
+
+- **[Engineering Stack](mdc:.cursor/rules/engineering-stack.mdc)**: Architecture, stack, and quality gates.
+- **[Performance Optimization](mdc:.cursor/rules/performance-optimization.mdc)**: Deep dive on measuring and improving runtime costs.
+- **[Security Guidelines](mdc:.cursor/rules/security-guidelines.mdc)**: Required when UX involves sensitive data.

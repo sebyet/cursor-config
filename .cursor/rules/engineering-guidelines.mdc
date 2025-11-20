@@ -1,0 +1,317 @@
+---
+description: Unified rulebook for architecture choices, stack usage, coding standards, TypeScript discipline, and core Next.js patterns.
+alwaysApply: false
+---
+## How to Use This Document
+
+_Summary: Use this table to route questions to the right policy block, then follow the MUST/SHOULD/AVOID bullets inside each section._
+
+| Trigger or question | Jump to | Key actions |
+| --- | --- | --- |
+| “Which backend tool should I pick?” | [Tech Stack Overview](#tech-stack-overview) | Follow the **When → Use → Avoid** flow for each platform. |
+| “What rules govern schema changes?” | [Database Design & Persistence](#database-design-persistence) | Apply schema → constraints → migrations → RLS order. |
+| “Need to build an AI feature” | [Intelligence & Messaging](#intelligence-messaging) | Default to AI SDK, enforce streaming + Zod validation. |
+| “Is this dependency acceptable?” | [Supply Chain & Operations](#supply-chain-operations) | Walk the hygiene → updates → audits flow, then confirm infra controls. |
+| “How strict is our error handling?” | [Security & Reliability](#security-reliability) | Implement boundaries, logging, retries, structured errors. |
+| “Should I refactor or rewrite?” | [Refactoring Discipline](#refactoring-discipline) | Run Safety First checklist, then choose path. |
+
+> **Agent cue:** When a user request matches a trigger, load the linked section before answering.
+
+## Tech Stack Overview {#tech-stack-overview}
+
+_Summary: Start here when choosing technologies or deciding how to implement a feature. Each platform lists When/Use/Avoid/Reference cues so agents can quickly apply the correct stack component._
+
+### Application & Data
+
+#### Next.js (App Router)
+- **When:** Any UI or API work inside `app/*`, marketing sites, dashboards, or internal tools.
+- **Use:** Server Components by default, Server Actions for mutations, middleware for auth/i18n, API routes for webhooks.
+- **Avoid:** Unnecessary `'use client'` boundaries, duplicating logic in both API routes and Server Actions.
+
+#### Supabase
+- **When:** Persistence, auth, file storage, or realtime needs arise.
+- **Use:** Tables with RLS, auth metadata, Storage for files only, Realtime for broadcasts/presence.
+- **Avoid:** Local JSON persistence, bypassing RLS, using Storage as a cache.
+
+#### Workflow DevKit
+- **When:** Work spans >30s, needs retries/backoff, or interacts with third parties asynchronously.
+- **Use:** Onboarding sequences, long-running integrations, scheduled tasks, fan-out workflows.
+- **Avoid:** Blocking HTTP responses with slow work, manual cron scripts.
+
+### UI & State
+
+#### Shadcn/ui
+- **When:** Building UI primitives aligned with Vibecamp design system.
+- **Use:** Import local Shadcn components, customize via Tailwind tokens, ensure accessibility.
+- **Avoid:** Installing shadcn as npm dependency, reinventing primitives already available.
+
+#### Nuqs
+- **When:** State must sync with URL (filters, pagination, search).
+- **Use:** Shareable states, multi-tab consistency, SSR-friendly filters.
+- **Avoid:** Storing sensitive info in URL, using Nuqs for transient UI toggles.
+
+#### Zustand
+- **When:** Need lightweight client-side global state (theme, onboarding progress).
+- **Use:** UI preferences, ephemeral caches, cross-component coordination.
+- **Avoid:** Persisting server data, modeling URL state, replacing React Hook Form.
+
+### Intelligence & Messaging {#intelligence-messaging}
+
+#### Vercel AI SDK
+- **When:** Any AI/LLM interaction, tool calling, or chat interface.
+- **Use:** Streaming responses, Zod schemas, tool routing, server-side orchestration.
+- **Avoid:** Raw fetches to models, storing keys client-side, blocking UI while waiting for completions.
+- **Safety:** Validate AI outputs before acting, log tool invocations without leaking secrets, scope model access to the minimum data needed.
+
+#### Resend
+- **When:** Transactional emails (auth, lifecycle, receipts).
+- **Use:** React Email templates, Resend API via server routes/actions, proper logging.
+- **Avoid:** Supabase email for production traffic, marketing sends.
+
+### Infrastructure, Commerce & Localization
+
+#### Upstash/Redis
+- **When:** Need caching, rate limiting, or lightweight KV with no infra management.
+- **Use:** Cache expensive Supabase/third-party calls, implement rate limits, feature flags.
+- **Avoid:** Caching realtime data, using as primary DB.
+
+#### Stripe
+- **When:** Handling any payment flow.
+- **Use:** Hosted Checkout, webhooks for lifecycle, customer portal for self-serve.
+- **Avoid:** DIY billing logic, skipping webhook verification.
+
+#### next-intl
+- **When:** Multi-locale requirement emerges.
+- **Use:** Locale-aware routing, translation dictionaries, formatting helpers.
+- **Avoid:** Hard-coded strings post-i18n, mixing translation sources.
+
+### Quality, Observability & Automation
+
+#### Playwright
+- **When:** Mission-critical flows (signup, checkout, onboarding) need validation.
+- **Use:** Cross-browser E2E coverage, CI gating, API validation, visual regression baselines.
+- **Avoid:** Treating Playwright as unit tests, skipping headless runs in CI.
+
+#### Vercel Analytics
+- **When:** Monitoring performance and conversions in production.
+- **Use:** Core Web Vitals tracking, Real-time telemetry, default Vercel integration.
+- **Avoid:** Redundant analytics unless justified, collecting PII.
+
+## Coding Standards
+
+_Summary: Defines the baseline expectations for formatting, naming, and commit hygiene across every file. Reference this before writing or reviewing code to keep style automatic._
+
+### Tooling & Formatting
+- **MUST:** Run Prettier + ESLint locally/CI; rely on `.editorconfig` for spacing.
+- **SHOULD:** Keep lines ≈100 chars, separate logic groups with blank lines.
+- **AVOID:** Mixing tabs/spaces, manual formatting overrides without reason.
+
+### Naming & Organization
+- **MUST:** camelCase functions, PascalCase components/types, UPPER_SNAKE constants, kebab-case files.
+- **SHOULD:** Keep files single-purpose (imports → types → implementation → helpers).
+- **AVOID:** Unused imports, unordered dependency groups.
+
+### Comments & Commits
+- **MUST:** Document “why,” not “what,” remove dead/commented code.
+- **SHOULD:** Use Conventional Commits, isolate formatting-only commits.
+- **AVOID:** Mixing feature + refactor logic in one commit.
+- **Plan:** Before writing code, outline the approach and rationale for complex suggestions so reviewers understand intent.
+- **Code clarity:** Prefer self-explanatory code over inline comments; if something requires explanation, refactor for clarity instead of adding comments.
+
+## Database Design & Persistence {#database-design-persistence}
+
+_Summary: Governs how we model data, enforce integrity, and ship migrations safely. Apply these rules whenever touching schema, queries, or Supabase-specific configuration._
+
+### Schema Design
+- **MUST:** Use singular snake_case, `id bigint generated always as identity`, timestamps, comments.
+- **SHOULD:** Describe columns, enforce `NOT NULL` where possible, name FKs `{table}_id`.
+- **AVOID:** Mutating schemas outside migrations.
+
+### Normalization & Constraints
+- **MUST:** Target ≥3NF; split repeated/atomic data.
+- **SHOULD:** Add unique/check constraints for invariants.
+- **AVOID:** Redundant computed columns without justification.
+
+### Indexing Strategy
+- **MUST:** Index PKs/FKs, common filters/order clauses.
+- **SHOULD:** Use GIN/GiST only when warranted, monitor bloat.
+- **AVOID:** Blanket indexing every column.
+
+### Query Patterns & Performance
+- **MUST:** Run `EXPLAIN (ANALYZE, BUFFERS)` on complex queries, avoid `SELECT *`.
+- **SHOULD:** Batch queries to prevent N+1, prefer Supabase functions for heavy work.
+- **AVOID:** Functions in WHERE clauses when a computed column suffices.
+
+### Migrations & Safety
+- **MUST:** Keep migrations reversible, descriptive, and staged (nullable → backfill → enforce).
+- **SHOULD:** Add indexes concurrently, wrap large changes in transactions.
+- **AVOID:** Editing existing migration files.
+
+## Security & Reliability {#security-reliability}
+
+_Summary: Centralizes auth, data-protection, AI safety, and incident-response guidance. Use this section to ensure every change enforces least privilege and surfaces healthy error handling._
+
+### Access Control & RLS
+- **MUST:** Enforce RLS per operation, base policies on `auth.uid()`, and grant least privilege for every role.
+- **MUST:** Manage sessions/tokens with short-lived credentials, secure refresh flows, and rotate secrets/tokens on a defined cadence.
+- **SHOULD:** Centralize auth checks (middleware/server actions), document access matrices, and audit access patterns regularly.
+- **AVOID:** Broad “allow all” policies or long-lived service tokens without monitoring or rotation plans.
+
+### Data Protection & Privacy
+- **MUST:** Encrypt data in transit (TLS) and at rest, sanitize all user input/output pathways.
+- **SHOULD:** Encrypt sensitive columns, redact PII before sending to AI models, logs, analytics, or third parties.
+- **AVOID:** Storing sensitive payloads in client-side caches, public buckets, or URL/query params.
+
+### AI & Tooling Safety
+- **MUST:** Validate AI outputs before acting (guardrails, allow-lists) and log tool invocations without leaking secrets.
+- **SHOULD:** Gate model access to internal data through scoped server-side adapters; prefer mock data in lower environments.
+- **AVOID:** Direct model access to production databases or secrets without mediation.
+
+### Observability & Incident Response
+#### Error Boundaries & UX
+- **MUST:** Provide `error.tsx` per route segment, accept `error`/`reset`, log via Sentry (or equivalent).
+- **SHOULD:** Offer recovery actions (retry, home, contact support) and include error digests.
+- **AVOID:** Surfacing sensitive stack traces.
+
+#### Classifying & Recovering
+- **MUST:** Separate validation/not-found from system failures; define domain error classes with codes.
+- **SHOULD:** Add retries/backoff for transient issues, degrade gracefully.
+- **AVOID:** Swallowing errors silently.
+
+#### Server-Side Handling
+- **MUST:** Wrap Server Component data fetching in try/catch; call `notFound()` or `redirect()` when appropriate.
+- **SHOULD:** Validate Server Action inputs with Zod, log request context, catch DB errors.
+- **AVOID:** Throwing raw DB errors to clients.
+
+#### Client-Side Handling
+- **MUST:** Guard async handlers with try/catch, show actionable messaging.
+- **SHOULD:** Implement inline validation, disable submit until valid, add retries/loading states.
+- **AVOID:** Leaving the UI in an indeterminate state.
+
+#### Logging & Monitoring
+- **MUST:** Use structured JSON logs, never log secrets, gate debug logs in prod builds.
+- **SHOULD:** Integrate Sentry/LogRocket with user context, monitor MTTR, prune stray `console.log`, reference incident playbooks for escalation.
+- **AVOID:** Noisy logging without levels.
+
+## Supply Chain & Operations {#supply-chain-operations}
+
+_Summary: Covers dependency hygiene, secrets, runtime resilience, and disaster readiness. Consult it before adding packages, configuring infrastructure, or planning operational runbooks._
+
+### Dependency Hygiene
+- **MUST:** Favor well-maintained packages with TS types and safe licenses.
+- **SHOULD:** Evaluate security history, bundle footprint, maintenance cadence.
+- **AVOID:** Heavy dependencies for trivial helpers.
+
+### Versioning & Updates
+- **MUST:** Pin versions, commit lockfiles, respect semver semantics, and patch security issues immediately with full test runs.
+- **SHOULD:** Use package-manager tooling to regenerate locks, enable Dependabot/Renovate, upgrade one major at a time.
+- **AVOID:** `latest`/`*` specifiers or skipping release notes/changelog reviews.
+
+### Supply-Chain Security
+- **MUST:** Run `npm audit`/Snyk in CI, block deploys on critical findings, keep `dependencies` vs `devDependencies` tidy, remove unused deps.
+- **SHOULD:** Verify package integrity, review maintainers for new deps, run quarterly audits for outdated/licensing issues.
+- **AVOID:** Blindly trusting transitive deps or leaving dependency rationale undocumented.
+
+### Secrets & Configuration
+- **MUST:** Store secrets in managed vaults or environment variables with rotation schedules.
+- **SHOULD:** Automate secret rotation and access reviews quarterly.
+- **AVOID:** Hard-coding secrets in repos or sharing via chat.
+
+### Rate Limiting & Resilience
+- **MUST:** Apply rate limits/throttles on public APIs and internal hot paths, with alerts on abuse.
+- **SHOULD:** Implement circuit breakers/backoff for downstream dependencies.
+- **AVOID:** Relying solely on client-side throttling.
+
+### Disaster Recovery
+- **MUST:** Maintain automated backups, tested restores, and documented failover procedures.
+- **SHOULD:** Run DR drills at least annually, log lessons learned.
+- **AVOID:** Unverified backup scripts or single-region dependencies without contingencies.
+
+### Data Operations
+- **MUST:** Monitor table growth, plan partitioning/archival as needed, document schema with ERDs/comments.
+- **SHOULD:** Cache read-heavy endpoints (Upstash/Redis) and invalidate after writes.
+- **AVOID:** Manual hotfixes without documentation/testing.
+
+## Refactoring Discipline
+
+_Summary: Explains when to refactor versus rewrite and the guardrails for doing so safely. Review this whenever technical-debt work or large structural changes are on the table._
+
+### When (and When Not) to Refactor
+- **MUST:** Refactor when code blocks new work, duplicates logic, or violates standards.
+- **SHOULD:** Skip refactors on soon-to-be-deleted code or incidents in progress.
+
+### Safety First
+- **MUST:** Ensure tests exist before edits; run before/after changes; keep diffs small and reversible.
+- **SHOULD:** Separate refactors from features, use branches.
+
+### Core Patterns
+- **MUST:** Extract functions, rename for clarity, simplify conditionals, remove duplication.
+- **SHOULD:** Break down large components, remove magic numbers, clean dead code.
+
+### Managing Technical Debt
+- **MUST:** Track debt openly, document shortcuts, prioritize by impact.
+- **SHOULD:** Address related debt while touching code.
+
+### Refactor vs Rewrite
+- **MUST:** Prefer refactor unless architecture is unsalvageable; use strangler patterns for rewrites.
+- **SHOULD:** Provide evidence (time, complexity) before proposing rewrites.
+
+### Team Coordination
+- **MUST:** Communicate large efforts, document intent/results, measure improvements.
+- **SHOULD:** Share learnings in engineering sync or RFCs.
+
+## Core Engineering Principles
+
+_Summary: Captures the mindset expectations (architectural thinking, YAGNI, KISS/DRY) that underpin every decision. Re-read when weighing trade-offs or documenting rationale for an approach._
+
+### Think Like an Architect
+- **MUST:** Map data flows, edge cases, and future change before coding.
+- **SHOULD:** Enforce separation of concerns, loose coupling, high cohesion.
+- **AVOID:** Premature optimization without metrics.
+
+### Avoid Over-Engineering
+- **MUST:** Apply YAGNI, only add abstractions with ≥2 real use cases.
+- **SHOULD:** Watch for “flexibility” arguments without evidence.
+
+### KISS & DRY in Practice
+- **MUST:** Prefer clarity over cleverness; centralize business logic when behaviors match.
+- **SHOULD:** Evaluate whether duplication actually differs before DRYing.
+- **AVOID:** Obscure meta abstractions that hinder onboarding.
+
+## Non-Technical User Guidance
+
+_Summary: When working with non-technical users (no coding experience), adapt communication and expectations. These rules ensure commands remain accessible while maintaining quality._
+
+### Communication Principles
+- **MUST:** Use plain English - avoid technical jargon (Git, GitHub, Vercel, Supabase, etc.) unless explaining what they are
+- **MUST:** Explain WHY before WHAT - "I'm saving your work so you don't lose it" before "I'm committing to Git"
+- **MUST:** Break complex steps into simple actions - "I'll open your browser for you to sign in" instead of "Run `vercel login`"
+- **SHOULD:** Use analogies - "Like saving a document" for Git commits, "Like publishing a blog post" for deployments
+- **AVOID:** Showing code unless asked, using command-line syntax in explanations, assuming technical knowledge
+
+### Limitations & Boundaries
+- **MUST:** Automate everything possible - don't ask users to run commands manually
+- **MUST:** Handle errors gracefully - explain what happened in simple terms and fix automatically
+- **SHOULD:** Guide through prerequisites step-by-step - don't assume tools are installed
+- **AVOID:** Asking users to edit configuration files, understand error messages, or debug technical issues
+- **NEVER:** Blame users for technical issues - frame as "I need to fix something" not "You did something wrong"
+
+### Quality Standards Still Apply
+- **MUST:** Maintain all quality checks (security, accessibility, performance) - just explain them simply
+- **MUST:** Follow all coding standards and best practices - users don't need to know the rules exist
+- **SHOULD:** Explain important decisions when relevant - "I'm making this secure so your users' data is safe"
+- **AVOID:** Skipping quality checks because user is non-technical - quality is non-negotiable
+
+### When to Escalate
+- **MUST:** Escalate if user needs to understand complex technical concepts to proceed
+- **SHOULD:** Escalate if setup requires manual configuration beyond simple sign-ins
+- **AVOID:** Escalating for normal workflow - commands should handle everything automatically
+
+## Maintenance & Escalation
+
+_Summary: Describes how the rulebook stays current and how to escalate conflicts or outdated guidance. Follow these steps when proposing edits or flagging gaps so ownership remains clear._
+
+- **Update cadence:** Review quarterly or when a new platform/tool becomes standard.
+- **Change process:** Open an RFC with proposed edits, get platform-engineering approval, update `version` field.
+- **Escalation:** If guidance conflicts with reality, ping `#platform` Slack channel or file an issue tagged `guidelines`.
+- **Agent note:** Flag discrepancies or outdated instructions in responses so humans can triage.
