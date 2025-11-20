@@ -149,7 +149,30 @@ Right now you're using Geist, which is a great modern choice. Would you like to 
   - [ ] Update font variables in `globals.css` `@theme inline` section if variable names change
   - [ ] Preserve existing font setup structure and formatting
 
-### 5. Create Component Demo
+### 5. Collect Design Inspirations
+
+After updating all global CSS elements, ask about design inspirations:
+
+- [ ] Ask conversationally: "Great! Your design system is looking good. Now, which products or websites inspire you? These will be added to your design references so you can study their patterns when building new features. You can name 1-3 products—like Airbnb, OpenAI, Linear, Stripe, or any others that resonate with your vision."
+- [ ] Accept user input: Allow user to provide 1-3 product/website names
+- [ ] If user provides inspirations:
+  - [ ] Ask for brief descriptions (optional): "What do you like about [product name]? Is it their clean interface, smooth interactions, or something else? This helps understand what patterns to reference."
+  - [ ] Accept brief descriptions or skip if user doesn't want to elaborate
+- [ ] If user doesn't provide inspirations or wants defaults:
+  - [ ] Use default inspirations: Airbnb, OpenAI, Dia Browser
+  - [ ] Explain defaults: "No problem! I'll set up some great defaults: Airbnb (excellent search and filtering), OpenAI (clean AI interfaces), and Dia Browser (modern browser patterns). You can always update these later."
+- [ ] Update `.cursor/rules/ui-ui-designer.mdc`:
+  - [ ] Read current Design Inspirations section
+  - [ ] Replace or update the "Default references" list with user-provided inspirations (or keep defaults if none provided)
+  - [ ] For each inspiration, add a brief description of what makes it valuable:
+    - If user provided descriptions, use those
+    - If defaults, use existing descriptions (Airbnb, OpenAI, Dia Browser)
+    - If new products without descriptions, create brief descriptions based on common patterns (e.g., "Clean interface design, thoughtful interactions, modern UI patterns")
+  - [ ] Preserve the "How to use" subsection structure
+  - [ ] Maintain markdown formatting and structure
+- [ ] Confirm update: "Perfect! I've added [list inspirations] to your design references. You can find them in your design guidelines, and they'll help guide your design decisions going forward."
+
+### 6. Create Component Demo
 
 After saving changes, create a demo page:
 
@@ -241,7 +264,7 @@ After saving changes, create a demo page:
 - [ ] Include component names/labels for each demo section
 - [ ] Show component states (hover, active, disabled, focus) where applicable
 
-### 6. Wrap Up
+### 7. Wrap Up
 
 - [ ] Confirm changes saved (don't mention technical file names)
 - [ ] Show demo page URL in friendly way: "I've created a preview page so you can see everything together!"
