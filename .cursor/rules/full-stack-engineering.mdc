@@ -202,11 +202,12 @@ alwaysApply: false
 - **Use:** React Email templates; Resend API via server routes/actions
 - **AVOID:** Supabase email for production; marketing sends
 
-### Localization
-**Technologies:** next-intl
+### Internationalization
+**Technologies:** Next.js App Router, @formatjs/intl-localematcher, Negotiator
 - **When:** Multi-locale requirement
-- **Use:** Locale-aware routing; translation dictionaries; formatting helpers
-- **AVOID:** Hard-coded strings post-i18n; mixing translation sources
+- **Use:** `proxy.ts` middleware with `@formatjs/intl-localematcher`/`Negotiator` for locale detection; nest files under `app/[lang]`; dictionary pattern with `'server-only'` dynamic imports; `generateStaticParams` for static routes
+- **MUST:** Detect locale from `Accept-Language` header; redirect to locale-prefixed paths; access locale via `params` in Server Components; use `getDictionary` with dynamic imports; mark dictionary files as `'server-only'`
+- **AVOID:** Hard-coding locale detection; client-side dictionary loading; hard-coded strings post-i18n; missing static params for production locales
 
 ### Third-Party Integrations
 **Technologies:** Stripe, other APIs
