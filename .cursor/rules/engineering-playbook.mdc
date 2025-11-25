@@ -1,0 +1,264 @@
+---
+description: Role-based engineering playbook for Frontend, Backend, DevOps, AI, and Architect roles. Each section combines coding rules, best practices, and technology-specific guidance.
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/api/**"
+  - "app/**"
+alwaysApply: false
+---
+
+## Foundation
+
+### Code Implementation
+- **MUST:** Step-by-step process: think → plan → confirm → code
+- **MUST:** Early returns, const arrow functions, handle* event handlers
+- **MUST:** No TODOs/placeholders; full implementation
+- **MUST:** Readability > performance; optimize only with metrics
+- **MUST:** State uncertainty explicitly
+- **AVOID:** Code without planning
+
+### Coding Standards
+- **MUST:** Prettier + ESLint; camelCase functions, PascalCase components, UPPER_SNAKE constants, kebab-case files
+- **MUST:** Document "why" not "what"; Conventional Commits
+- **AVOID:** Unused imports, mixing tabs/spaces
+
+### TypeScript Patterns
+- **MUST:** Strict mode; interfaces for objects, types for unions/primitives
+- **MUST:** Avoid `any`; use utility types
+- **AVOID:** Type assertions without validation
+
+## Frontend Developer
+
+### Server vs Client Components (Next.js App Router)
+- **MUST:** Server Components default; `'use client'` only for interactivity/hooks/browser APIs
+- **MUST:** Keep client components small (<150 lines)
+- **AVOID:** Unnecessary `'use client'` boundaries
+
+### Component Architecture (React)
+- **MUST:** Single responsibility; composition over inheritance
+- **MUST:** Custom hooks for reusable logic (prefix `use`)
+- **MUST:** TypeScript props; avoid `any`
+- **AVOID:** Prop drilling >2-3 levels; use Context/Zustand/composition
+
+### State Management (Zustand, Nuqs, React Context)
+- **Zustand:** Lightweight client-side global state (theme, UI prefs)
+  - **MUST:** Separate server state from client state
+  - **AVOID:** Persisting server data, URL state, replacing React Hook Form
+- **Nuqs:** State must sync with URL (filters, pagination)
+  - **MUST:** Sync URLs with shareable state; honor history
+  - **AVOID:** Sensitive info in URL, transient UI toggles
+- **React Context:** Theme, auth context, rarely-changing values
+  - **MUST:** Memoize providers; split contexts by concern
+  - **AVOID:** High-frequency updates, server state
+
+### UI Components & Styling (Shadcn/ui, TailwindCSS)
+- **Shadcn/ui:** Import from `components/ui/*`; customize via Tailwind tokens
+  - **MUST:** Use built-in variants before inventing props
+  - **AVOID:** Installing as npm dependency, reinventing primitives
+- **TailwindCSS:**
+  - **MUST:** Use `cn()` helper; semantic tokens (`bg-background`, `text-foreground`); mobile-first responsive (`base` → `sm:` → `md:`)
+  - **AVOID:** Arbitrary values; add recurring values to theme
+
+### Animations (Framer Motion, CSS Transitions)
+- **Framer Motion:** Complex animations, shared element transitions
+  - **MUST:** Honor `prefers-reduced-motion`; animate only `transform`/`opacity`
+  - **AVOID:** High-frequency interactions, blocking pointer events
+- **CSS Transitions:** Simple hover/active states
+  - **MUST:** Honor `prefers-reduced-motion`
+  - **AVOID:** Animating layout properties
+
+### Forms & Validation (React Hook Form, Zod)
+- **React Hook Form:**
+  - **MUST:** Use for complex forms; real-time validation; inline errors; loading states; hydration-safe; allow paste; support password managers/2FA
+  - **AVOID:** Blocking paste; controlled for simple inputs
+- **Zod:**
+  - **MUST:** Use schemas for validation
+
+### Performance Optimization (React.memo, next/dynamic, next/image, virtua)
+- **React.memo:**
+  - **MUST:** Use for expensive re-renders
+  - **AVOID:** New objects/functions in render; move to `useMemo`/`useCallback`
+- **next/dynamic:**
+  - **MUST:** Use for heavy components
+- **next/image:**
+  - **MUST:** Use with explicit dimensions
+- **virtua:**
+  - **MUST:** Use to virtualize long lists
+
+### Error Handling (Error Boundaries, Sentry)
+- **Error Boundaries:**
+  - **MUST:** Use `error.tsx` per route; recovery actions; try/catch async errors; user-friendly messages
+- **Sentry:**
+  - **MUST:** Log errors with context
+  - **AVOID:** Swallowing errors
+
+### Data Fetching (Server Components, React Query)
+- **Server Components:**
+  - **MUST:** Use for initial data; loading states (skeletons); error handling
+- **React Query:**
+  - **MUST:** Use for client fetching for user actions
+  - **AVOID:** Client-side fetching when Server Components suffice
+
+## Backend Developer
+
+### Server-Side Rendering & Data Fetching (Next.js Server Components)
+- **MUST:** Server Components default for data fetching; try/catch; `notFound()`/`redirect()` when appropriate
+- **AVOID:** Client-side fetching when Server Components handle it
+
+### Mutations & Actions (Next.js Server Actions, API Routes)
+- **Server Actions:** Mutations (create, update, delete)
+  - **MUST:** Validate with Zod; idempotent when possible; structured errors
+  - **AVOID:** Duplicating logic in API routes
+- **API Routes:** Webhooks, third-party integrations, REST endpoints
+  - **MUST:** Validate inputs; sanitize user data
+  - **AVOID:** Unnecessary routes when Server Actions suffice
+
+### Authentication & Authorization (Supabase Auth, RLS)
+- **MUST:** RLS per operation; base policies on `auth.uid()`; least privilege; short-lived credentials; secure refresh; rotate secrets
+- **AVOID:** "Allow all" policies; long-lived tokens without rotation
+
+### Database Operations (Supabase, PostgreSQL)
+- **Schema Design:** **MUST:** Singular snake_case tables; `id bigint generated always as identity`; timestamps; comments. **SHOULD:** `NOT NULL` where possible; FKs named `{table}_id`. **AVOID:** Mutating schemas outside migrations
+- **Normalization:** **MUST:** Target ≥3NF; split repeated/atomic data. **SHOULD:** Unique/check constraints for invariants. **AVOID:** Redundant computed columns
+- **Indexing:** **MUST:** Index PKs/FKs, common filters/order clauses. **SHOULD:** GIN/GiST when warranted; monitor bloat. **AVOID:** Blanket indexing
+- **Query Optimization:** **MUST:** `EXPLAIN (ANALYZE, BUFFERS)` on complex queries; avoid `SELECT *`; batch queries; prevent N+1; parameterize queries. **AVOID:** Functions in WHERE when computed column suffices
+- **Migrations:** **MUST:** Reversible, descriptive, staged (nullable → backfill → enforce). **SHOULD:** Concurrent indexes; transactions for large changes. **AVOID:** Editing existing migrations
+
+### Background Jobs & Workflows (Workflow DevKit)
+- **MUST:** Use for work >30s needing retries/backoff (onboarding sequences, long-running integrations, scheduled tasks). **AVOID:** Blocking HTTP responses; manual cron scripts
+
+### Email & Messaging (Resend)
+- **MUST:** Use React Email templates + Resend API for transactional emails (auth, lifecycle, receipts). **AVOID:** Supabase email for production; marketing sends
+
+### Internationalization (Next.js App Router, @formatjs/intl-localematcher, Negotiator)
+- **MUST:** Use `proxy.ts` middleware with `@formatjs/intl-localematcher`/`Negotiator` for locale detection; nest files under `app/[lang]`; dictionary pattern with `'server-only'` dynamic imports; `generateStaticParams` for static routes; detect locale from `Accept-Language` header; redirect to locale-prefixed paths; access locale via `params` in Server Components; use `getDictionary` with dynamic imports; mark dictionary files as `'server-only'`
+- **AVOID:** Hard-coding locale detection; client-side dictionary loading; hard-coded strings post-i18n; missing static params for production locales
+
+### Third-Party Integrations (Polar.sh, other APIs)
+- **Polar.sh:** Payment flows, subscriptions, checkout. **MUST:** Install `@polar-sh/nextjs zod`; use `Checkout` handler with `accessToken`, `successUrl`, `returnUrl`; use `CustomerPortal` with `getCustomerId` function; use `Webhooks` handler with `webhookSecret` and payload handlers; verify webhook signatures; handle all webhook events (onCheckoutCreated, onOrderCreated, onSubscriptionActive, etc.). **AVOID:** DIY billing logic; skipping webhook verification; hardcoding customer IDs; exposing access tokens client-side
+
+### Error Handling (Error classes, Sentry)
+- **MUST:** Separate validation/not-found from system failures; domain error classes with codes; sanitize error messages; log to Sentry
+- **AVOID:** Raw DB errors to clients
+
+## DevOps & Operations
+
+### CI/CD & Testing (GitHub Actions, Vercel)
+- **MUST:** Use for automated deployments, continuous integration; CI gating; automated builds; deployment pipelines; run tests in CI; block deploys on failures
+- **AVOID:** Manual deployments; skipping CI checks
+
+### Monitoring & Observability (Vercel Analytics, Sentry, LogRocket)
+- **Vercel Analytics:** Performance and conversions monitoring
+  - **MUST:** Use Core Web Vitals; real-time telemetry
+  - **AVOID:** Redundant analytics; collecting PII
+
+### Dependency Management (npm, Dependabot, Renovate)
+- **MUST:** Pin versions; commit lockfiles; patch security immediately; run `npm audit`/Snyk in CI; block deploys on critical findings
+- **SHOULD:** Dependabot/Renovate; upgrade one major at a time
+- **AVOID:** `latest`/`*` specifiers; unused deps
+
+### Secrets & Configuration (Environment variables, Vaults)
+- **MUST:** Managed vaults or env vars; rotation schedules
+- **SHOULD:** Automate rotation; access reviews quarterly
+- **AVOID:** Hard-coding secrets; sharing via chat
+
+### Caching & Performance (Upstash/Redis, Vercel Edge)
+- **Upstash/Redis:**
+  - **MUST:** Use for caching, rate limiting, lightweight KV; cache expensive calls; rate limits; feature flags; cache read-heavy endpoints; invalidate after writes
+  - **AVOID:** Caching realtime data; using as primary DB
+- **Vercel Edge:**
+  - **MUST:** Use for edge caching and rate limiting
+
+### Rate Limiting & Resilience (Upstash, Vercel Edge)
+- **MUST:** Rate limits on public APIs; alerts on abuse
+- **SHOULD:** Circuit breakers/backoff for downstream dependencies
+- **AVOID:** Client-side throttling only
+
+### Disaster Recovery (Backups, Failover)
+- **MUST:** Automated backups; tested restores; documented failover
+- **SHOULD:** DR drills annually
+- **AVOID:** Unverified backup scripts; single-region dependencies
+
+### Data Operations (Database monitoring, Archival)
+- **MUST:** Monitor table growth; plan partitioning/archival; document schema
+- **SHOULD:** Cache read-heavy endpoints; invalidate after writes
+- **AVOID:** Manual hotfixes without documentation/testing
+
+## AI Engineer
+
+### Model Selection (OpenAI, Anthropic Claude, Google Gemini, Cohere, Mistral)
+- **MUST:** Use AI Gateway for all model access; no provider packages needed (e.g., `@ai-sdk/openai`); specify models using provider/model format (e.g., `'openai/gpt-4o-mini'`, `'openai/gpt-5'`, `'anthropic/claude-3-5-sonnet-20241022'`)
+- **MUST:** Match model to task (reasoning, speed, cost, context length); use `openai/gpt-4o-mini` for 80% of tasks; balance cost vs quality; premium models only for complex reasoning/critical tasks
+- **SHOULD:** Test multiple models; benchmark on your use case
+- **AVOID:** Installing provider packages (`@ai-sdk/openai`, `@ai-sdk/anthropic`, etc.); using model names without provider prefix
+
+**Task Recommendations:** Chat/Conversation: `openai/gpt-4o-mini` (default), `openai/gpt-4o`/`anthropic/claude-3-5-sonnet-20241022` (complex). Code Generation: `openai/gpt-4o`/`anthropic/claude-3-5-sonnet-20241022` (quality), `openai/gpt-4o-mini` (fast), `deepseek/deepseek-coder` (budget). Text Analysis: `openai/gpt-4o-mini`/`anthropic/claude-3-haiku-20240307` (fast), `openai/gpt-4o` (nuanced). Structured Outputs: `openai/gpt-4o` (best schema adherence), `openai/gpt-4o-mini` (simple schemas); **MUST:** Use Zod with `generateObject`. Embeddings: `openai/text-embedding-3-large` (quality), `openai/text-embedding-3-small` (cost-effective); **MUST:** Use same model for indexing/querying. Vision: `openai/gpt-4o`/`anthropic/claude-3-5-sonnet-20241022` (best), `openai/gpt-4o-mini` (simple); **MUST:** Compress images, respect token limits. High-Volume: `openai/gpt-4o-mini`, `anthropic/claude-3-haiku-20240307`, `google/gemini-1.5-flash`; **MUST:** Batch requests, rate limit. Complex Reasoning/Agents: `openai/gpt-4o`, `anthropic/claude-3-5-sonnet-20241022`; **MUST:** Validate outputs, implement guardrails
+
+### AI UI Interfaces (ai-elements)
+- **MUST:** Use ai-elements for all AI interfaces (chat interfaces, AI-powered forms, AI assistants, etc.)
+- **MUST:** Initialize ai-elements with `npx ai-elements@latest` during project setup
+- **MUST:** Use ai-elements components for consistent AI UI patterns across the application
+- **AVOID:** Building custom AI UI components when ai-elements provides equivalent functionality
+
+### Chatbot (Vercel AI SDK Chatbot)
+- **MUST:** Use for simple linear interactions, FAQ responses, guided conversations; chat UI components; message persistence; streaming responses; Zod schemas for structured outputs; validate outputs; log without secrets
+- **MUST:** Use AI Gateway with provider/model format (e.g., `model: 'openai/gpt-4o-mini'`) instead of provider packages
+- **AVOID:** Complex multi-step reasoning; dynamic tool selection; installing provider packages
+
+### Workflow (Vercel AI SDK Workflow Patterns)
+- **Sequential Processing:** Well-defined sequences; content generation pipelines. **MUST:** Define clear step sequence; validate intermediate outputs; handle errors at each step. **AVOID:** Skipping validation between steps
+- **Parallel Processing:** Independent subtasks. **MUST:** Ensure tasks are truly independent; handle partial failures gracefully. **AVOID:** Parallel tasks with dependencies; race conditions
+- **Routing:** Varied inputs requiring different processing. **MUST:** Classify inputs first; route to appropriate handlers; validate routing decisions. **AVOID:** Over-complex routing logic; ambiguous classifications
+- **Orchestrator-Worker:** Complex tasks requiring different expertise. **MUST:** Orchestrator maintains overall context; workers optimize for specific tasks. **AVOID:** Workers making global decisions; losing context between orchestrator and workers
+- **Evaluator-Optimizer:** Quality control needed; self-improvement workflows. **MUST:** Set quality thresholds; limit iterations; use larger models for evaluation. **AVOID:** Infinite loops; no iteration limits; evaluating with same model that generated
+- **General Rules:** **MUST:** Start with simplest approach; add complexity only when required; consider flexibility vs control; error tolerance; cost; maintenance; validate intermediate outputs; log workflow progress. **AVOID:** Over-engineering; dynamic path selection (use Agents instead)
+
+### Agents (Vercel AI SDK Agent class)
+- **MUST:** Use for complex dynamic tasks requiring autonomous decision-making; tool calling in loops; LLMs use tools iteratively to accomplish tasks; validate tool outputs before acting; guardrails and allow-lists; log tool invocations without secrets; scope model access to minimum data needed; loop control with stopWhen/prepareStep
+- **AVOID:** Raw fetches to models; storing keys client-side; blocking UI; infinite loops
+
+### AI Safety & Validation (Zod, Guardrails)
+- **Zod:**
+  - **MUST:** Validate outputs before acting; use for structured outputs
+- **Guardrails:**
+  - **MUST:** Use allow-lists; log tool invocations without leaking secrets
+  - **SHOULD:** Scoped server-side adapters; mock data in lower environments
+  - **AVOID:** Direct model access to production DBs/secrets
+
+### Streaming & Performance (Vercel AI SDK)
+- **MUST:** Streaming responses; don't block UI
+- **SHOULD:** Proper loading states during streaming
+- **AVOID:** Blocking UI while waiting for completions
+
+### Data Protection (PII redaction, Encryption)
+- **PII Redaction:**
+  - **MUST:** Redact PII before sending to models/logs/analytics/third parties
+- **Encryption:**
+  - **SHOULD:** Encrypt sensitive columns; scoped server-side adapters
+  - **AVOID:** Sending sensitive data without sanitization
+
+### Prompt Engineering (Vercel AI SDK)
+- **MUST:** Clear system prompts; user prompts; context management
+- **SHOULD:** Test prompts; iterate based on outputs
+- **AVOID:** Prompt injection; exposing system prompts
+
+## Architect
+
+### Core Engineering Principles
+- **MUST:** Map data flows, edge cases, future change before coding; YAGNI; abstractions only with ≥2 real use cases; clarity over cleverness; centralize business logic when behaviors match
+- **AVOID:** Premature optimization; "flexibility" without evidence; obscure meta abstractions
+
+### Refactoring Discipline
+- **MUST:** Refactor when code blocks new work, duplicates logic, violates standards; tests exist before edits; small reversible diffs; extract functions; rename for clarity; simplify conditionals; remove duplication; track debt openly; document shortcuts; prioritize by impact; prefer refactor unless architecture unsalvageable; strangler patterns for rewrites; communicate large efforts; document intent/results
+- **AVOID:** Refactors on soon-to-be-deleted code; incidents in progress
+
+### System Design Patterns
+- **MUST:** Separation of concerns; loose coupling; high cohesion
+- **SHOULD:** Scalability patterns; evaluate microservices vs monolith
+- **AVOID:** Tight coupling; god objects; premature microservices
+
+### Data Protection & Privacy
+- **MUST:** Encrypt in transit (TLS) and at rest; sanitize all input/output pathways
+- **SHOULD:** Encrypt sensitive columns; redact PII
+- **AVOID:** Sensitive payloads in client-side caches; public buckets; URL/query params

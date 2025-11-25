@@ -85,7 +85,8 @@ pnpm add react-hook-form zod @hookform/resolvers
 pnpm add framer-motion
 
 # AI SDK
-pnpm add ai
+pnpm add ai @ai-sdk/react
+npx ai-elements@latest
 
 # Database
 pnpm add @supabase/supabase-js @supabase/ssr
@@ -155,7 +156,7 @@ What was installed:
 - State Management: Zustand, Nuqs
 - Forms: React Hook Form, Zod
 - Animations: Framer Motion
-- AI SDK: Vercel AI SDK
+- AI SDK: Vercel AI SDK (ai, @ai-sdk/react, ai-elements)
 - Database: Supabase client (@supabase/supabase-js, @supabase/ssr, @supabase/supabase-client-nextjs)
 - i18n: next-intl
 - Email: Resend, React Email
@@ -186,6 +187,7 @@ Environment configured:
 - "Now I'll install all the packages you need - this might take a minute!"
 - "Installing state management tools..."
 - "Setting up forms and validation..."
+- "Installing AI SDK and AI elements..."
 - "Installing all the UI components - this gives you beautiful buttons, forms, and more!"
 - "Almost done! Just setting up a few more things..."
 
