@@ -1,0 +1,210 @@
+---
+description: Unified UX, UI, design system, interactions, accessibility, motion, and performance guidelines for React Native mobile apps. Use when building components, screens, interactions, or implementing design patterns.
+globs:
+  - "**/components/**"
+  - "**/screens/**"
+  - "**/*.tsx"
+alwaysApply: false
+---
+
+## Foundation
+
+### Design Inspirations
+- **Default references**
+  - **Apple Notes** – Clean, minimal interfaces, excellent keyboard handling, smooth animations, native feel
+  - **iMessage** – Exceptional chat UX, floating composer, smooth scrolling, native interactions
+  - **Instagram** – Smooth animations, gesture handling, excellent image handling, native feel
+  - **How to use**
+  - **MUST:** Study these references before designing similar features; understand the "why" behind their patterns, not just copy the "what".
+  - **SHOULD:** Analyze their information architecture, interaction patterns, and visual hierarchy when facing similar design challenges.
+  - **SHOULD:** Reference specific patterns (e.g., "iMessage's floating composer approach" or "Apple Notes' keyboard handling") when proposing solutions.
+  - **AVOID:** Copying without understanding context; adapt patterns to fit your product's unique needs and constraints.
+
+### Self-Evident Experience
+- **Clarity**
+  - **MUST:** Keep each screen self-evident: primary action is obvious, grouping follows hierarchy, entry points are unmistakable.
+  - **MUST:** Size/position the most important elements for immediate recognition; NEVER make users guess what's tappable.
+  - **SHOULD:** Reuse proven patterns; new paradigms require explicit cues.
+- **User behavior truths**
+  - **MUST:** Design for scanning (headlines, bullets, whitespace) because users skim.
+  - **MUST:** Assume mistakes will happen; provide undo, retries, and autosave for long inputs.
+  - **MUST:** Give instant feedback for every action (loading, success, error).
+- **Content & copy**
+  - **MUST:** Remove fluff: active voice, concrete nouns, no jargon.
+  - **MUST:** Make headlines descriptive and keyword-rich; match screen content exactly.
+  - **MUST:** Ensure color is never the sole carrier of meaning; pair icons/text/patterns.
+  - **SHOULD:** Cut instructions in half and show examples rather than paragraphs.
+- **Performance perception**
+  - **MUST:** Use skeletons/placeholders over blank states, show progress for long work, and favor optimistic UI with reconciliation/rollback paths.
+
+## UX Designer
+
+### Navigation
+- **MUST:** Provide persistent nav with active states; match labels to user mental models.
+- **MUST:** Indicate progress for multi-step flows, and NEVER create dead ends—always offer next/recovery actions.
+- **MUST:** Use navigation properly (stack navigation for flows, tab navigation for main sections).
+- **MUST:** Support back navigation (hardware back button on Android, swipe gesture on iOS).
+- **MUST:** Keep navigation consistent across platforms while respecting platform conventions.
+- **SHOULD:** Surface search prominently and make thumb-friendly primary actions.
+
+### Forms & Inputs
+- **MUST:** Pair every input with an explicit label (never rely on placeholder-only); required fields are clearly marked.
+- **MUST:** Pre-fill known data, validate in real time, and allow submitting incomplete forms to surface validation.
+- **MUST:** Place errors nearest the field, include why + fix instructions, and focus the first error upon submit.
+- **MUST:** Keep inputs accessible, allow paste (especially OTPs/passwords), support password managers/2FA, and warn before abandoning unsaved work.
+- **MUST:** Use correct `inputMode` and `keyboardType` for different input types.
+- **MUST:** Loading buttons show spinner and keep original label.
+- **MUST:** Enter submits focused text input. In multiline inputs, handle submission appropriately.
+- **MUST:** Keep submit enabled until request starts; then disable, show spinner, use idempotency key.
+- **MUST:** Don't block typing; accept free text and validate after.
+- **MUST:** Trim values to handle text expansion trailing spaces.
+- **MUST:** No dead zones on checkboxes/radios; label+control share one generous hit target.
+- **SHOULD:** Include examples via placeholders that end with ellipsis (`…`), trim trailing spaces.
+- **SHOULD:** Autofocus on desktop when there's a single primary input; rarely on mobile (to avoid layout shift).
+
+### Feedback & Messaging
+- **MUST:** Confirm destructive work or provide an Undo window; use polite announcements for toasts/inline validation.
+- **SHOULD:** Prefer optimistic UI while syncing with the server; on failure, show actionable error + rollback or Undo.
+- **SHOULD:** Use ellipsis (`…`) for options that open follow-ups (eg, "Rename…") and loading states (eg, "Loading…", "Saving…", "Generating…").
+
+## UI Developer
+
+### Design System & Components
+- **Component reuse**
+  - **MUST:** Pull from design system before attempting bespoke builds; NEVER fork when a design-system primitive exists.
+  - **MUST:** Use built-in variants before inventing new props.
+- **Tokens & colors**
+  - **MUST:** Reference semantic tokens (`background`, `foreground`, `primary`, etc.) instead of hard-coded hex/rgb/hsl.
+  - **MUST:** Define tokens in theme configuration and consume them through styling system; NEVER inline brand colors inside components.
+- **Accessibility with utilities**
+  - **MUST:** Provide focus rings and enforce contrast (APCA preferred) in both light/dark themes.
+
+### Design Details
+- **MUST:** Accessible charts (color-blind-friendly palettes); meet contrast—prefer [APCA](https://apcacontrast.com/) over WCAG 2; increase contrast on `:hover/:active/:focus`.
+- **SHOULD:** Layered shadows (ambient + direct); crisp edges via semi-transparent borders + shadows; nested radii: child ≤ parent; concentric; hue consistency: tint borders/shadows/text toward bg hue; avoid gradient banding (use masks when needed).
+
+### Layout
+- **MUST:** Deliberate alignment to grid/baseline/edges—no accidental placement.
+- **MUST:** Verify on different screen sizes (small phones, large phones, tablets).
+- **MUST:** Respect safe areas (use `useSafeAreaInsets` or `SafeAreaView`).
+- **MUST:** Avoid unwanted scrollbars; fix overflows.
+- **SHOULD:** Optical alignment; adjust by ±1px when perception beats geometry.
+- **SHOULD:** Balance icon/text lockups (stroke/weight/size/spacing/color).
+
+## Accessibility Specialist
+
+### Keyboard & Focus
+- **MUST:** Implement full keyboard support per platform guidelines.
+- **MUST:** Show visible focus via focus indicators; NEVER hide focus for keyboard paths.
+- **MUST:** Manage focus (trap, move, and return) per platform patterns.
+
+### Hit Targets & Touch
+- **MUST:** Provide ≥44px hit targets (iOS HIG recommends 44x44pt minimum).
+- **MUST:** Set `touch-action` appropriately, respect system zoom.
+- **MUST:** Set tap highlight color to match design.
+- **MUST:** Handle drag/scroll with proper gesture handling.
+- **MUST:** Design forgiving interactions (generous targets, clear affordances; avoid finickiness).
+- **MUST:** No "dead-looking" interactive zones—if it looks tappable, it is.
+- **SHOULD:** Delay the first tooltip, then show subsequent peers instantly with no animation.
+
+### Content Resilience
+- **MUST:** Craft empty, sparse, dense, loading, and error states.
+- **MUST:** Ensure icons without text have `accessibilityLabel`, decorative items are `accessibilityElementsHidden`, and headings use a proper hierarchy.
+- **MUST:** Design for UGC extremes (very short/long strings); resilient to user-generated content (short/avg/very long); keep locale-aware formatting for dates/times/numbers/currency.
+- **MUST:** Skeletons mirror final content to avoid layout shift; screen titles match current context; no dead ends—always offer next step/recovery.
+- **MUST:** Tabular numbers for comparisons (`fontVariant: ['tabular-nums']`).
+- **MUST:** Redundant status cues (not color-only); icons have text labels.
+- **MUST:** Use the ellipsis character `…` (not ``).
+- **MUST:** Include a "Skip to content" link; hierarchical headings.
+- **MUST:** Locale-aware dates/times/numbers/currency; accurate names (`accessibilityLabel`), decorative elements `accessibilityElementsHidden`, verify in the Accessibility Tree.
+- **MUST:** Icon-only buttons have descriptive `accessibilityLabel`; prefer native semantics (`Button`, `Pressable`, `TouchableOpacity`) before custom components.
+- **SHOULD:** Inline help first; tooltips last resort; avoid widows/orphans.
+
+## Motion Designer
+
+### Motion Principles
+- **Purpose first**
+  - **MUST:** Ensure every animation delivers feedback, explains state change, or adds rare delight; NEVER animate for its own sake.
+- **Frequency**
+  - **MUST:** Remove animations from high-frequency interactions (command menus, keyboard navigation, hover loops); medium frequency gets minimal motion; low frequency can host richer delight.
+  - **NEVER:** Animate keyboard-initiated focus changes or routes visited dozens of times per day.
+- **Perceived speed & easing**
+  - **MUST:** Keep UI motion under 300 ms (dropdowns ≈180 ms, tooltips 125 ms) and default to `ease-out` or tuned springs.
+  - **SHOULD:** Avoid `scale(0)` starts—begin near 0.9 for natural feels; set transform origins to the trigger point.
+- **Taste & critique**
+  - **SHOULD:** Regularly study Linear, Raycast, Apple, etc., and articulate _why_ an animation feels right or wrong.
+  - **SHOULD:** Embrace the "taste gap": early attempts may lag behind taste; iterate and solicit critique.
+- **Accessibility & control**
+  - **MUST:** Honor `prefers-reduced-motion` with reduced variants or near-instant transitions.
+  - **MUST:** Make animations interruptible/input-driven; autoplay only when absolutely necessary (e.g., passive ambient loops).
+- **Animation basics**
+  - **MUST:** Honor `prefers-reduced-motion` (provide reduced variant); animate compositor-friendly props (`transform`, `opacity`); avoid layout/repaint props (`top/left/width/height`); animations are interruptible and input-driven (avoid autoplay); correct `transform-origin` (motion starts where it "physically" should).
+  - **SHOULD:** Prefer React Native Reanimated > Web Animations API > JS libraries; animate only to clarify cause/effect or add deliberate delight; choose easing to match the change (size/distance/trigger).
+
+### Motion Patterns
+- **Micro-feedback**
+  - **MUST:** Add subtle scale (~0.97) or active-state transforms on buttons.
+  - **SHOULD:** Add shake/scale cues for error/success yet keep them ≤500 ms and non-startling.
+- **Tooltips & overlays**
+  - **MUST:** Delay the first tooltip, then show subsequent ones instantly; scale/pop from trigger origin with `transform-origin` tokens.
+  - **MUST:** Animate modal backdrops (≈200 ms fade) and content (spring from `scale 0.95 → 1`, small `y` offset); exits slightly faster.
+- **Lists & layout**
+  - **MUST:** Animate list add/remove with layout animations to preserve spatial memory; keep exit durations ≤200 ms.
+  - **SHOULD:** Stagger small lists (50–100 ms) but NEVER for high-frequency feeds.
+- **Screen & route transitions**
+  - **SHOULD:** Use subtle (≤20px) translations around 150–250 ms when spatial context matters; skip for frequently visited routes/back navigation where immediacy wins.
+- **Loading & progress**
+  - **MUST:** Animate skeleton shimmer, spinner rotation via `transform`, and progress bars with smooth `ease-out`. Faster spinning increases perceived speed.
+- **Scroll & gesture triggers**
+  - **SHOULD:** Use `useInView` / Intersection Observer with `once: true` for scroll reveals (20–50 px travel) and springs for drag/snap gestures.
+  - **MUST:** Disable text selection during drag, set thresholds for swipe actions, and provide elastic resistance.
+
+### React Native Reanimated & Testing
+- **Testing regimen**
+  - **MUST:** Verify screen readers announce content changes (not animation), keyboard paths stay instant, and interrupted animations recover gracefully.
+  - **SHOULD:** Test motion on low-end hardware, throttled CPU/network, different devices, and with `prefers-reduced-motion` toggled.
+  - **SHOULD:** Profile with React DevTools, watch for layout thrash, and keep frame rates near 60 fps.
+
+## Performance Engineer
+
+### Measurement
+- **MUST:** Measure reliably (disable extensions that skew runtime); track and minimize re-renders (React DevTools/React Scan); profile with CPU/network throttling.
+- **SHOULD:** Test on low-end devices and different screen sizes.
+
+### Optimization
+- **MUST:** Batch layout reads/writes; avoid unnecessary reflows/repaints; mutations target <500 ms; virtualize large lists (eg, `LegendList`); preload only above-the-fold images; lazy-load the rest; prevent layout shift from images (explicit dimensions or reserved space).
+- **MUST:** Animate only compositor-friendly props (`transform`, `opacity`).
+- **SHOULD:** Prefer uncontrolled inputs; make controlled loops cheap (keystroke cost).
+
+## Mobile-Specific Patterns
+
+### Chat & Streaming Interfaces
+- **MUST:** Implement smooth message animations (fade in, slide up)
+- **MUST:** Handle streaming content with staggered fade-in animations
+- **MUST:** Use blank size calculation for floating content
+- **MUST:** Support keyboard-aware scrolling
+- **SHOULD:** Pool animations to limit concurrent animated nodes
+- **SHOULD:** Batch staggered animations (2-4 items at a time)
+
+### Floating Composer
+- **MUST:** Use KeyboardStickyView for floating inputs
+- **MUST:** Measure composer height synchronously
+- **MUST:** Add composer height to ScrollView contentInset
+- **MUST:** Scroll to end when composer grows (if scrolled to end)
+- **SHOULD:** Use Liquid Glass effects for modern feel
+
+### Platform Conventions
+- **iOS:** Follow Human Interface Guidelines
+  - **MUST:** Use native navigation patterns
+  - **MUST:** Respect safe areas
+  - **SHOULD:** Use native UI elements (UIMenu, native alerts)
+- **Android:** Follow Material Design
+  - **MUST:** Use Material Design patterns
+  - **MUST:** Support hardware back button
+  - **SHOULD:** Use Material Design components
+
+### Gesture Handling
+- **MUST:** Support swipe gestures appropriately
+- **MUST:** Handle pull-to-refresh
+- **MUST:** Support interactive keyboard dismissal
+- **SHOULD:** Support pan gestures for focus/blur inputs

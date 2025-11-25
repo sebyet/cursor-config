@@ -1,0 +1,228 @@
+---
+description: Role-based engineering playbook for React Native mobile development. Each section combines coding rules, best practices, and mobile-specific guidance.
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.js"
+  - "**/*.jsx"
+  - "**/screens/**"
+  - "**/components/**"
+alwaysApply: false
+---
+
+## Foundation
+
+### Code Implementation
+- **MUST:** Step-by-step process: think → plan → confirm → code
+- **MUST:** Early returns, const arrow functions, handle* event handlers
+- **MUST:** No TODOs/placeholders; full implementation
+- **MUST:** Readability > performance; optimize only with metrics
+- **MUST:** State uncertainty explicitly
+- **AVOID:** Code without planning
+
+### Coding Standards
+- **MUST:** Prettier + ESLint; camelCase functions, PascalCase components, UPPER_SNAKE constants, kebab-case files
+- **MUST:** Document "why" not "what"; Conventional Commits
+- **AVOID:** Unused imports, mixing tabs/spaces
+
+### TypeScript Patterns
+- **MUST:** Strict mode; interfaces for objects, types for unions/primitives
+- **MUST:** Avoid `any`; use utility types
+- **AVOID:** Type assertions without validation
+
+## Mobile Developer
+
+### Core React Native Stack
+- **MUST:** React Native with Expo for development workflow (easier setup, managed workflow)
+- **MUST:** React Native Reanimated for animations (UI thread, shared values, no re-renders)
+- **MUST:** React Native Keyboard Controller for keyboard handling
+- **SHOULD:** LegendList for virtualized lists (better than FlatList for dynamic heights)
+- **SHOULD:** react-native-unistyles for styling (avoids Context re-renders)
+- **SHOULD:** Zeego for native iOS menus (UIMenu)
+- **SHOULD:** Tanstack Query for data fetching
+- **SHOULD:** Zustand for state management
+- **AVOID:** FlatList for lists with dynamic heights (use LegendList instead)
+
+### Component Architecture (React Native)
+- **MUST:** Single responsibility; composition over inheritance
+- **MUST:** Custom hooks for reusable logic (prefix `use`)
+- **MUST:** TypeScript props; avoid `any`
+- **MUST:** Functional components with hooks (no class components)
+- **AVOID:** Prop drilling >2-3 levels; use Context/Zustand/composition
+- **AVOID:** Class components; use functional components with hooks
+
+### Navigation (React Navigation)
+- **MUST:** Use React Navigation for all navigation (stack, tab, drawer)
+- **MUST:** Type-safe navigation with TypeScript
+- **MUST:** Proper navigation structure (nested navigators when needed)
+- **SHOULD:** Use navigation refs for imperative navigation when needed
+- **AVOID:** Custom navigation solutions; mixing navigation libraries
+
+### State Management (Zustand, React Context)
+- **Zustand:** Lightweight client-side global state (theme, UI prefs, app state)
+  - **MUST:** Separate server state from client state
+  - **MUST:** Use with Tanstack Query for server state
+  - **AVOID:** Persisting server data, replacing React Hook Form
+- **React Context:** Theme, auth context, rarely-changing values
+  - **MUST:** Memoize providers; split contexts by concern
+  - **AVOID:** High-frequency updates, server state
+
+### Styling (react-native-unistyles, StyleSheet, NativeWind)
+- **react-native-unistyles:** Comprehensive theming without Context re-renders
+  - **MUST:** Use for theme-based styling
+  - **MUST:** Define theme tokens, not hard-coded values
+  - **AVOID:** Accessing theme via Context (causes re-renders)
+- **StyleSheet:** Native React Native styling
+  - **MUST:** Use for component-specific styles
+  - **MUST:** Extract styles to StyleSheet.create for performance
+  - **AVOID:** Inline styles in render
+- **NativeWind:** TailwindCSS for React Native (optional)
+  - **SHOULD:** Use if team prefers TailwindCSS
+  - **MUST:** Configure properly for React Native
+
+### Performance Patterns
+- **MUST:** Use `contentInset` for dynamic spacing (not padding/translateY)
+- **MUST:** Leverage React Native New Architecture for synchronous measurements
+- **MUST:** Pool animations to limit concurrent animated nodes
+- **MUST:** Batch staggered animations (2-4 items at a time)
+- **MUST:** Use virtualized lists for long content (LegendList preferred)
+- **MUST:** Avoid re-renders during animations (use Reanimated shared values)
+- **MUST:** Use React.memo for expensive components
+- **MUST:** Use useMemo/useCallback for expensive computations
+- **SHOULD:** Optimize images (resize, compress, lazy load)
+- **AVOID:** Animating layout properties (use transform/opacity only)
+- **AVOID:** Unnecessary re-renders (profile with React DevTools)
+
+### Animations (React Native Reanimated)
+- **React Native Reanimated:** Complex animations, UI thread animations
+  - **MUST:** Use shared values for animation state (no re-renders)
+  - **MUST:** Animate only `transform` and `opacity` (compositor-friendly)
+  - **MUST:** Honor `prefers-reduced-motion` with reduced variants
+  - **MUST:** Use `useAnimatedStyle` for animated styles
+  - **MUST:** Use `useAnimatedReaction` for reactive animations
+  - **SHOULD:** Pool animations to limit concurrent animated nodes
+  - **SHOULD:** Batch staggered animations (2-4 items at a time)
+  - **AVOID:** Animating layout properties (width, height, top, left)
+  - **AVOID:** Blocking UI thread with heavy animations
+
+### Keyboard Handling (React Native Keyboard Controller)
+- **MUST:** Use React Native Keyboard Controller for keyboard handling
+- **MUST:** Implement keyboard-aware scrolling logic
+- **MUST:** Handle edge cases (backgrounding, duplicate events)
+- **MUST:** Support interactive keyboard dismissal
+- **SHOULD:** Conditionally shift content based on scroll position
+- **SHOULD:** Use KeyboardStickyView for floating inputs
+- **AVOID:** Manual keyboard height calculations
+- **AVOID:** Ignoring keyboard events
+
+### Platform-Specific Code
+- **MUST:** Use `Platform.OS` for platform detection
+- **MUST:** Use platform-specific file extensions (`.ios.ts`, `.android.ts`)
+- **MUST:** Follow iOS Human Interface Guidelines and Material Design
+- **SHOULD:** Prefer native UI elements over JS components when possible
+- **SHOULD:** Use native modules for platform-specific features
+- **AVOID:** Platform-specific code in shared components when avoidable
+
+### Native Integration
+- **MUST:** Prefer native UI elements (UIMenu, modals) over JS components
+- **MUST:** Use native modules for platform-specific features
+- **SHOULD:** Upstream patches to React Native core when possible
+- **SHOULD:** Document patches clearly for React Native updates
+- **AVOID:** Patching React Native unless absolutely necessary
+- **AVOID:** Reinventing native functionality
+
+### Forms & Validation (React Hook Form, Zod)
+- **React Hook Form:**
+  - **MUST:** Use for complex forms; real-time validation; inline errors; loading states
+  - **MUST:** Allow paste; support password managers/2FA
+  - **AVOID:** Blocking paste; controlled for simple inputs
+- **Zod:**
+  - **MUST:** Use schemas for validation
+
+### Data Fetching (Tanstack Query)
+- **MUST:** Use Tanstack Query for all server state
+- **MUST:** Configure query client with proper defaults
+- **MUST:** Handle loading, error, and success states
+- **MUST:** Use mutations for create/update/delete operations
+- **SHOULD:** Implement optimistic updates when appropriate
+- **SHOULD:** Use query invalidation for cache management
+- **AVOID:** Manual fetch calls; mixing fetch with Tanstack Query
+
+### API & Data Layer
+- **MUST:** Build shared API layer with runtime type safety (Zod)
+- **MUST:** Generate mobile client from OpenAPI spec (Hey API)
+- **MUST:** Keep business logic on server (thin client)
+- **SHOULD:** Use Tanstack Query for data fetching
+- **SHOULD:** Type-safe RPC pattern for API calls
+- **AVOID:** Duplicating API logic in mobile app
+
+### Error Handling (Error Boundaries)
+- **Error Boundaries:**
+  - **MUST:** Use error boundaries for component error handling
+  - **MUST:** Recovery actions; try/catch async errors; user-friendly messages
+  - **AVOID:** Swallowing errors
+
+### Testing Patterns (Jest, React Native Testing Library)
+- **Jest:** Unit testing framework
+  - **MUST:** Write unit tests for utilities and business logic
+  - **MUST:** Mock native modules and platform APIs
+- **React Native Testing Library:** Component testing
+  - **MUST:** Test user interactions, not implementation details
+  - **MUST:** Use accessibility queries when possible
+  - **AVOID:** Testing implementation details
+
+### Build & Deployment (Fastlane, EAS Build)
+- **EAS Build (Expo):** Recommended for Expo projects
+  - **MUST:** Configure build profiles (development, preview, production)
+  - **MUST:** Set up code signing for iOS
+  - **SHOULD:** Use EAS Submit for App Store submission
+- **Fastlane:** For React Native CLI projects
+  - **SHOULD:** Use for automated builds and deployments
+  - **SHOULD:** Configure lanes for different environments
+
+## DevOps & Operations
+
+### CI/CD & Testing (GitHub Actions)
+- **MUST:** Use for automated builds, continuous integration
+- **MUST:** Run tests in CI; block builds on failures
+- **SHOULD:** Build iOS and Android in CI
+- **AVOID:** Manual builds; skipping CI checks
+
+### Monitoring & Observability
+- **MUST:** Monitor application performance and errors
+- **SHOULD:** Use crash reporting (Sentry, Bugsnag)
+- **SHOULD:** Track app performance metrics
+- **AVOID:** Collecting PII in monitoring data
+
+### Dependency Management (pnpm, Dependabot, Renovate)
+- **MUST:** Pin versions; commit lockfiles; patch security immediately
+- **MUST:** Run `pnpm audit`/Snyk in CI; block builds on critical findings
+- **SHOULD:** Dependabot/Renovate; upgrade one major at a time
+- **AVOID:** `latest`/`*` specifiers; unused deps
+
+### Secrets & Configuration (Environment variables)
+- **MUST:** Use environment variables for configuration
+- **MUST:** Use different configs for dev/staging/production
+- **SHOULD:** Use secure storage for sensitive data
+- **AVOID:** Hard-coding secrets; committing secrets to git
+
+## Architect
+
+### Core Engineering Principles
+- **MUST:** Map data flows, edge cases, future change before coding; YAGNI; abstractions only with ≥2 real use cases; clarity over cleverness; centralize business logic when behaviors match
+- **AVOID:** Premature optimization; "flexibility" without evidence; obscure meta abstractions
+
+### Refactoring Discipline
+- **MUST:** Refactor when code blocks new work, duplicates logic, violates standards; tests exist before edits; small reversible diffs; extract functions; rename for clarity; simplify conditionals; remove duplication; track debt openly; document shortcuts; prioritize by impact; prefer refactor unless architecture unsalvageable; strangler patterns for rewrites; communicate large efforts; document intent/results
+- **AVOID:** Refactors on soon-to-be-deleted code; incidents in progress
+
+### System Design Patterns
+- **MUST:** Separation of concerns; loose coupling; high cohesion
+- **SHOULD:** Composable feature hooks (like useKeyboardAwareMessageList, useMessageBlankSize)
+- **SHOULD:** Multiple context providers for separation of concerns
+- **AVOID:** Tight coupling; god objects; premature microservices
+
+### Data Protection & Privacy
+- **MUST:** Encrypt in transit (TLS) and at rest; sanitize all input/output pathways
+- **SHOULD:** Encrypt sensitive columns; redact PII
+- **AVOID:** Sensitive payloads in client-side caches; storing secrets client-side
