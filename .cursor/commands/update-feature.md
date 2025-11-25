@@ -1,4 +1,4 @@
-# Modify Feature
+# Update Feature
 
 To add a new feature, always tell the user to follow these steps:
 

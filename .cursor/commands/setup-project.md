@@ -1,4 +1,4 @@
-# Setup New Project
+# Setup Project
 
 Get your brand new Next.js project ready to go! I'll check everything you need, install all the packages, set up your database connection, and make sure you're ready to start building. Just run this command and I'll handle all the technical setup automatically!
 
@@ -92,10 +92,16 @@ npx ai-elements@latest
 pnpm add @supabase/supabase-js @supabase/ssr
 
 # Internationalization
-pnpm add next-intl
+pnpm add next-intl @formatjs/intl-localematcher negotiator
 
 # Email
 pnpm add resend react-email @react-email/components
+
+# Performance Optimization
+pnpm add virtua
+
+# Background Jobs & Workflows
+pnpm add workflow
 
 # Utilities
 pnpm add date-fns
@@ -158,8 +164,10 @@ What was installed:
 - Animations: Framer Motion
 - AI SDK: Vercel AI SDK (ai, @ai-sdk/react, ai-elements)
 - Database: Supabase client (@supabase/supabase-js, @supabase/ssr, @supabase/supabase-client-nextjs)
-- i18n: next-intl
+- i18n: next-intl, @formatjs/intl-localematcher, Negotiator
 - Email: Resend, React Email
+- Performance: virtua (list virtualization)
+- Background Jobs: Workflow DevKit
 - Utilities: date-fns, clsx, tailwind-merge
 - Development Tools: Prettier, ESLint config
 - UI Components: All shadcn/ui components
@@ -188,6 +196,8 @@ Environment configured:
 - "Installing state management tools..."
 - "Setting up forms and validation..."
 - "Installing AI SDK and AI elements..."
+- "Setting up internationalization tools..."
+- "Installing performance optimization libraries..."
 - "Installing all the UI components - this gives you beautiful buttons, forms, and more!"
 - "Almost done! Just setting up a few more things..."
 

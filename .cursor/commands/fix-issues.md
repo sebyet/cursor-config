@@ -1,4 +1,4 @@
-# Fix Everything
+# Fix Issues
 
 Intelligently checks what's wrong and fixes only the problems that exist. Think of it as a smart "fix everything" button that only fixes what needs fixing!
 

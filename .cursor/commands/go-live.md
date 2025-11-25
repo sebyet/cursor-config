@@ -1,4 +1,4 @@
-# Publish to Production (Go Live)
+# Go Live
 
 Intelligently checks quality (code cleanup, security, accessibility, code review), verifies everything is ready, then guides you through publishing your website to production and making it live. Only checks what's needed and only publishes if ready!
 
@@ -89,5 +89,5 @@ Intelligently checks quality (code cleanup, security, accessibility, code review
 ## See Also
 
 - **[Run Tests](run-tests.md)**: Run tests explicitly when needed
-- **[Fix Everything](fix-everything.md)**: Fix any issues before publishing
-- **[Publish Feature](publish-feature.md)**: Create preview before going live
+- **[Fix Issues](fix-issues.md)**: Fix any issues before publishing
+- **[Preview App](preview-app.md)**: Create preview before going live

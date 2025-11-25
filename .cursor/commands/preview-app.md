@@ -1,4 +1,4 @@
-# Publish Feature Preview
+# Preview App
 
 Intelligently checks if everything is ready, then guides you through publishing a preview of your feature so you can test it and share it with others. Creates a preview URL you can share - perfect for getting feedback before going live!
 
@@ -62,6 +62,5 @@ Intelligently checks if everything is ready, then guides you through publishing 
 
 ## See Also
 
-- **[Run Tests](run-tests.md)**: Run tests before publishing preview
-- **[Create PR](create-pr.md)**: Create pull request for code review
-- **[Build Project](build-project.md)**: Build project before publishing
+- **[Test App](test-app.md)**: Run tests before creating preview
+- **[Fix Issues](fix-issues.md)**: Fix any issues before previewing

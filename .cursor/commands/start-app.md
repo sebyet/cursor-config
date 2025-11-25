@@ -1,4 +1,4 @@
-# Start Server
+# Start App
 
 Friendly, conversational server startup. Kills any running servers, starts your development server fresh, and gives you the URL so you can open your app in the browser right away!
 

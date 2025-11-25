@@ -1,4 +1,4 @@
-# Automated Testing with Playwright
+# Test App
 
 Automatically tests your application using Playwright! First tests the last feature you worked on, gives you feedback, then tests the entire user journey. Perfect for catching bugs before they reach production!
 
@@ -260,8 +260,8 @@ ps aux | grep "next dev" | grep -v grep
 
 ## Integration with Other Commands
 
-- **Before `@publish-feature`:** Run this to ensure feature works before creating preview
-- **After `@add-feature`:** Automatically test new features after building
-- **Before `@publish-production`:** Critical step to catch bugs before going live
-- **With `@fix-everything`:** Use test results to identify what needs fixing
+- **Before `@preview-app`:** Run this to ensure feature works before creating preview
+- **After `@build-feature`:** Automatically test new features after building
+- **Before `@go-live`:** Critical step to catch bugs before going live
+- **With `@fix-issues`:** Use test results to identify what needs fixing
 

@@ -86,18 +86,14 @@ alwaysApply: false
 - **virtua:**
   - **MUST:** Use to virtualize long lists
 
-### Error Handling (Error Boundaries, Sentry)
+### Error Handling (Error Boundaries)
 - **Error Boundaries:**
   - **MUST:** Use `error.tsx` per route; recovery actions; try/catch async errors; user-friendly messages
-- **Sentry:**
-  - **MUST:** Log errors with context
   - **AVOID:** Swallowing errors
 
-### Data Fetching (Server Components, React Query)
+### Data Fetching (Server Components)
 - **Server Components:**
   - **MUST:** Use for initial data; loading states (skeletons); error handling
-- **React Query:**
-  - **MUST:** Use for client fetching for user actions
   - **AVOID:** Client-side fetching when Server Components suffice
 
 ## Backend Developer
@@ -114,11 +110,19 @@ alwaysApply: false
   - **MUST:** Validate inputs; sanitize user data
   - **AVOID:** Unnecessary routes when Server Actions suffice
 
-### Authentication & Authorization (Supabase Auth, RLS)
+### Authentication/Login Flow Scaffolding
+- **MUST:** If user mentions login/auth, offer to scaffold: "I can set up a complete login system for you! Would you like password-based auth, social auth (Google/GitHub), or both?"
+- **MUST:** Explain simply: "Do you want users to sign in with a password, or with Google/GitHub (like 'Sign in with Google'), or both?"
+- **MUST:** Run appropriate shadcn command: `pnpm dlx shadcn@latest add @supabase/password-based-auth-nextjs` or `@supabase/social-auth-nextjs`
+- **MUST:** Use Supabase MCP tools to apply auth database migration
+- **MUST:** Save migration SQL to `supabase/migrations/<timestamp>_login_flow.sql`
+- **MUST:** Explain: "I'm setting up the database to store user accounts"
 - **MUST:** RLS per operation; base policies on `auth.uid()`; least privilege; short-lived credentials; secure refresh; rotate secrets
 - **AVOID:** "Allow all" policies; long-lived tokens without rotation
 
 ### Database Operations (Supabase, PostgreSQL)
+- **MUST:** Use Supabase MCP tools to apply all database changes directly
+- **MUST:** Save migration SQL to `supabase/migrations/<timestamp>_<descriptive_name>.sql`
 - **Schema Design:** **MUST:** Singular snake_case tables; `id bigint generated always as identity`; timestamps; comments. **SHOULD:** `NOT NULL` where possible; FKs named `{table}_id`. **AVOID:** Mutating schemas outside migrations
 - **Normalization:** **MUST:** Target ≥3NF; split repeated/atomic data. **SHOULD:** Unique/check constraints for invariants. **AVOID:** Redundant computed columns
 - **Indexing:** **MUST:** Index PKs/FKs, common filters/order clauses. **SHOULD:** GIN/GiST when warranted; monitor bloat. **AVOID:** Blanket indexing
@@ -135,11 +139,8 @@ alwaysApply: false
 - **MUST:** Use `proxy.ts` middleware with `@formatjs/intl-localematcher`/`Negotiator` for locale detection; nest files under `app/[lang]`; dictionary pattern with `'server-only'` dynamic imports; `generateStaticParams` for static routes; detect locale from `Accept-Language` header; redirect to locale-prefixed paths; access locale via `params` in Server Components; use `getDictionary` with dynamic imports; mark dictionary files as `'server-only'`
 - **AVOID:** Hard-coding locale detection; client-side dictionary loading; hard-coded strings post-i18n; missing static params for production locales
 
-### Third-Party Integrations (Polar.sh, other APIs)
-- **Polar.sh:** Payment flows, subscriptions, checkout. **MUST:** Install `@polar-sh/nextjs zod`; use `Checkout` handler with `accessToken`, `successUrl`, `returnUrl`; use `CustomerPortal` with `getCustomerId` function; use `Webhooks` handler with `webhookSecret` and payload handlers; verify webhook signatures; handle all webhook events (onCheckoutCreated, onOrderCreated, onSubscriptionActive, etc.). **AVOID:** DIY billing logic; skipping webhook verification; hardcoding customer IDs; exposing access tokens client-side
-
-### Error Handling (Error classes, Sentry)
-- **MUST:** Separate validation/not-found from system failures; domain error classes with codes; sanitize error messages; log to Sentry
+### Error Handling (Error classes)
+- **MUST:** Separate validation/not-found from system failures; domain error classes with codes; sanitize error messages
 - **AVOID:** Raw DB errors to clients
 
 ## DevOps & Operations
@@ -148,10 +149,9 @@ alwaysApply: false
 - **MUST:** Use for automated deployments, continuous integration; CI gating; automated builds; deployment pipelines; run tests in CI; block deploys on failures
 - **AVOID:** Manual deployments; skipping CI checks
 
-### Monitoring & Observability (Vercel Analytics, Sentry, LogRocket)
-- **Vercel Analytics:** Performance and conversions monitoring
-  - **MUST:** Use Core Web Vitals; real-time telemetry
-  - **AVOID:** Redundant analytics; collecting PII
+### Monitoring & Observability
+- **MUST:** Monitor application performance and errors
+- **AVOID:** Collecting PII in monitoring data
 
 ### Dependency Management (npm, Dependabot, Renovate)
 - **MUST:** Pin versions; commit lockfiles; patch security immediately; run `npm audit`/Snyk in CI; block deploys on critical findings
@@ -163,14 +163,11 @@ alwaysApply: false
 - **SHOULD:** Automate rotation; access reviews quarterly
 - **AVOID:** Hard-coding secrets; sharing via chat
 
-### Caching & Performance (Upstash/Redis, Vercel Edge)
-- **Upstash/Redis:**
-  - **MUST:** Use for caching, rate limiting, lightweight KV; cache expensive calls; rate limits; feature flags; cache read-heavy endpoints; invalidate after writes
-  - **AVOID:** Caching realtime data; using as primary DB
+### Caching & Performance (Vercel Edge)
 - **Vercel Edge:**
   - **MUST:** Use for edge caching and rate limiting
 
-### Rate Limiting & Resilience (Upstash, Vercel Edge)
+### Rate Limiting & Resilience (Vercel Edge)
 - **MUST:** Rate limits on public APIs; alerts on abuse
 - **SHOULD:** Circuit breakers/backoff for downstream dependencies
 - **AVOID:** Client-side throttling only

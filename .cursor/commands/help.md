@@ -35,11 +35,11 @@ When you see these words, here's what they mean in plain English:
 - ❌ Testing (I'll test everything automatically)
 
 ### Getting Started:
-1. **First time?** Use `@setup-new-project` - I'll guide you through everything step-by-step
-2. **Want to add something?** Use `@add-feature` - Just describe what you want
-3. **Something broken?** Use `@fix-everything` - I'll find and fix it
-4. **Ready to share?** Use `@publish-feature` - Get a preview URL
-5. **Ready to go live?** Use `@publish-production` - Make your site public
+1. **First time?** Use `@setup-project` - I'll guide you through everything step-by-step
+2. **Want to add something?** Use `@build-feature` - Just describe what you want
+3. **Something broken?** Use `@fix-issues` - I'll find and fix it
+4. **Ready to share?** Use `@preview-app` - Get a preview URL
+5. **Ready to go live?** Use `@go-live` - Make your site public
 
 **Remember:** If you're ever confused, just ask! I'll explain everything in simple terms.
 
@@ -85,88 +85,96 @@ This command analyzes your request and recommends the most appropriate command(s
 
 **Simple requests:**
 - `@help` → "I want to add a new feature"
-  - **Recommended:** `@add-feature` → "Add a contact form"
+  - **Recommended:** `@build-feature` → "Add a contact form"
   - **Why:** Automatically handles feature development end-to-end, including tests and documentation
 
 - `@help` → "Something is broken"
-  - **Recommended:** `@fix-everything` → "The button doesn't work"
+  - **Recommended:** `@fix-issues` → "The button doesn't work"
   - **Why:** Intelligently diagnoses and fixes all types of issues automatically
 
 **Complex requests:**
 - `@help` → "I want to set up a new project"
-  - **Recommended:** `@setup-new-project` → "Create my new app"
+  - **Recommended:** `@setup-project` → "Create my new app"
   - **Why:** Handles complete project setup including Supabase, GitHub, Vercel, and design system customization
 
 - `@help` → "I want to deploy my app to production"
-  - **Recommended:** `@publish-production` → "Go live"
+  - **Recommended:** `@go-live` → "Go live"
   - **Why:** Runs all quality checks (security, accessibility, performance, tests) automatically before deploying
 
 **Discovery requests:**
 - `@help` → "What commands are available?"
-  - **Recommended:** List all 10 core commands with brief descriptions
+  - **Recommended:** List all 13 core commands with brief descriptions
   - **Why:** Shows the complete workflow from setup to production
 
 **Planning requests:**
 - `@help` → "I want to plan my product flow"
-  - **Recommended:** `@plan-product` → "Generate user flow for my platform"
+  - **Recommended:** `@plan-app-flow` → "Generate user flow for my platform"
   - **Why:** Generates comprehensive user flows with system setup, user interactions, and acceptance criteria
 
 ## Command Recommendation Logic
 
 ### Core Commands (Essential Workflow)
 
-I prioritize **10 core commands** that cover everything you need:
+I prioritize **13 core commands** that cover everything you need:
 
-1. **`@setup-new-project`** - When you need to:
+1. **`@setup-project`** - When you need to:
    - Set up a brand new project from scratch
    - Configure Supabase database and authentication
    - Connect to GitHub and Vercel
    - Customize your design system
 
-2. **`@add-feature`** - When you need to:
+2. **`@build-feature`** - When you need to:
    - Add new features (including login/auth flows)
    - Build complete features end-to-end
    - Automatically test and document
 
-3. **`@delete-feature`** - When you need to:
+3. **`@remove-feature`** - When you need to:
    - Remove existing features safely
    - Clean up related code and references
 
-4. **`@customize-design-system`** - When you need to:
+4. **`@update-feature`** - When you need to:
+   - Modify existing features
+   - Update functionality or behavior
+
+5. **`@customize-app`** - When you need to:
    - Customize colors, fonts, and styles
    - Make your app look exactly how you want
 
-5. **`@publish-feature`** - When you need to:
+6. **`@preview-app`** - When you need to:
    - Create a preview URL to share
    - Test features before going live
 
-6. **`@publish-production`** - When you need to:
+7. **`@go-live`** - When you need to:
    - Deploy to production and go live
    - Run all quality checks automatically
 
-7. **`@fix-everything`** - When you need to:
+8. **`@fix-issues`** - When you need to:
    - Fix bugs, errors, and issues
    - Resolve Git problems
    - Clean up code quality
    - Remove AI-generated slop
 
-8. **`@run-tests`** - When you need to:
-   - Run tests explicitly
-   - Verify everything works
+9. **`@start-app`** - When you need to:
+   - Start your development server
+   - View your app locally
 
-9. **`@test-automated`** - When you need to:
+10. **`@test-app`** - When you need to:
    - Automatically test the last feature you worked on
    - Test the complete user journey
    - Get comprehensive feedback on what works and what doesn't
    - Catch bugs before they reach production
 
-10. **`@plan-product`** - When you need to:
+11. **`@plan-app-flow`** - When you need to:
    - Generate comprehensive user flows for your platform
    - Map out system setup and user interactions
    - Create product documentation with acceptance criteria
    - Plan product features before building
 
-11. **`@help`** - When you need to:
+12. **`@sync-configuration`** - When you need to:
+   - Sync Cursor configuration from a repository
+   - Update commands, rules, and reviews
+
+13. **`@help`** - When you need to:
    - Find the right command
    - Understand what each command does
 
@@ -202,36 +210,42 @@ I prioritize **10 core commands** that cover everything you need:
 I match requests to commands based on:
 
 **Intent keywords:**
-- "add", "create", "build", "implement" → `@add-feature`
-- "fix", "broken", "error", "bug" → `@fix-everything`
-- "test", "check", "verify" → `@run-tests` or `@test-automated`
-- "automated test", "playwright", "e2e", "end-to-end", "test journey" → `@test-automated`
-- "deploy", "publish", "release", "go live" → `@publish-production` or `@publish-feature`
-- "setup", "configure", "initialize", "new project" → `@setup-new-project`
-- "delete", "remove" → `@delete-feature`
-- "design", "colors", "fonts", "styles" → `@customize-design-system`
-- "plan", "flow", "user flow", "product flow", "user story" → `@plan-product`
+- "add", "create", "build", "implement" → `@build-feature`
+- "fix", "broken", "error", "bug" → `@fix-issues`
+- "test", "check", "verify" → `@test-app`
+- "automated test", "playwright", "e2e", "end-to-end", "test journey" → `@test-app`
+- "deploy", "publish", "release", "go live" → `@go-live` or `@preview-app`
+- "setup", "configure", "initialize", "new project" → `@setup-project`
+- "delete", "remove" → `@remove-feature`
+- "update", "modify", "change" → `@update-feature`
+- "design", "colors", "fonts", "styles" → `@customize-app`
+- "plan", "flow", "user flow", "product flow", "user story" → `@plan-app-flow`
+- "start", "run", "launch" → `@start-app`
 
 **Workflow keywords:**
-- "start", "begin", "new" → `@setup-new-project`
-- "feature", "add", "build" → `@add-feature`
-- "preview", "share", "test" → `@publish-feature`
-- "production", "live", "deploy" → `@publish-production`
-- "broken", "error", "fix" → `@fix-everything`
-- "plan", "flow", "user flow", "product flow" → `@plan-product`
+- "start", "begin", "new" → `@setup-project`
+- "feature", "add", "build" → `@build-feature`
+- "preview", "share", "test" → `@preview-app`
+- "production", "live", "deploy" → `@go-live`
+- "broken", "error", "fix" → `@fix-issues`
+- "plan", "flow", "user flow", "product flow" → `@plan-app-flow`
 
 **Complexity indicators:**
-- Simple requests → Core commands (`@add-feature`, `@fix-everything`, etc.)
-- Multi-step tasks → Sequence of commands (e.g., setup → add-feature → publish-feature → publish-production)
+- Simple requests → Core commands (`@build-feature`, `@fix-issues`, etc.)
+- Multi-step tasks → Sequence of commands (e.g., setup-project → build-feature → preview-app → go-live)
 
 ## See Also
 
-- **[Add Feature](add-feature.md)**: Build features
-- **[Fix Everything](fix-everything.md)**: Fix problems
-- **[Run Tests](run-tests.md)**: Test and quality
-- **[Automated Testing](test-automated.md)**: Automated testing with Playwright
-- **[Publish Production](publish-production.md)**: Deploy to production
-- **[Publish Feature](publish-feature.md)**: Deploy preview
-- **[Setup New Project](setup-new-project.md)**: Set up projects
-- **[Plan Product](plan-product.md)**: Generate user flows
+- **[Build Feature](build-feature.md)**: Build features
+- **[Remove Feature](remove-feature.md)**: Remove features
+- **[Update Feature](update-feature.md)**: Update features
+- **[Fix Issues](fix-issues.md)**: Fix problems
+- **[Test App](test-app.md)**: Automated testing with Playwright
+- **[Go Live](go-live.md)**: Deploy to production
+- **[Preview App](preview-app.md)**: Create preview link
+- **[Start App](start-app.md)**: Start development server
+- **[Setup Project](setup-project.md)**: Set up projects
+- **[Plan App Flow](plan-app-flow.md)**: Generate user flows
+- **[Customize App](customize-app.md)**: Customize appearance
+- **[Sync Configuration](sync-configuration.md)**: Sync Cursor config
 

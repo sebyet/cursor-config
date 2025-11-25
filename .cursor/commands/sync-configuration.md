@@ -1,4 +1,4 @@
-# Fetch Cursor Config
+# Sync Configuration
 
 Fetch the `.cursor` directory from a GitHub repository and copy it into this project so everyone stays in sync on commands, rules, and reviews.
 
@@ -51,6 +51,6 @@ Fetch the `.cursor` directory from a GitHub repository and copy it into this pro
 
 ## See Also
 
-- **[Setup](setup-new-project.md)**: Initial project setup
-- **[How to Start](how-to-start.md)**: Learn how to use commands
+- **[Setup Project](setup-project.md)**: Initial project setup
+- **[Help](help.md)**: Learn how to use commands
 
