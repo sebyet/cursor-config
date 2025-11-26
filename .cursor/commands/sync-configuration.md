@@ -1,56 +1,44 @@
 # Sync Configuration
 
-Fetch the `.cursor` directory from a GitHub repository and copy it into this project so everyone stays in sync on commands, rules, and reviews.
+Update MCP configuration with your Vercel and Supabase project URLs.
 
 ## What This Command Does
 
-- Clones the specified repository into `/tmp/cursor-config-temp` using `git clone --depth=1`
-- Copies the repo’s `.cursor` directory (commands, rules, reviews) into this project’s `.cursor` directory, preserving structure and overwriting existing files
-- Cleans up the temporary clone and verifies the copy succeeded
+- Updates `mcp.json` with your Vercel project URL
+- Updates `mcp.json` with your Supabase project URL
 
 ## Example Prompts
 
-- "Fetch cursor config from https://github.com/sebyet/cursor-config"
-- "Get the .cursor directory from https://github.com/username/repo"
-- "Update cursor config from GitHub"
-- "Sync cursor configuration from https://github.com/myorg/cursor-rules"
+- "Update MCP config with Vercel URL https://myapp.vercel.app and Supabase URL https://xxxxx.supabase.co"
+- "Sync MCP configuration, Vercel: https://project.vercel.app, Supabase: https://abc123.supabase.co"
+- "Update mcp.json with my Vercel and Supabase URLs"
 
 ## Runbook
 
 1. **Confirm intent**
-   - Tell the user you’ll fetch the `.cursor` directory from the repository they provide and copy it into the project.
-   - Mention this will update their Cursor configuration with the repository’s latest files.
-2. **Clone repository**
-   - `git clone --depth=1 <repo-url> /tmp/cursor-config-temp`
-   - If cloning fails, explain the likely causes (bad URL, private repo, network issue).
-3. **Validate `.cursor` exists**
-   - Ensure `/tmp/cursor-config-temp/.cursor` exists.
-   - If missing, stop and tell the user the repo doesn’t contain a `.cursor` directory.
-4. **Copy configuration**
-   - `cp -R /tmp/cursor-config-temp/.cursor/. /Users/sebastien.payet/Projects/sebastien/.cursor/` (or use `rsync -a` if available).
-   - Preserve directory structure and permissions.
-5. **Clean up**
-   - Remove `/tmp/cursor-config-temp`.
-6. **Verify and report**
-   - Confirm `commands/`, `rules/`, and `reviews/` now reflect the fetched files.
-   - Tell the user the Cursor configuration is updated and ready to use.
+   - Tell the user you'll update the MCP configuration with their Vercel and Supabase project URLs.
+   - Ask for Vercel project URL and Supabase project URL if not provided.
+
+2. **Get URLs from user**
+   - Ask for Vercel project URL (e.g., `https://myapp.vercel.app` or project URL from Vercel dashboard)
+   - Ask for Supabase project URL (e.g., `https://xxxxx.supabase.co` from Supabase project settings)
+   - If URLs are provided in the prompt, use those
+   - Validate URLs are in correct format
+
+3. **Update mcp.json**
+   - Check that `.cursor/mcp.json` file exists
+   - If it doesn't exist, stop and tell the user to run the initial setup first
+   - Read the `mcp.json` file
+   - Update the Vercel section with the provided project URL
+   - Update the Supabase section with the provided project URL
+   - Preserve all existing MCP configurations (tokens, credentials, other settings)
+   - Only update the URL fields, don't overwrite tokens or other credentials
+   - Write the updated JSON back to the file
 
 ## What to Tell the User
 
-- **When starting:** “I’ll fetch the `.cursor` directory from the GitHub repository and copy it here so your Cursor configuration matches the repository.”
-- **During execution:** “Cloning the repository… Copying `.cursor` directory contents… Cleaning up temporary files…”
-- **On success:** “Successfully fetched and copied the `.cursor` directory! Your Cursor configuration now includes the updated `commands/`, `rules/`, and `reviews/`.”
-- **If cloning fails:** “The repository URL doesn’t seem accessible. Please check the URL, repo visibility, and your network connection.”
-- **If `.cursor` is missing:** “The repository doesn’t contain a `.cursor` directory. Please add it and try again.”
-
-## Technical Notes
-
-- Use `git clone --depth=1` to minimize download time.
-- Prefer `rsync -a` to preserve permissions; `cp -R` works if `rsync` is unavailable.
-- Guard against partial copies by validating before overwriting.
-
-## See Also
-
-- **[Setup Project](setup-project.md)**: Initial project setup
-- **[Help](help.md)**: Learn how to use commands
-
+- **When starting:** "I'll update your MCP configuration with your Vercel and Supabase project URLs."
+- **When asking for URLs:** "I need your Vercel project URL and Supabase project URL to update the MCP configuration. Can you provide them?"
+- **During execution:** "Updating `mcp.json` with your Vercel and Supabase URLs…"
+- **On success:** "Successfully updated `mcp.json` with your Vercel and Supabase project URLs!"
+- **If URLs are invalid:** "The URLs you provided don't seem to be in the correct format. Please check your Vercel and Supabase project URLs."

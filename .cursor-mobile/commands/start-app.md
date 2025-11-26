@@ -158,3 +158,5 @@ pnpm android
 - **Physical devices:** For physical devices, make sure they're connected via USB and developer mode is enabled
 - **Expo vs React Native CLI:** Expo projects use `expo start`, React Native CLI uses `react-native start` or `react-native run-ios/android`
 
+
+

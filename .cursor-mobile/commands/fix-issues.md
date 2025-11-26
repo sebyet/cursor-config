@@ -66,3 +66,5 @@ Intelligently checks what's wrong with your React Native app and fixes only the 
 - Check native module linking
 - Verify platform-specific code is correct
 
+
+

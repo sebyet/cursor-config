@@ -249,3 +249,5 @@ I match requests to commands based on:
 - **[Customize App](customize-app.md)**: Customize appearance
 - **[Sync Configuration](sync-configuration.md)**: Sync Cursor config
 
+
+
