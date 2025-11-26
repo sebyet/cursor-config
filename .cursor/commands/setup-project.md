@@ -7,7 +7,8 @@ Get your brand new Next.js project ready to go! I'll check everything you need, 
 1. **Check your tools** - Make sure Node.js, Git, and Vercel CLI are installed (I'll help install them if needed!)
 2. **Install all packages** - Get everything from your tech stack ready to use, including all the UI components
 3. **Set up Supabase** - Connect your database and get your credentials configured
-4. **Show you what's ready** - Give you a clear summary of everything that's set up
+4. **Save your work** - Commit all changes to Git and push to your remote repository (if configured)
+5. **Show you what's ready** - Give you a clear summary of everything that's set up
 
 **Note:** This command gets everything ready, but doesn't start your server or customize your design system - we'll do those separately!
 
@@ -148,7 +149,35 @@ pnpm dlx shadcn@latest add @supabase/supabase-client-nextjs
 - I'll confirm `.env.local` was created/updated with the correct values
 - Your database connection is now ready to use!
 
-### 6. Summary
+### 6. Commit and Push Changes
+
+**Check if Git repository is initialized:**
+- Run `git status` to see if this is a Git repository
+- If not initialized: I'll initialize it with `git init`
+- If already initialized: Great! We'll use the existing repository
+
+**Check if remote is configured:**
+- Run `git remote -v` to see if there's a remote repository
+- If no remote: I'll let you know that you can add one later with `git remote add origin <url>`
+- If remote exists: Perfect! We'll push to it
+
+**Stage all changes:**
+- Run `git add .` to stage all the new files and changes
+- This includes: `package.json`, `pnpm-lock.yaml`, `components.json`, `components/ui/`, `.env.local`, etc.
+
+**Commit the changes:**
+- Run `git commit -m "chore: initial project setup with dependencies and Supabase configuration"`
+- This saves all the setup work we just did!
+
+**Push to remote (if configured):**
+- If a remote exists: Run `git push -u origin main` (or `master` if that's your default branch)
+- If no remote: I'll let you know the changes are committed locally and ready to push when you add a remote
+
+**Don't proceed if user needs to review:**
+- If there are uncommitted changes that might conflict, I'll let you know
+- You can always review what's being committed before we push!
+
+### 7. Summary
 
 At the end, I'll give you a clear summary of everything that's ready:
 
@@ -174,6 +203,10 @@ What was installed:
 
 Environment configured:
 - `.env.local` created with Supabase credentials (SUPABASE_URL, SUPABASE_ANON_KEY)
+
+Git status:
+- Changes committed: [yes/no]
+- Pushed to remote: [yes/no/not configured]
 ```
 
 ---
@@ -206,6 +239,14 @@ Environment configured:
 - "Getting your Supabase credentials..."
 - "Setting up your environment file - this keeps your secrets safe!"
 - "Perfect! Your database is connected and ready to use!"
+
+**When committing changes:**
+- "Let me save all these changes to Git..."
+- "Committing all the setup work..."
+- "Great! All changes are saved locally"
+- "Pushing to your remote repository..." (if remote exists)
+- "Perfect! Everything is saved and pushed!" (if pushed)
+- "Your changes are committed locally - you can push them when you're ready!" (if no remote)
 
 **When done:**
 - "All set! Your project is ready to go! 🎉"
@@ -243,6 +284,12 @@ Environment configured:
 - [ ] Installed Supabase client via shadcn
 - [ ] Retrieved Supabase credentials via MCP
 - [ ] Configured `.env.local` with Supabase credentials
+- [ ] Checked if Git repository is initialized
+- [ ] Initialized Git repository if needed
+- [ ] Checked if remote is configured
+- [ ] Staged all changes (`git add .`)
+- [ ] Committed changes with descriptive message
+- [ ] Pushed to remote if configured
 - [ ] Provided summary of what was installed
 
 ---
@@ -255,5 +302,6 @@ Environment configured:
 - **Package Manager:** I'll use `pnpm` for everything (it's faster!) - I'll install it if you don't have it
 - **No Server Start:** This command gets everything ready, but doesn't start your development server - you can do that separately!
 - **No Customization:** This command doesn't customize your design system - we'll do that in another step!
+- **Git Commit & Push:** I'll commit all changes and push to remote if configured - this saves all your setup work!
 - **Summary Required:** I'll always show you a clear summary at the end so you know exactly what's ready
 - **Note:** This assumes you're already in a Next.js project directory - make sure you're in your project root when you run this!
