@@ -149,7 +149,32 @@ pnpm dlx shadcn@latest add @supabase/supabase-client-nextjs
 - I'll confirm `.env.local` was created/updated with the correct values
 - Your database connection is now ready to use!
 
-### 6. Commit and Push Changes
+### 6. Configure Vercel AI Gateway Authentication
+
+Set up a Vercel AI Gateway API key so your app can call the gateway securely.
+
+**Configure API key in `.env.local`:**
+- Create or copy an AI Gateway API key from the Vercel dashboard
+- Append it to `.env.local` alongside your other secrets:
+  ```
+  AI_GATEWAY_API_KEY=<your_api_key_here>
+  ```
+- This keeps the key local and available through `process.env.AI_GATEWAY_API_KEY`
+- Never commit `.env.local`; it already holds secrets
+
+### 7. Configure Resend Email API Key
+
+Resend needs its API key stored in `.env.local` so your app can send email.
+
+- Create or copy your Resend API key from the Resend dashboard
+- Append it to `.env.local` with the rest of your secrets:
+  ```
+  RESEND_API_KEY=<your_resend_api_key_here>
+  ```
+- This keeps the key local and available through `process.env.RESEND_API_KEY`
+- Keep `.env.local` out of Git; it already contains secrets
+
+### 8. Commit and Push Changes
 
 **Check if Git repository is initialized:**
 - Run `git status` to see if this is a Git repository
@@ -177,7 +202,7 @@ pnpm dlx shadcn@latest add @supabase/supabase-client-nextjs
 - If there are uncommitted changes that might conflict, I'll let you know
 - You can always review what's being committed before we push!
 
-### 7. Summary
+### 9. Summary
 
 At the end, I'll give you a clear summary of everything that's ready:
 
@@ -203,6 +228,8 @@ What was installed:
 
 Environment configured:
 - `.env.local` created with Supabase credentials (SUPABASE_URL, SUPABASE_ANON_KEY)
+- `.env.local` updated with Vercel AI Gateway API key (AI_GATEWAY_API_KEY)
+- `.env.local` updated with Resend API key (RESEND_API_KEY)
 
 Git status:
 - Changes committed: [yes/no]
@@ -239,6 +266,16 @@ Git status:
 - "Getting your Supabase credentials..."
 - "Setting up your environment file - this keeps your secrets safe!"
 - "Perfect! Your database is connected and ready to use!"
+
+**When configuring AI Gateway authentication:**
+- "Next, I'll set up authentication for Vercel AI Gateway..."
+- "I'll store your AI Gateway API key inside `.env.local` so your app can call the gateway securely!"
+- "All set! Your AI Gateway requests will now be authorized."
+
+**When configuring Resend:**
+- "Now I'll set up Resend so your app can send emails..."
+- "Saving your Resend API key into `.env.local` so it stays secure!"
+- "Great! Your app can now send email through Resend."
 
 **When committing changes:**
 - "Let me save all these changes to Git..."
@@ -284,6 +321,8 @@ Git status:
 - [ ] Installed Supabase client via shadcn
 - [ ] Retrieved Supabase credentials via MCP
 - [ ] Configured `.env.local` with Supabase credentials
+- [ ] Configured Vercel AI Gateway authentication (API key saved to `.env.local`)
+- [ ] Configured Resend API key in `.env.local`
 - [ ] Checked if Git repository is initialized
 - [ ] Initialized Git repository if needed
 - [ ] Checked if remote is configured
@@ -303,5 +342,7 @@ Git status:
 - **No Server Start:** This command gets everything ready, but doesn't start your development server - you can do that separately!
 - **No Customization:** This command doesn't customize your design system - we'll do that in another step!
 - **Git Commit & Push:** I'll commit all changes and push to remote if configured - this saves all your setup work!
+- **AI Gateway Auth:** Store the AI Gateway API key in `.env.local` so calls stay authenticated
+- **Email:** Store the Resend API key in `.env.local` so email sending works securely
 - **Summary Required:** I'll always show you a clear summary at the end so you know exactly what's ready
 - **Note:** This assumes you're already in a Next.js project directory - make sure you're in your project root when you run this!
