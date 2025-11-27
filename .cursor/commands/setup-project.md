@@ -86,7 +86,7 @@ pnpm add react-hook-form zod @hookform/resolvers
 pnpm add framer-motion
 
 # AI SDK
-pnpm add ai @ai-sdk/react
+pnpm add ai @ai-sdk/react @exalabs/ai-sdk
 npx ai-elements@latest
 
 # Database
@@ -174,7 +174,19 @@ Resend needs its API key stored in `.env.local` so your app can send email.
 - This keeps the key local and available through `process.env.RESEND_API_KEY`
 - Keep `.env.local` out of Git; it already contains secrets
 
-### 8. Commit and Push Changes
+### 8. Configure Exa Search API Key
+
+If you plan to use Exa’s web search tooling, store your Exa API key in `.env.local`.
+
+- Get the key from the Exa dashboard
+- Append it to `.env.local`:
+  ```
+  EXA_API_KEY=<your_exa_api_key_here>
+  ```
+- This exposes it via `process.env.EXA_API_KEY` for the Exa SDK helpers
+- Keep `.env.local` out of Git; it already stores secrets
+
+### 9. Commit and Push Changes
 
 **Check if Git repository is initialized:**
 - Run `git status` to see if this is a Git repository
@@ -202,7 +214,7 @@ Resend needs its API key stored in `.env.local` so your app can send email.
 - If there are uncommitted changes that might conflict, I'll let you know
 - You can always review what's being committed before we push!
 
-### 9. Summary
+### 10. Summary
 
 At the end, I'll give you a clear summary of everything that's ready:
 
@@ -230,6 +242,7 @@ Environment configured:
 - `.env.local` created with Supabase credentials (SUPABASE_URL, SUPABASE_ANON_KEY)
 - `.env.local` updated with Vercel AI Gateway API key (AI_GATEWAY_API_KEY)
 - `.env.local` updated with Resend API key (RESEND_API_KEY)
+- `.env.local` updated with Exa API key (EXA_API_KEY)
 
 Git status:
 - Changes committed: [yes/no]
@@ -255,7 +268,7 @@ Git status:
 - "Now I'll install all the packages you need - this might take a minute!"
 - "Installing state management tools..."
 - "Setting up forms and validation..."
-- "Installing AI SDK and AI elements..."
+- "Installing AI SDKs, Exa search, and AI elements..."
 - "Setting up internationalization tools..."
 - "Installing performance optimization libraries..."
 - "Installing all the UI components - this gives you beautiful buttons, forms, and more!"
@@ -276,6 +289,11 @@ Git status:
 - "Now I'll set up Resend so your app can send emails..."
 - "Saving your Resend API key into `.env.local` so it stays secure!"
 - "Great! Your app can now send email through Resend."
+
+**When configuring Exa search:**
+- "Adding your Exa API key so web search tools can run..."
+- "Saving the Exa key into `.env.local` for the AI SDK to use!"
+- "Done! The Exa-powered search helpers are ready."
 
 **When committing changes:**
 - "Let me save all these changes to Git..."
@@ -323,6 +341,7 @@ Git status:
 - [ ] Configured `.env.local` with Supabase credentials
 - [ ] Configured Vercel AI Gateway authentication (API key saved to `.env.local`)
 - [ ] Configured Resend API key in `.env.local`
+- [ ] Configured Exa API key in `.env.local`
 - [ ] Checked if Git repository is initialized
 - [ ] Initialized Git repository if needed
 - [ ] Checked if remote is configured
@@ -344,5 +363,6 @@ Git status:
 - **Git Commit & Push:** I'll commit all changes and push to remote if configured - this saves all your setup work!
 - **AI Gateway Auth:** Store the AI Gateway API key in `.env.local` so calls stay authenticated
 - **Email:** Store the Resend API key in `.env.local` so email sending works securely
+- **Exa Search:** Store the Exa API key in `.env.local` so web search tooling can run
 - **Summary Required:** I'll always show you a clear summary at the end so you know exactly what's ready
 - **Note:** This assumes you're already in a Next.js project directory - make sure you're in your project root when you run this!

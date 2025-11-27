@@ -198,6 +198,12 @@ alwaysApply: false
 - **MUST:** Use ai-elements components for consistent AI UI patterns across the application
 - **AVOID:** Building custom AI UI components when ai-elements provides equivalent functionality
 
+### Web Search (Exa)
+- **MUST:** Use Exa as the default web-search capability for AI features; install `@exalabs/ai-sdk` alongside the Vercel AI SDK
+- **MUST:** Store the Exa API key in `.env.local` as `EXA_API_KEY`; never hard-code keys
+- **SHOULD:** Use Exa’s `webSearch` helper (from `@exalabs/ai-sdk`) when models need fresh information; respect rate limits and step counts (e.g., limit tool usage per turn)
+- **AVOID:** Building custom web-scraping for AI contexts or calling third-party search APIs directly without Exa
+
 ### Chatbot (Vercel AI SDK Chatbot)
 - **MUST:** Use for simple linear interactions, FAQ responses, guided conversations; chat UI components; message persistence; streaming responses; Zod schemas for structured outputs; validate outputs; log without secrets
 - **MUST:** Use AI Gateway with provider/model format (e.g., `model: 'openai/gpt-4o-mini'`) instead of provider packages
