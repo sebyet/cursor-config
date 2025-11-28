@@ -129,6 +129,19 @@ git status .cursor/
 - Git status should show the updated files
 - No errors during the process
 
+### 7. Remove Backup (After Confirmation)
+
+**Delete the backup once you are satisfied with the update:**
+```bash
+# Only remove the backup if you no longer need it
+rm -rf "$BACKUP_DIR"
+```
+
+**What this does:**
+- Cleans up the timestamped backup created earlier
+- Frees disk space after confirming the update looks good
+- Prevents stale backups from piling up in the project
+
 ## What to Tell the User
 
 **When starting:**
