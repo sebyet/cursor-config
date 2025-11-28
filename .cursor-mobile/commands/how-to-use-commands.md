@@ -6,7 +6,7 @@ Type `/command-name` and describe what you want in plain English. That's it!
 
 **`/setup-project`** - Gets everything ready for a new React Native project. Use when starting fresh.
 
-**`/build-feature`** - Adds something new to your mobile app. Describe what you want, review the plan, then build it.
+**`/add-feature`** - Adds something new to your mobile app. Describe what you want, review the plan, then build it.
 
 **`/update-feature`** - Changes something that already exists. Describe what to change, review the plan, then update it.
 
@@ -32,13 +32,14 @@ Type `/command-name` and describe what you want in plain English. That's it!
 
 ## Common Workflows
 
-**Starting a new project:** `/setup-project` → `/customize-app` → `/build-feature`
+**Starting a new project:** `/setup-project` → `/customize-app` → `/add-feature`
 
-**Adding something new:** `/build-feature` → `/test-app` → `/preview-app` → `/go-live`
+**Adding something new:** `/add-feature` → `/test-app` → `/preview-app` → `/go-live`
 
 **Fixing problems:** `/fix-issues` → `/test-app`
 
 **Going live:** `/test-app` → `/preview-app` → `/go-live`
+
 
 
 

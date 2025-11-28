@@ -596,7 +596,7 @@ After completing all the steps above and running `@setup-project`:
 
 1. **Test the server:** You can test starting the development server separately
 2. **Customize your app:** Use `@customize-app` to change colors, fonts, and design
-3. **Build features:** Use `@build-feature` to add new functionality
+3. **Build features:** Use `@add-feature` to add new functionality
 4. **Deploy:** Your Vercel project is already connected - push to GitHub and it will deploy automatically!
 
 You're all set! 🎉

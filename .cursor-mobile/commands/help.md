@@ -40,7 +40,7 @@ When you see these words, here's what they mean in plain English:
 
 ### Getting Started:
 1. **First time?** Use `@setup-project` - I'll guide you through everything step-by-step
-2. **Want to add something?** Use `@build-feature` - Just describe what you want
+2. **Want to add something?** Use `@add-feature` - Just describe what you want
 3. **Something broken?** Use `@fix-issues` - I'll find and fix it
 4. **Ready to share?** Use `@preview-app` - Get a preview build
 5. **Ready to go live?** Use `@go-live` - Publish to App Store and Play Store
@@ -89,7 +89,7 @@ This command analyzes your request and recommends the most appropriate command(s
 
 **Simple requests:**
 - `@help` → "I want to add a new feature"
-  - **Recommended:** `@build-feature` → "Add a login screen"
+  - **Recommended:** `@add-feature` → "Add a login screen"
   - **Why:** Automatically handles feature development end-to-end, including tests and documentation
 
 - `@help` → "Something is broken"
@@ -126,7 +126,7 @@ I prioritize **13 core commands** that cover everything you need:
    - Configure iOS and Android development environments
    - Install all necessary packages and dependencies
 
-2. **`@build-feature`** - When you need to:
+2. **`@add-feature`** - When you need to:
    - Add new features (screens, components, navigation)
    - Build complete features end-to-end
    - Automatically test and document
@@ -211,7 +211,7 @@ I prioritize **13 core commands** that cover everything you need:
 I match requests to commands based on:
 
 **Intent keywords:**
-- "add", "create", "build", "implement" → `@build-feature`
+- "add", "create", "build", "implement" → `@add-feature`
 - "fix", "broken", "error", "bug" → `@fix-issues`
 - "test", "check", "verify" → `@test-app`
 - "deploy", "publish", "release", "go live", "app store", "play store" → `@go-live` or `@preview-app`
@@ -224,19 +224,19 @@ I match requests to commands based on:
 
 **Workflow keywords:**
 - "start", "begin", "new" → `@setup-project`
-- "feature", "add", "build" → `@build-feature`
+- "feature", "add", "build" → `@add-feature`
 - "preview", "share", "test" → `@preview-app`
 - "production", "live", "deploy", "app store" → `@go-live`
 - "broken", "error", "fix" → `@fix-issues`
 - "plan", "flow", "user flow", "product flow" → `@plan-app-flow`
 
 **Complexity indicators:**
-- Simple requests → Core commands (`@build-feature`, `@fix-issues`, etc.)
-- Multi-step tasks → Sequence of commands (e.g., setup-project → build-feature → preview-app → go-live)
+- Simple requests → Core commands (`@add-feature`, `@fix-issues`, etc.)
+- Multi-step tasks → Sequence of commands (e.g., setup-project → add-feature → preview-app → go-live)
 
 ## See Also
 
-- **[Build Feature](build-feature.md)**: Build features
+- **[Build Feature](add-feature.md)**: Build features
 - **[Remove Feature](remove-feature.md)**: Remove features
 - **[Update Feature](update-feature.md)**: Update features
 - **[Fix Issues](fix-issues.md)**: Fix problems
@@ -248,6 +248,7 @@ I match requests to commands based on:
 - **[Plan App Flow](plan-app-flow.md)**: Generate user flows
 - **[Customize App](customize-app.md)**: Customize appearance
 - **[Sync Configuration](sync-configuration.md)**: Sync Cursor config
+
 
 
 

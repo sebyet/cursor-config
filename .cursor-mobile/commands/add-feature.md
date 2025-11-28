@@ -1,4 +1,4 @@
-# Build Feature
+# Add Feature
 
 To add a new feature to your React Native app, always tell the user to follow these steps:
 
@@ -12,8 +12,8 @@ To add a new feature to your React Native app, always tell the user to follow th
    - Reply to any questions that come up
    - Consider platform-specific requirements (iOS vs Android)
 
-3. **Click on build**
-   - Once you've reviewed the plan, click build to implement the feature
+3. **Click on add**
+   - Once you've reviewed the plan, click Add to implement the feature
    - The feature will be built with React Native best practices
    - Platform-specific code will be handled appropriately
 
@@ -27,6 +27,7 @@ When building features, consider:
 - **Performance:** Will this feature need optimization (virtualized lists, memoization)?
 - **Keyboard handling:** Does this feature interact with the keyboard?
 - **Animations:** Should this feature have smooth animations?
+
 
 
 

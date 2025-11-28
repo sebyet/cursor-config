@@ -261,7 +261,7 @@ ps aux | grep "next dev" | grep -v grep
 ## Integration with Other Commands
 
 - **Before `@preview-app`:** Run this to ensure feature works before creating preview
-- **After `@build-feature`:** Automatically test new features after building
+- **After `@add-feature`:** Automatically test new features after building
 - **Before `@go-live`:** Critical step to catch bugs before going live
 - **With `@fix-issues`:** Use test results to identify what needs fixing
 
