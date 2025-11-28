@@ -3,6 +3,7 @@ description: Role-based engineering playbook for Frontend, Backend, DevOps, AI, 
 globs:
   - "**/*.ts"
   - "**/*.tsx"
+  - "**/*.md"
   - "**/api/**"
   - "app/**"
 alwaysApply: false

@@ -38,8 +38,9 @@ When you see these words, here's what they mean in plain English:
 1. **First time?** Use `@setup-project` - I'll guide you through everything step-by-step
 2. **Want to add something?** Use `@build-feature` - Just describe what you want
 3. **Something broken?** Use `@fix-issues` - I'll find and fix it
-4. **Ready to share?** Use `@preview-app` - Get a preview URL
-5. **Ready to go live?** Use `@go-live` - Make your site public
+4. **Need to undo changes?** Use `@reset-to-last-version` - I'll restore your last commit
+5. **Ready to share?** Use `@preview-app` - Get a preview URL
+6. **Ready to go live?** Use `@go-live` - Make your site public
 
 **Remember:** If you're ever confused, just ask! I'll explain everything in simple terms.
 
@@ -103,7 +104,7 @@ This command analyzes your request and recommends the most appropriate command(s
 
 **Discovery requests:**
 - `@help` → "What commands are available?"
-  - **Recommended:** List all 13 core commands with brief descriptions
+  - **Recommended:** List all 15 core commands with brief descriptions
   - **Why:** Shows the complete workflow from setup to production
 
 **Planning requests:**
@@ -115,7 +116,7 @@ This command analyzes your request and recommends the most appropriate command(s
 
 ### Core Commands (Essential Workflow)
 
-I prioritize **13 core commands** that cover everything you need:
+I prioritize **15 core commands** that cover everything you need:
 
 1. **`@setup-project`** - When you need to:
    - Set up a brand new project from scratch
@@ -154,27 +155,37 @@ I prioritize **13 core commands** that cover everything you need:
    - Clean up code quality
    - Remove AI-generated slop
 
-9. **`@start-app`** - When you need to:
+9. **`@reset-to-last-version`** - When you need to:
+   - Discard all uncommitted changes safely
+   - Restore your working tree to the last commit
+   - Undo experiments or messy states instantly
+
+10. **`@start-app`** - When you need to:
    - Start your development server
    - View your app locally
 
-10. **`@test-app`** - When you need to:
+11. **`@test-app`** - When you need to:
    - Automatically test the last feature you worked on
    - Test the complete user journey
    - Get comprehensive feedback on what works and what doesn't
    - Catch bugs before they reach production
 
-11. **`@plan-app-flow`** - When you need to:
+12. **`@plan-app-flow`** - When you need to:
    - Generate comprehensive user flows for your platform
    - Map out system setup and user interactions
    - Create product documentation with acceptance criteria
    - Plan product features before building
 
-12. **`@sync-configuration`** - When you need to:
+13. **`@sync-configuration`** - When you need to:
    - Sync Cursor configuration from a repository
    - Update commands, rules, and reviews
 
-13. **`@help`** - When you need to:
+14. **`@update-cursor-config`** - When you need to:
+   - Update your `.cursor` folder with the latest version from the reference repository
+   - Get the latest Cursor commands and rules
+   - Sync with the latest best practices and configurations
+
+15. **`@help`** - When you need to:
    - Find the right command
    - Understand what each command does
 
@@ -218,9 +229,11 @@ I match requests to commands based on:
 - "setup", "configure", "initialize", "new project" → `@setup-project`
 - "delete", "remove" → `@remove-feature`
 - "update", "modify", "change" → `@update-feature`
+- "reset", "undo", "discard changes" → `@reset-to-last-version`
 - "design", "colors", "fonts", "styles" → `@customize-app`
 - "plan", "flow", "user flow", "product flow", "user story" → `@plan-app-flow`
 - "start", "run", "launch" → `@start-app`
+- "update cursor config", "sync cursor", "update .cursor", "get latest cursor config" → `@update-cursor-config`
 
 **Workflow keywords:**
 - "start", "begin", "new" → `@setup-project`
@@ -228,6 +241,7 @@ I match requests to commands based on:
 - "preview", "share", "test" → `@preview-app`
 - "production", "live", "deploy" → `@go-live`
 - "broken", "error", "fix" → `@fix-issues`
+- "reset", "undo", "clean up workspace" → `@reset-to-last-version`
 - "plan", "flow", "user flow", "product flow" → `@plan-app-flow`
 
 **Complexity indicators:**
@@ -240,6 +254,7 @@ I match requests to commands based on:
 - **[Remove Feature](remove-feature.md)**: Remove features
 - **[Update Feature](update-feature.md)**: Update features
 - **[Fix Issues](fix-issues.md)**: Fix problems
+- **[Reset to Last Version](reset-to-last-version.md)**: Discard uncommitted changes
 - **[Test App](test-app.md)**: Automated testing with Playwright
 - **[Go Live](go-live.md)**: Deploy to production
 - **[Preview App](preview-app.md)**: Create preview link
@@ -248,4 +263,5 @@ I match requests to commands based on:
 - **[Plan App Flow](plan-app-flow.md)**: Generate user flows
 - **[Customize App](customize-app.md)**: Customize appearance
 - **[Sync Configuration](sync-configuration.md)**: Sync Cursor config
+- **[Update Cursor Config](update-cursor-config.md)**: Update `.cursor` folder from repository
 

@@ -3,6 +3,7 @@ description: Unified UX, UI, design system, interactions, accessibility, motion,
 globs:
   - "**/components/**"
   - "**/*.tsx"
+  - "**/*.md"
   - "app/**/*.tsx"
 alwaysApply: false
 ---
