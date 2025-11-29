@@ -13,8 +13,9 @@ To add a new feature, always tell the user to follow these steps:
 3. **Click on add**
    - Once you've reviewed the plan, click Add to implement the feature
 
-## Specific rules 
-- Always check the engineering-playbook.mdc and the ui-ux-guidelines.md before starting any implementation or planning
+## Specific rules
+- Always create a new branch from main to make the new changes
+- Always check the engineering-playbook.mdc before starting any implementation or planning
 - If user mentions login/auth:
    - Run appropriate shadcn command: `pnpm dlx shadcn@latest add @supabase/password-based-auth-nextjs` or `@supabase/social-auth-nextjs`
    - Use Supabase MCP tools to apply auth database migration
