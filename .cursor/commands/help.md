@@ -112,11 +112,15 @@ This command analyzes your request and recommends the most appropriate command(s
   - **Recommended:** `@plan-app-flow` → "Generate user flow for my platform"
   - **Why:** Generates comprehensive user flows with system setup, user interactions, and acceptance criteria
 
+- `@help` → "What's the next step in my plan?"
+  - **Recommended:** `@next-step` → "Show me what to do next"
+  - **Why:** Analyzes your plans folder, checks implementation status, and identifies the next step to work on
+
 ## Command Recommendation Logic
 
 ### Core Commands (Essential Workflow)
 
-I prioritize **15 core commands** that cover everything you need:
+I prioritize **16 core commands** that cover everything you need:
 
 1. **`@setup-project`** - When you need to:
    - Set up a brand new project from scratch
@@ -176,16 +180,22 @@ I prioritize **15 core commands** that cover everything you need:
    - Create product documentation with acceptance criteria
    - Plan product features before building
 
-13. **`@sync-configuration`** - When you need to:
+13. **`@next-step`** - When you need to:
+   - Track progress through your implementation plans
+   - Identify what's been completed and what's next
+   - Get the next step to work on from your plan
+   - Understand what needs to be implemented
+
+14. **`@sync-configuration`** - When you need to:
    - Sync Cursor configuration from a repository
    - Update commands, rules, and reviews
 
-14. **`@update-cursor-config`** - When you need to:
+15. **`@update-cursor-config`** - When you need to:
    - Update your `.cursor` folder with the latest version from the reference repository
    - Get the latest Cursor commands and rules
    - Sync with the latest best practices and configurations
 
-15. **`@help`** - When you need to:
+16. **`@help`** - When you need to:
    - Find the right command
    - Understand what each command does
 
@@ -232,6 +242,7 @@ I match requests to commands based on:
 - "reset", "undo", "discard changes" → `@reset-to-last-version`
 - "design", "colors", "fonts", "styles" → `@customize-app`
 - "plan", "flow", "user flow", "product flow", "user story" → `@plan-app-flow`
+- "next step", "what's next", "track progress", "implementation status", "what should I do next" → `@next-step`
 - "start", "run", "launch" → `@start-app`
 - "update cursor config", "sync cursor", "update .cursor", "get latest cursor config" → `@update-cursor-config`
 
@@ -243,6 +254,7 @@ I match requests to commands based on:
 - "broken", "error", "fix" → `@fix-issues`
 - "reset", "undo", "clean up workspace" → `@reset-to-last-version`
 - "plan", "flow", "user flow", "product flow" → `@plan-app-flow`
+- "next step", "what's next", "track progress", "implementation status" → `@next-step`
 
 **Complexity indicators:**
 - Simple requests → Core commands (`@add-feature`, `@fix-issues`, etc.)
@@ -261,7 +273,7 @@ I match requests to commands based on:
 - **[Start App](start-app.md)**: Start development server
 - **[Setup Project](setup-project.md)**: Set up projects
 - **[Plan App Flow](plan-app-flow.md)**: Generate user flows
+- **[Next Step](next-step.md)**: Track progress and identify next steps
 - **[Customize App](customize-app.md)**: Customize appearance
 - **[Sync Configuration](sync-configuration.md)**: Sync Cursor config
 - **[Update Cursor Config](update-cursor-config.md)**: Update `.cursor` folder from repository
-
