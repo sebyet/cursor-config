@@ -1,6 +1,6 @@
-# Test App
+# Test App → "Check it works"
 
-Automatically tests your React Native application! First tests the last feature you worked on, gives you feedback, then tests the entire app. Perfect for catching bugs before they reach production!
+Automatically tests your application using Playwright! First tests the last feature you worked on, gives you feedback, then tests the entire user journey. Perfect for catching bugs before they reach production!
 
 ## What This Does
 
@@ -10,16 +10,16 @@ Automatically tests your React Native application! First tests the last feature 
    - Identify what was last worked on
 
 2. **Test the last feature first**
-   - Run unit tests for the feature if they exist
+   - Start the development server if needed
+   - Navigate to the feature using Playwright
    - Test key interactions and flows
    - Check for errors, broken functionality, and UX issues
    - Provide detailed feedback on what works and what doesn't
 
-3. **Test the full app**
-   - Run all unit tests
+3. **Test the full user journey**
    - Test complete user flows from start to finish
    - Verify navigation, forms, interactions, and critical paths
-   - Check for regressions and broken functionality
+   - Check for regressions and broken links
    - Ensure everything works together
 
 4. **Provide comprehensive feedback**
@@ -61,71 +61,78 @@ git log --oneline -10 | grep -i "feat\|feature\|add\|fix"
 - Identify key user flows for that feature
 - Plan test scenarios
 
-### 2. Run Unit Tests
+### 2. Ensure Server is Running
 
-**Check if tests exist:**
+**Check if server is running:**
 ```bash
-# Look for test files
-find . -name "*.test.ts" -o -name "*.test.tsx" -o -name "*.spec.ts" -o -name "*.spec.tsx"
+# Check if port 3000 is in use
+lsof -ti:3000 || echo "Port 3000 is free"
 
-# Check Jest configuration
-cat package.json | grep -A 10 "jest"
+# Check for Next.js dev server
+ps aux | grep "next dev" | grep -v grep
 ```
 
-**Run tests:**
-```bash
-# Run all tests
-pnpm test
-# or
-npm test
+**Start server if needed:**
+- If not running, start development server:
+  ```bash
+  # Check package manager
+  [ -f pnpm-lock.yaml ] && pnpm dev || npm run dev
+  ```
+- Wait for server to be ready (look for "Ready" message)
+- Note the URL (usually `http://localhost:3000`)
 
-# Run tests in watch mode (for development)
-pnpm test --watch
-
-# Run tests with coverage
-pnpm test --coverage
-```
-
-**For React Native Testing Library:**
-- Tests should use `@testing-library/react-native`
-- Test user interactions, not implementation details
-- Use accessibility queries when possible
+**Verify server is accessible:**
+- Use Playwright to navigate to the base URL
+- Check that the page loads successfully
+- Confirm no critical errors
 
 ### 3. Test the Last Feature First
 
-**Run feature-specific tests:**
-- Run tests for files related to the last feature
-- Test key interactions specific to that feature
+**Navigate to the feature:**
+- Use Playwright MCP to navigate to the relevant page/route
+- Take a snapshot to see the current state
+- Identify key interactive elements
+
+**Test key interactions:**
+- Click buttons, links, and interactive elements
+- Fill forms if applicable
+- Test user flows specific to the feature
 - Verify expected behaviors work correctly
 
 **Check for issues:**
-- Look for test failures
-- Check for console errors
+- Look for console errors (use browser_console_messages)
+- Check network requests for failures (use browser_network_requests)
 - Verify visual elements render correctly
 - Test responsive behavior if applicable
+- Check accessibility basics (focus, keyboard navigation)
 
 **Document findings:**
 - Note what works correctly
 - List any bugs or issues found
+- Capture screenshots of problems if needed
 - Record steps to reproduce issues
 
-### 4. Test the Full App
+### 4. Test the Full User Journey
 
-**Run all tests:**
-- Run complete test suite
-- Verify all tests pass
-- Check for any regressions
-
-**Test complete flows:**
-- Navigation flows
+**Identify critical user flows:**
+- Homepage → Feature discovery
+- Authentication flow (if applicable)
+- Main feature interactions
+- Navigation between pages
 - Form submissions
 - Data display and updates
-- Error handling
-- Edge cases
+
+**Test complete flows:**
+- Start from the homepage
+- Navigate through key pages
+- Test end-to-end user scenarios
+- Verify data persistence (if applicable)
+- Check error handling
+- Test edge cases
 
 **Verify integration:**
 - Ensure features work together
-- Check for broken navigation
+- Check for broken links or navigation
 - Verify consistent UI/UX
 - Test cross-feature interactions
 
@@ -161,8 +168,12 @@ pnpm test --coverage
 - "I can see you worked on [description]. Let me test it now!"
 - If unclear: "I see recent changes but want to confirm - what feature did you last work on?"
 
-**When running tests:**
-- "Running tests for your latest feature..."
+**When starting server:**
+- "Making sure your server is running..."
+- "Server is ready! Starting tests..."
+
+**When testing the last feature:**
+- "Testing your latest feature: [feature name]..."
 - "Checking [specific interaction]..."
 - "Verifying [specific behavior]..."
 
@@ -174,43 +185,56 @@ pnpm test --coverage
   - Highlight any issues
   - Offer to fix problems
 
-**When testing full app:**
-- "Now testing the complete app..."
+**When testing full journey:**
+- "Now testing the complete user journey..."
 - "Verifying all features work together..."
 - "Checking navigation and flows..."
 
 **When done:**
 - "All tests complete! Here's the summary:"
   - Feature test results
-  - Full app test results
+  - Full journey test results
   - Overall status
 - "Everything looks good!" or "Found [X] issues that need attention"
 - "Would you like me to fix any issues I found?"
+
+**If server issues:**
+- "I need to start your server first..."
+- "Server is starting, just a moment..."
+- "Server is ready! Now testing..."
+
+**If Playwright MCP not available:**
+- "I need Playwright MCP to run automated tests. Let me check if it's configured..."
+- "Playwright MCP tools aren't available. Would you like me to help set it up?"
 
 ---
 
 ## Important Notes
 
-- **Test framework:** React Native uses Jest for unit testing. React Native Testing Library for component testing.
-- **E2E testing:** For end-to-end testing, consider Detox or Maestro (separate from this command).
+- **Server dependency:** Tests require the development server to be running. We'll start it automatically if needed.
 - **Git history:** We use git to identify the last feature. Make sure changes are committed for better tracking.
-- **Test scope:** We test both the specific feature and the full app to catch both feature-specific bugs and integration issues.
+- **Playwright MCP:** This command requires Playwright MCP tools to be configured and available.
+- **Test scope:** We test both the specific feature and the full journey to catch both feature-specific bugs and integration issues.
 - **Feedback format:** Results are provided in clear, actionable format - what works, what doesn't, and how to fix it.
 - **Automatic fixes:** If issues are found, we can automatically fix them if you'd like!
-- **Platform testing:** Consider testing on both iOS and Android simulators/emulators for platform-specific issues.
+- **Screenshots:** We capture screenshots of issues when helpful for debugging.
+- **Console errors:** We check browser console for JavaScript errors automatically.
+- **Network issues:** We monitor network requests to catch API failures or slow responses.
 
 ---
 
 ## Example Test Scenarios
 
 **For a login feature:**
+- Navigate to login page
 - Test form validation
 - Test successful login
 - Test error handling
-- Verify navigation after login
+- Verify redirect after login
 - Test logout functionality
 
 **For a form feature:**
+- Navigate to form page
 - Test all form fields
 - Test validation
 - Test form submission
@@ -219,12 +243,13 @@ pnpm test --coverage
 
 **For a navigation feature:**
 - Test all navigation links
-- Verify screens load correctly
-- Test back navigation
+- Verify pages load correctly
+- Test back/forward navigation
 - Check active states
-- Verify tab navigation (if applicable)
+- Verify mobile menu (if applicable)
 
 **For a data display feature:**
+- Navigate to data page
 - Verify data loads correctly
 - Test filtering/sorting (if applicable)
 - Test pagination (if applicable)
@@ -239,35 +264,4 @@ pnpm test --coverage
 - **After `@add-feature`:** Automatically test new features after building
 - **Before `@go-live`:** Critical step to catch bugs before going live
 - **With `@fix-issues`:** Use test results to identify what needs fixing
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
